@@ -1,0 +1,72 @@
+#include "Tank.h"
+
+Tank::Tank(char owner, int ammunation, Direction d, Position p, int shooting_status, int backward_status)
+    : owner(owner), ammunation(ammunation), d(d), p(p), shooting_status(shooting_status), backward_status(backward_status) {}
+
+char Tank::getSymbol() const {
+    return owner;
+}
+
+const Position& Tank::getPosition() const {
+    return p;
+}
+
+const Direction& Tank::getDirection() const {
+    return d;
+}
+
+int Tank::getAmmo() const {
+    return ammunation;
+}
+
+int Tank::getShootingStatus() const {
+    return shooting_status;
+}
+
+int Tank::getBackwardStatus() const {
+    return backward_status;
+}
+
+Position Tank::moveForward(int width, int height) {
+    if (backward_status >= 1) {
+        backward_status = -1;
+        return p;
+    }
+    p.move(d, width, height);
+    return p;
+}
+
+Position Tank::moveBackward(int width, int height) {
+    p.move(d.getOppositeDirection(), width, height);
+    backward_status = 3;
+    return p;
+}
+
+void Tank::decreaseBackward() {
+    backward_status--;
+}
+
+void Tank::shoot() {
+    ammunation--;
+    shooting_status = 4;
+}
+
+void Tank::decreaseShooting() {
+    shooting_status--;
+}
+
+void Tank::rotateLeft4() {
+    d.rotateCounterClockwise4();
+}
+
+void Tank::rotateLeft8() {
+    d.rotateCounterClockwise8();
+}
+
+void Tank::rotateRight4() {
+    d.rotateClockwise4();
+}
+
+void Tank::rotateRight8() {
+    d.rotateClockwise8();
+}

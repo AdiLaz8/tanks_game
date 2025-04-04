@@ -4,34 +4,24 @@
 #include "Cell.h"
 #include "Position.h"
 #include "Direction.h"
-class Shell : public Cell
-{
-    private:
-        Position p;
-        Direction d;
-        int ownerId;
-    public:
-        Shell(Position p, Direction d, int ownerId): p(p), d(d), ownerId(ownerId) {}
 
-        char getSymbol() const override {
-            return '*';
-        }
+class Shell : public Cell {
+private:
+    Position p;
+    Direction d;
+    int ownerId;
 
-        Position getPosition() const {
-            return p;
-        }
+public:
+    Shell(Position p, Direction d, int ownerId);
 
-        void move() {
-            p.move(d);
-        }
+    char getSymbol() const override;
 
-        Direction getDirection() const {
-            return d;
-        }
+    const Position& getPosition() const;
 
-        int getOwnerId() const {
-            return ownerId;
-        }
+    void move(int width, int height);
 
+    Direction getDirection() const;
+    int getOwnerId() const;
 };
+
 #endif

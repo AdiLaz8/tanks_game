@@ -13,10 +13,7 @@ struct Position
     Position operator+(const Position delta) const {
         return {x + delta.x, y + delta.y};
     }
-    void tunnel(int width, int height) {
-        x = (x + width) % width;
-        y = (y + height) % height;
-    }
-    void move(Direction dir);
+    void move(Direction dir,int width, int height);
+    
 };
 #endif

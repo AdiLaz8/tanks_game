@@ -13,7 +13,7 @@ class Tank: public Cell {
         int shooting_status;
         int backward_status;
     public:
-        Tank(char owner, int ammunation = 16, Direction d, Position p, int shooting_status = 0, int backward_status = -1) : id(id), ammunation(ammunation), d(d), p(p), shooting_status(shooting_status), backward_status(backward_status) {}
+        Tank(char owner, int ammunation = 16, Direction d, Position p, int shooting_status = 0, int backward_status = -1) : owner(owner), ammunation(ammunation), d(d), p(p), shooting_status(shooting_status), backward_status(backward_status) {}
         char getSymbol() const override{
             return owner;
         }

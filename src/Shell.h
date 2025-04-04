@@ -21,7 +21,7 @@ class Shell : public Cell
             return p;
         }
 
-        void setPosition() {
+        void move() {
             p.move(d);
         }
 

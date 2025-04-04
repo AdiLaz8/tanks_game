@@ -64,5 +64,4 @@ public:
         currentDirection = newDirection;
     }
 };
-
-#endif // DIRECTION_H
+#endif

@@ -17,6 +17,6 @@ struct Position
         x = (x + width) % width;
         y = (y + height) % height;
     }
-    Position move(Direction dir) const;
+    void move(Direction dir) ;
 };
 #endif

@@ -1,7 +1,8 @@
 #include "Position.h"
 #include "Direction.h"
 
-Position Position::move(Direction dir) const {
+void Position::move(Direction dir) {
     Position delta = dir.toVector();
-    return *this + delta;
+    x += delta.x;
+    y += delta.y;
 }

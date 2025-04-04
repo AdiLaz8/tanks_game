@@ -36,6 +36,12 @@ public:
         }
     }
 
+    // Method to compute and return the opposite direction
+    Direction getOppositeDirection() const {
+        int oppositeIndex = (static_cast<int>(currentDirection) + 4) % 8;
+        return Direction(static_cast<Value>(oppositeIndex));
+    }
+
     void rotateClockwise8() {
         currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 1) % 8);
     }

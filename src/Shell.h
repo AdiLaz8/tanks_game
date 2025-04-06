@@ -4,6 +4,8 @@
 #include "Cell.h"
 #include "Position.h"
 #include "Direction.h"
+#include <sstream>
+
 
 class Shell : public Cell {
 private:
@@ -22,6 +24,14 @@ public:
 
     Direction getDirection() const;
     int getOwnerId() const;
+    std::string toString() const override {
+        std::stringstream ss;
+        ss << "Shell(owner=" << ownerId
+            << ", dir=" << d.getDirection()
+            << ", pos=(" << p.x << "," << p.y << "))";
+        return ss.str();
+}
+
 };
 
 #endif

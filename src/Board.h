@@ -12,7 +12,7 @@ public:
     Board(int w, int h);
     ~Board();
 
-    CellSlot& getSlot(int x, int y);
+    CellSlot& getSlot(int x, int y) const;
     void addObject(Cell* obj, int x, int y);
     void removeObject(Cell* obj, int x, int y);
     bool isPassable(int x, int y) const;

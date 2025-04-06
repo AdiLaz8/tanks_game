@@ -4,6 +4,7 @@
 #include "Cell.h"
 #include "Direction.h"
 #include "Position.h"
+#include <sstream>
 
 class Tank : public Cell {
 private:
@@ -36,6 +37,18 @@ public:
     void rotateLeft8();
     void rotateRight4();
     void rotateRight8();
+    std::string toString() const override {
+        std::stringstream ss;
+        ss << "Tank(owner=" << owner
+        << ", ammo=" << ammunation
+        << ", pos=(" << p.x << "," << p.y << ")"
+        << ", dir=" << d.getDirection()
+        << ", shoot=" << shooting_status
+        << ", back=" << backward_status
+        << ")";
+        return ss.str();
+}
+
 };
 
 #endif

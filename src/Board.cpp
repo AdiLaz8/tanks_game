@@ -14,7 +14,7 @@ Board::~Board() {
     delete[] grid;
 }
 
-CellSlot& Board::getSlot(int x, int y) {
+CellSlot& Board::getSlot(int x, int y) const{
     return grid[y][x];
 }
 

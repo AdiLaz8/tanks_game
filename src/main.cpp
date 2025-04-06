@@ -53,6 +53,19 @@ int main(int argc, char* argv[]) {
     }
     file.close();
     std::cout << "✅ Board loaded successfully." << std::endl;
+    std::cout << "📦 Objects on board:" << std::endl;
+
+for (int y = 0; y < board.getHeight(); ++y) {
+    for (int x = 0; x < board.getWidth(); ++x) {
+        const CellSlot& slot = board.getSlot(x, y);
+        const auto& objects = slot.getAll();
+        for (Cell* obj : objects) {
+            std::cout << "[" << x << "," << y << "] "
+                      << obj->toString() << std::endl;
+        }
+    }
+}
+
 
 for (int y = 0; y < board.getHeight(); ++y) {
     for (int x = 0; x < board.getWidth(); ++x) {

@@ -1,28 +1,37 @@
-# Makefile for C++ project
-
-# Compiler settings - can change according to your needs
+# Compiler settings
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -g
 
-# Build targets
-TARGET = main
-SRCS = main.cpp
+# Source files
+SRCS = main.cpp \
+       Board.cpp \
+       Position.cpp \
+       Direction.cpp \
+       Tank.cpp \
+       Wall.cpp \
+       Shell.cpp \
+       CellSlot.cpp
+
+
+# Object files (כל קובץ cpp יומר ל־o)
 OBJS = $(SRCS:.cpp=.o)
+
+# Target binary name
+TARGET = tanks_game
 
 # Default target
 all: $(TARGET)
 
-# Link the target with all objects files
+# Build the target
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Compile each source file to an object
+# Rule to compile .cpp to .o
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up
+# Clean
 clean:
 	rm -f $(TARGET) $(OBJS)
 
-# Phony targets
 .PHONY: all clean

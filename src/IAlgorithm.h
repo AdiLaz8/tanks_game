@@ -9,6 +9,9 @@ class IAlgorithm {
 public:
     virtual Action nextAction(const Board& board, const Tank& self, const Tank& enemy) = 0;
     virtual ~IAlgorithm() = default;
+    // Implemented method
+    bool canShoot(const Tank& self, const Tank& enemy, const Board& board);
+    ActionType rotateTowards(Direction::Value current, Direction::Value desired) const;
 };
 
 #endif

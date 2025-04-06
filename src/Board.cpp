@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <typeinfo>
 
 Board::Board(int w, int h) : width(w), height(h) {
     grid = new CellSlot*[height];
@@ -20,10 +21,23 @@ CellSlot& Board::getSlot(int x, int y) const{
 
 void Board::addObject(Cell* obj, int x, int y) {
     grid[y][x].add(obj);
+    // Check if the object is a shell and add it to the vector
+    Shell* shell = dynamic_cast<Shell*>(obj);
+    if (shell) {
+        shells.push_back(shell);
+    }
 }
 
 void Board::removeObject(Cell* obj, int x, int y) {
     grid[y][x].remove(obj);
+    // Check if the object is a shell and remove it from the vector
+    Shell* shell = dynamic_cast<Shell*>(obj);
+    if (shell) {
+        auto it = std::find(shells.begin(), shells.end(), shell);
+        if (it != shells.end()) {
+            shells.erase(it);
+        }
+    }
 }
 
 bool Board::isPassable(int x, int y) const {

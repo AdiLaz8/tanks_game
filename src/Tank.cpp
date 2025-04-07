@@ -32,17 +32,12 @@ bool Tank::isAlive() const {
 }
 
 Position Tank::moveForward(int width, int height) {
-    if (backward_status >= 1) {
-        backward_status = -1;
-        return p;
-    }
     p.move(d, width, height);
     return p;
 }
 
 Position Tank::moveBackward(int width, int height) {
     p.move(d.getOppositeDirection(), width, height);
-    backward_status = 3;
     return p;
 }
 

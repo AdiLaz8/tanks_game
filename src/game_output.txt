@@ -1,3 +1,23 @@
 Player 1: RotateLeft4
-Player 2: Shoot
-Shell hit wall. Wall health is now 1
+Player 2: None
+Player 1: RotateLeft8
+Player 2: None
+Player 1: MoveForward
+Player 2: None
+Player 1: RotateRight8
+Player 2: None
+Player 1: MoveForward
+Player 2: None
+Player 1: RotateLeft8
+Player 2: None
+Player 1: MoveForward
+Player 2: None
+Player 1: RotateLeft8
+Player 2: None
+Player 1: MoveForward
+Player 2: None
+Player 1: MoveForward
+Player 2: None
+Player 1: RotateLeft8
+Player 2: None
+Player 1: Shoot

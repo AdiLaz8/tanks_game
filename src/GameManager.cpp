@@ -2,6 +2,8 @@
 #include "Shell.h"
 #include "Algorithm1.h"
 #include "Algorithm2.h"
+#include <iostream>
+
 
 GameManager::GameManager(Board& board) : gameBoard(board), currentStep(0), isAlgo1Turn(true), postAmmoSteps(80) {
     tank1 = gameBoard.getTank(1);
@@ -66,6 +68,8 @@ void GameManager::moveShells() {
 }
 
 void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo) {
+    Position tankPos = tank->getPosition();
+    std::cout << "Tank Position: (" << tankPos.x << ", " << tankPos.y << ")" << std::endl;
     if (!tank) return;
     Action action = algo.nextAction(gameBoard, *tank, *enemyTank);
     std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
@@ -136,6 +140,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
             break;
         case ActionType::Shoot:
             if (tank->getShootingStatus() == 0 && tank->getAmmo() > 0) {
+                std::cout << player << ": Shoot" << std::endl; 
                 tank->shoot();
                 Position pos = tank->getPosition() + tank->getDirection().toVector();
                 int x = (pos.x + gameBoard.getWidth()) % gameBoard.getWidth();
@@ -199,6 +204,7 @@ void GameManager::checkCollisions() {
     }
     for (Shell* shell : shells) {
         Position shellPos = shell->getPosition();
+        logFile << "Shell fired at position (" << shellPos.x << ", " << shellPos.y << ")";
         bool hitTank1 = (shellPos == posTank1);
         bool hitTank2 = (shellPos == posTank2);
 

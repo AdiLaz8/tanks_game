@@ -14,9 +14,10 @@ private:
     Position p;
     int shooting_status;
     int backward_status;
+    bool is_alive;
 
 public:
-    Tank(char owner, int ammunation = 16, Direction d = Direction(Direction::L), Position p = Position(0, 0), int shooting_status = 0, int backward_status = -1);
+    Tank(char owner, int ammunation = 16, Direction d = Direction(Direction::L), Position p = Position(0, 0), int shooting_status = 0, int backward_status = -1, bool is_alive = true);
 
     char getSymbol() const override;
 
@@ -25,13 +26,16 @@ public:
     int getAmmo() const;
     int getShootingStatus() const;
     int getBackwardStatus() const;
+    bool isAlive() const;
 
     Position moveForward(int width, int height);
     Position moveBackward(int width, int height);
 
     void decreaseBackward();
+    void setBackward(int status);
     void shoot();
     void decreaseShooting();
+    void hit();
 
     void rotateLeft4();
     void rotateLeft8();

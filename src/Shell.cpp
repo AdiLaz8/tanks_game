@@ -1,6 +1,6 @@
 #include "Shell.h"
 
-Shell::Shell(Position p, Direction d, int ownerId)
+Shell::Shell(Position p, Direction d, char ownerId)
     : p(p), d(d), ownerId(ownerId) {}
 
 char Shell::getSymbol() const {
@@ -21,6 +21,6 @@ Direction Shell::getDirection() const {
     return d;
 }
 
-int Shell::getOwnerId() const {
+char Shell::getOwnerId() const {
     return ownerId;
 }

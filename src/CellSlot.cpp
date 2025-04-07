@@ -5,8 +5,7 @@ void CellSlot::add(Cell* obj) {
 }
 
 void CellSlot::remove(Cell* obj) {
-    auto temp = std::remove(objects.begin(), objects.end(), obj);
-    objects.erase(temp, objects.end());
+    objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 }
 
 const std::vector<Cell*>& CellSlot::getAll() const {
@@ -15,28 +14,49 @@ const std::vector<Cell*>& CellSlot::getAll() const {
 
 Tank* CellSlot::getTank() const {
     for (Cell* obj : objects) {
-        if (auto* t = dynamic_cast<Tank*>(obj)) return t;
+        Tank* tank = dynamic_cast<Tank*>(obj);
+        if (tank) return tank;
     }
     return nullptr;
 }
 
 Wall* CellSlot::getWall() const {
     for (Cell* obj : objects) {
-        if (auto* w = dynamic_cast<Wall*>(obj)) return w;
+        Wall* wall = dynamic_cast<Wall*>(obj);
+        if (wall) return wall;
     }
     return nullptr;
 }
 
 Mine* CellSlot::getMine() const {
     for (Cell* obj : objects) {
-        if (auto* m = dynamic_cast<Mine*>(obj)) return m;
+        Mine* mine = dynamic_cast<Mine*>(obj);
+        if (mine) return mine;
     }
     return nullptr;
 }
 
-Shell* CellSlot::getShell() const {
+std::vector<Shell*> CellSlot::getShells() const {
+    std::vector<Shell*> shells;
     for (Cell* obj : objects) {
-        if (auto* s = dynamic_cast<Shell*>(obj)) return s;
+        Shell* shell = dynamic_cast<Shell*>(obj);
+        if (shell) shells.push_back(shell);
     }
-    return nullptr;
+    return shells;
+}
+
+int CellSlot::countTanks() const {
+    int count = 0;
+    for (Cell* obj : objects) {
+        if (dynamic_cast<Tank*>(obj)) count++;
+    }
+    return count;
+}
+
+int CellSlot::countShells() const {
+    int count = 0;
+    for (Cell* obj : objects) {
+        if (dynamic_cast<Shell*>(obj)) count++;
+    }
+    return count;
 }

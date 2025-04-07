@@ -21,7 +21,9 @@ public:
     Tank* getTank() const;
     Wall* getWall() const;
     Mine* getMine() const;
-    Shell* getShell() const;
+    std::vector<Shell*> getShells() const;
+    int countTanks() const;
+    int countShells() const;
 };
 
-#endif
+#endif // CELLSLOT_H

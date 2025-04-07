@@ -11,10 +11,10 @@ class Shell : public Cell {
 private:
     Position p;
     Direction d;
-    int ownerId;
+    char ownerId;
 
 public:
-    Shell(Position p, Direction d, int ownerId);
+    Shell(Position p, Direction d, char ownerId);
 
     char getSymbol() const override;
 
@@ -23,7 +23,7 @@ public:
     void move(int width, int height);
 
     Direction getDirection() const;
-    int getOwnerId() const;
+    char getOwnerId() const;
     std::string toString() const override {
         std::stringstream ss;
         ss << "Shell(owner=" << ownerId

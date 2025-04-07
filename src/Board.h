@@ -10,6 +10,8 @@ private:
     int width, height;
     CellSlot** grid;
     std::vector<Shell*> shells;  // Maintaining a list of shells
+    Tank* tank1;
+    Tank* tank2;
 
 public:
     Board(int w, int h);
@@ -22,6 +24,7 @@ public:
     const std::vector<Shell*>& getShells() const { return shells; }
     int getWidth() const;
     int getHeight() const;
+    Tank* getTank(int tankNumber);
 };
 
 #endif

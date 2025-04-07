@@ -52,3 +52,12 @@ int Board::getWidth() const {
 int Board::getHeight() const {
     return height;
 }
+
+Tank* Board::getTank(int tankNumber) {
+    if (tankNumber == 1) {
+        return tank1;
+    } else if (tankNumber == 2) {
+        return tank2;
+    }
+    return nullptr; // Return null if no valid tank number
+}

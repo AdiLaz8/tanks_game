@@ -1,0 +1,3 @@
+Player 1: RotateLeft4
+Player 2: Shoot
+Shell hit wall. Wall health is now 1

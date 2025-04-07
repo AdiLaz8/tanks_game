@@ -4,9 +4,12 @@
 #include "Board.h"
 #include "IAlgorithm.h"
 #include <memory>
+#include <fstream>
+
 
 class GameManager {
 private:
+    std::ofstream logFile;
     Board& gameBoard;
     std::unique_ptr<IAlgorithm> algorithm1;
     std::unique_ptr<IAlgorithm> algorithm2;
@@ -18,7 +21,7 @@ private:
 
 public:
     GameManager(Board& board);
-    ~GameManager() = default;
+    ~GameManager();
     void gameLoop();
     void moveShells();
     void executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo);

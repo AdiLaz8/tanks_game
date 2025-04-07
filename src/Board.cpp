@@ -26,6 +26,13 @@ void Board::addObject(Cell* obj, int x, int y) {
     if (shell) {
         shells.push_back(shell);
     }
+    if (auto tank = dynamic_cast<Tank*>(obj)) {
+        if (tank->getSymbol() == '1') {
+            tank1 = tank;
+        } else if (tank->getSymbol() == '2') {
+            tank2 = tank;
+        }
+    }
 }
 
 void Board::removeObject(Cell* obj, int x, int y) {

@@ -1,16 +1,24 @@
 #include "Algorithm2.h"
-
+    static int counter=0;
 Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
+    if(counter%5==0){
+        counter++;
+        return Action(ActionType::Shoot);
+
+    }
     // Check for incoming shells
     if (isThreatenedByShells(board, self.getPosition())) {
+        counter++;
         Action safeMove = moveIfThreatened(board, self);
         if (safeMove.getType() != ActionType::None) {
             return safeMove;
         }
+
     }
 
     // Try to shoot if there is no immediate threat
     if (canShoot(self, enemy, board)) {
+        counter++;
         return Action(ActionType::Shoot);
     }
 

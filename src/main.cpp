@@ -6,6 +6,8 @@
 #include "Tank.h"
 #include "Wall.h"
 #include "Mine.h"
+#include "GameManager.h"
+
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         std::cerr << "Usage: tanks_game <input_file>" << std::endl;
@@ -96,6 +98,23 @@ for (int y = 0; y < board.getHeight(); ++y) {
     }
     std::cout << '\n';
 }
+    GameManager game(board);
+    game.gameLoop();
+
+    // 📤 הדפסת קובץ פלט
+    std::ifstream outFile("game_output.txt");
+    if (!outFile) {
+        std::cerr << "Failed to open game_output.txt" << std::endl;
+        return 1;
+    }
+
+    std::cout << "\n📄 Game Output:\n";
+    std::string line;
+    while (std::getline(outFile, line)) {
+        std::cout << line << std::endl;
+    }
+
+    outFile.close();
 
 
     return 0;

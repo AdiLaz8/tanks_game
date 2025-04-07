@@ -17,7 +17,7 @@ private:
     bool is_alive;
 
 public:
-    Tank(char owner, int ammunation = 16, Direction d = Direction(Direction::L), Position p = Position(0, 0), int shooting_status = 0, int backward_status = -1, bool is_alive = true);
+    Tank(char owner, int ammunation = 16, Direction d = Direction(Direction::L), Position p = Position(0, 0), int shooting_status = 0, int backward_status = 0, bool is_alive = true);
 
     char getSymbol() const override;
 

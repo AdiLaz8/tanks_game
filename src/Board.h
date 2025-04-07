@@ -10,8 +10,8 @@ private:
     int width, height;
     CellSlot** grid;
     std::vector<Shell*> shells;  // Maintaining a list of shells
-    Tank* tank1;
-    Tank* tank2;
+    Tank* tank1= nullptr;
+    Tank* tank2= nullptr;
 
 public:
     Board(int w, int h);

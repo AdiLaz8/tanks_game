@@ -119,6 +119,21 @@ Action Algorithm1::nextAction(const Board& board,const Tank& self, const Tank& e
     return Action(turn);
 
 }
+ActionType Algorithm1::rotateTowards(Direction::Value current, Direction::Value desired) const {
+    int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
+
+    if (diff == 0) return ActionType::None;
+    if (diff == 1) return ActionType::RotateRight8;
+    if (diff == 2) return ActionType::RotateRight4;
+    if (diff == 3) return ActionType::RotateRight4;
+    if (diff == 4) return ActionType::RotateRight4;
+    if (diff == 5) return ActionType::RotateLeft4;
+    if (diff == 6) return ActionType::RotateLeft4;
+    if (diff == 7) return ActionType::RotateLeft8;
+
+    return ActionType::None;
+}
+
 
 
 

@@ -1,25 +1,28 @@
 #include "Algorithm2.h"
-    static int counter=0;
 Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
-    if (canShoot(self, enemy, board)) {
-    if(counter%5==0){
-        counter++;
+    if(idleTurns%5==0){
+        idleTurns++;
         return Action(ActionType::Shoot);
     }
-    }
+    idleTurns++;
     // Check for incoming shells
     if (isThreatenedByShells(board, self.getPosition())) {
-        counter++;
         Action safeMove = moveIfThreatened(board, self);
         if (safeMove.getType() != ActionType::None) {
             return safeMove;
         }
-
     }
+
+    // // Attempt to move every 3 turns, starting from the second turn
+    // if (counter % 3 == 1) {
+    //     Action safeMove = moveIfThreatened(board, self);
+    //     if (safeMove.getType() != ActionType::None) {
+    //         return safeMove;
+    //     }
+    // }
 
     // Try to shoot if there is no immediate threat
     if (canShoot(self, enemy, board)) {
-        counter++;
         return Action(ActionType::Shoot);
     }
 

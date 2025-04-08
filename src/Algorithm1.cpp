@@ -90,7 +90,7 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
 }
 Action Algorithm1::nextAction(const Board& board,const Tank& self, const Tank& enemy){
     // 1. בדיקה אם אפשר לירות
-    if (canShoot(self, enemy, board) && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+    if (canShoot(self, enemy, board)) {
         return Action(ActionType::Shoot);
     }
 
@@ -102,14 +102,26 @@ Action Algorithm1::nextAction(const Board& board,const Tank& self, const Tank& e
 
     // 3. אם אין מסלול — פשוט לא לזוז (או נוכל לכתוב התנהגות אחרת)
     if (currentPath.empty()) {
-        return Action(ActionType::None);
-    }
+    // 🔥 ננסה לירות בקיר שנמצא מול הכיוון הנוכחי
+        Position ahead = self.getPosition() + self.getDirection().toVector();
+        const CellSlot& slot = board.getSlot(ahead.x, ahead.y);
+
+        if (slot.getWall() && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+            return Action(ActionType::Shoot);
+        }
+
+    // אם אין קיר לירות עליו, לא נעשה כלום
+    return Action(ActionType::None);
+}
 
     // 4. פעולה הבאה במסלול
     Direction::Value targetDir = currentPath.front();
 
     // 5. אם הטנק כבר פונה לכיוון הנכון — נתקדם קדימה ונמחק את הצעד
     if (self.getDirection().getDirection() == targetDir) {
+        if (canShoot(self, enemy, board)) {
+            return Action(ActionType::Shoot);
+    }
         currentPath.erase(currentPath.begin());
         return Action(ActionType::MoveForward);
     }
@@ -120,19 +132,17 @@ Action Algorithm1::nextAction(const Board& board,const Tank& self, const Tank& e
 
 }
 ActionType Algorithm1::rotateTowards(Direction::Value current, Direction::Value desired) const {
-    int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
+    int cur = static_cast<int>(current);
+    int des = static_cast<int>(desired);
+    int diff = (des - cur + 8) % 8;
 
     if (diff == 0) return ActionType::None;
-    if (diff == 1) return ActionType::RotateRight8;
-    if (diff == 2) return ActionType::RotateRight4;
-    if (diff == 3) return ActionType::RotateRight4;
-    if (diff == 4) return ActionType::RotateRight4;
-    if (diff == 5) return ActionType::RotateLeft4;
-    if (diff == 6) return ActionType::RotateLeft4;
-    if (diff == 7) return ActionType::RotateLeft8;
-
-    return ActionType::None;
+    if (diff <= 4) return (diff == 1) ? ActionType::RotateRight8 :
+                         (diff == 2) ? ActionType::RotateRight4 : ActionType::RotateRight4;
+    else return (8 - diff == 1) ? ActionType::RotateLeft8 :
+                  (8 - diff == 2) ? ActionType::RotateLeft4 : ActionType::RotateLeft4;
 }
+
 
 
 

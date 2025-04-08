@@ -1,6 +1,63 @@
-Player 1: Shoot from (0, 0) to (7, 0) in direction 6.
-Player 2: Shoot from (7, 0) to (0, 0) in direction 2.
-Shell fired at position (7, 0)Shell: Player 2 was hit by shell and destroyed.
-Shell fired at position (0, 0)Shell: Player 1 was hit by shell and destroyed.
-Game Over!
-Result: Tie - Both tanks destroyed
+Player 1: Rotated right by 90 degrees.
+Player 2: Shoot from (11, 7) to (12, 7) in direction 2.
+Shell fired at position (12, 7)Shell fired at position (13, 7)Shell hit wall. Wall health is now 1
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: Rotated left by 90 degrees.
+Player 2: Shoot from (11, 7) to (12, 7) in direction 2.
+Shell fired at position (12, 7)Shell fired at position (13, 7)Shell hit wall. Wall health is now 0
+Wall destroyed.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: Rotated right by 90 degrees.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: Rotated right by 45 degrees.
+Player 2: No action taken.
+Player 1: Rotated right by 90 degrees.
+Player 2: Shoot from (11, 7) to (12, 7) in direction 2.
+Shell fired at position (12, 7)Shell fired at position (13, 7)Shell fired at position (0, 7)Shell hit wall. Wall health is now 1
+Player 1: MoveForward from (1, 1) to (2, 1).
+Player 2: No action taken.
+Player 1: Rotated left by 45 degrees.
+Player 2: No action taken.
+Player 1: Rotated left by 90 degrees.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: Shoot from (11, 7) to (12, 7) in direction 2.
+Shell fired at position (12, 7)Shell fired at position (13, 7)Shell fired at position (0, 7)Shell hit wall. Wall health is now 0
+Wall destroyed.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: Rotated left by 90 degrees.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Player 1: Rotated left by 45 degrees.
+Player 2: No action taken.
+Player 1: MoveForward failed due to obstruction.
+Player 2: Shoot from (11, 7) to (12, 7) in direction 2.
+Shell fired at position (12, 7)Shell fired at position (13, 7)Shell fired at position (0, 7)Player 1: Rotated right by 45 degrees.
+Player 2: No action taken.
+Shell fired at position (0, 7)Shell fired at position (1, 7)Shell fired at position (2, 7)Player 1: Rotated right by 90 degrees.
+Player 2: No action taken.
+Shell fired at position (2, 7)Shell fired at position (3, 7)Shell fired at position (4, 7)Player 1: MoveForward failed due to obstruction.
+Player 2: No action taken.
+Shell fired at position (4, 7)Shell fired at position (5, 7)Shell fired at position (6, 7)Player 1: Rotated right by 90 degrees.
+Player 2: No action taken.
+Shell fired at position (6, 7)Shell fired at position (7, 7)Shell fired at position (8, 7)Player 1: MoveForward failed due to obstruction.
+Player 2: Shoot from (11, 7) to (12, 7) in direction 2.
+Shell fired at position (8, 7)Shell fired at position (12, 7)Shell fired at position (9, 7)Shell fired at position (13, 7)Shell fired at position (10, 7)Shell fired at position (0, 7)Player 1: Rotated left by 90 degrees.
+Player 2: Rotated right by 45 degrees.
+Shell fired at position (10, 7)Shell fired at position (0, 7)Shell fired at position (11, 7)Shell: Player 2 was hit by shell and destroyed.
+Shell fired at position (1, 7)Game Over!
+Result: Player 1 wins - Player 2 destroyed

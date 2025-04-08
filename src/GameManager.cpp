@@ -19,7 +19,6 @@ GameManager::~GameManager() {
     }
 }
 
-
 void GameManager::gameLoop() {
     while (!checkGameOver()) {
         if (tank1->getAmmo() == 0 && tank2->getAmmo() == 0){
@@ -90,6 +89,9 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
 
     // Logging to console for debugging
     std::cout << player << " initiates action: ";
+    if (action.getType() != ActionType::Shoot && tank->getShootingStatus() > 0){
+        tank->decreaseShooting();
+    }
     switch (action.getType()) {
         case ActionType::MoveForward: {
             Position newPosition = initialPosition + direction.toVector();
@@ -122,11 +124,15 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                 Position shootPosition = initialPosition + direction.toVector();
                 int x = (shootPosition.x + gameBoard.getWidth()) % gameBoard.getWidth();
                 int y = (shootPosition.y + gameBoard.getHeight()) % gameBoard.getHeight();
+                tank->shoot();
                 Shell* newShell = new Shell(Position(x, y), direction, tank->getSymbol());
                 gameBoard.addObject(newShell, x, y);
                 logFile << player << ": Shoot from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << x << ", " << y << ") in direction " << direction.getDirection() << "." << std::endl;
                 std::cout << "Shot from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << x << ", " << y << ") in direction " << direction.getDirection() << ".\n";
             } else {
+                if (tank->getShootingStatus() > 0){
+                    tank->decreaseShooting();
+                }
                 logFile << player << ": Shoot failed due to status or ammo." << std::endl;
                 std::cout << "Attempted to shoot but could not due to status or ammo.\n";
             }
@@ -217,8 +223,9 @@ void GameManager::checkCollisions() {
         if (slot.getWall()) {
             int hp = slot.getWall()->onHit();
             logFile << "Shell hit wall. Wall health is now " << hp << std::endl;
+            gameBoard.removeObject(shell, shellPos.x, shellPos.y);
             if (hp <= 0) {
-                gameBoard.removeObject(shell, shellPos.x, shellPos.y);
+                gameBoard.removeObject(slot.getWall(), shellPos.x, shellPos.y);
                 logFile << "Wall destroyed." << std::endl;
             }
             continue;

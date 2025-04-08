@@ -142,9 +142,3 @@ ActionType Algorithm1::rotateTowards(Direction::Value current, Direction::Value 
     else return (8 - diff == 1) ? ActionType::RotateLeft8 :
                   (8 - diff == 2) ? ActionType::RotateLeft4 : ActionType::RotateLeft4;
 }
-
-
-
-
-
-

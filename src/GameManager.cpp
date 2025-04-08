@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-GameManager::GameManager(Board& board) : gameBoard(board), currentStep(0), isAlgo1Turn(true), postAmmoSteps(80) {
+GameManager::GameManager(Board& board) : gameBoard(board), currentStep(0), postAmmoSteps(80) {
     tank1 = gameBoard.getTank(1);
     tank2 = gameBoard.getTank(2);
     algorithm1 = std::make_unique<Algorithm1>();
@@ -29,18 +29,17 @@ void GameManager::gameLoop() {
             moveShells();
             checkCollisions();
         } else {
-            Tank* currentTank = isAlgo1Turn ? tank1 : tank2;
-            Tank* enemyTank = isAlgo1Turn ? tank2 : tank1;
-            IAlgorithm& currentAlgo = isAlgo1Turn ? *algorithm1 : *algorithm2;
+            IAlgorithm& algo1 = *algorithm1;
             moveShells();
             checkCollisions();
             if (checkGameOver())
             {
                 break;
             }
-            executeTankAction(currentTank, enemyTank, currentAlgo);
+            executeTankAction(tank1, tank2, algo1);
+            IAlgorithm& algo2 = *algorithm2;
+            executeTankAction(tank2, tank1, algo2);
             checkCollisions();
-            isAlgo1Turn = !isAlgo1Turn; // Toggle turn
         }
         currentStep++;
     }
@@ -68,116 +67,75 @@ void GameManager::moveShells() {
 }
 
 void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo) {
-    Position tankPos = tank->getPosition();
-    std::cout << "Tank Position: (" << tankPos.x << ", " << tankPos.y << ")" << std::endl;
     if (!tank) return;
     Action action = algo.nextAction(gameBoard, *tank, *enemyTank);
     std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
-    //bool badStep = false;
-    // Manage backward status outside of switch for clarity and control
-    if (tank->getBackwardStatus() > 2) {
-        tank->decreaseBackward();
-        logFile << player << ": Nothing happened, part of MoveBackward waiting" << std::endl;
-        return; // Skip action execution if in the middle of backward delay
-    }
-    else if (tank->getBackwardStatus() == 2) {
-        tank->moveBackward(gameBoard.getWidth(), gameBoard.getHeight());
-        tank->decreaseBackward();
-        logFile << player << ": MoveBackward" << std::endl;
-        return;
-    }
-    else if (tank->getBackwardStatus() == 1) {
+    Position initialPosition = tank->getPosition();
+    Direction direction = tank->getDirection();
 
-        if (action.getType() != ActionType::MoveBackward) {
-            tank->setBackward(0); // Reset if not continuing to move backward
-        }
-        else {
-            Position next = tank->getPosition() + tank->getDirection().getOppositeDirection().toVector();
-            if(gameBoard.isPassable(next.x,next.y)) {
-                tank->moveBackward(gameBoard.getWidth(), gameBoard.getHeight());
-                logFile << player << ": MoveBackward" << std::endl;
-            }
-            else{
-                logFile << player << ": MoveBackward failed-wall (Bad Step)" << std::endl;
-                tank->decreaseBackward();
-                //badStep = true;
-            }
-            return;
-        }
-    }
-    Position next(0,0);
+    // Logging to console for debugging
+    std::cout << player << " initiates action: ";
     switch (action.getType()) {
-        case ActionType::MoveForward:
-            next=tank->getPosition() + tank->getDirection().toVector();
-            if (tank->getBackwardStatus() == 0){
-                if(gameBoard.isPassable(next.x, next.y)) {
-                    tank->moveForward(gameBoard.getWidth(), gameBoard.getHeight());
-                    logFile << player << ": MoveForward" << std::endl;
-                }
-                else{
-                    logFile << player << ": MoveForward failed-wall (Bad Step)" << std::endl;
-                    //badStep = true;
-                }
-            }
-            else {
-                tank->setBackward(0);
-                logFile << player << ": Canceled moving BackWards" << std::endl;
-                return;
+        case ActionType::MoveForward: {
+            Position newPosition = initialPosition + direction.toVector();
+            if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
+                tank->moveForward(gameBoard.getWidth(), gameBoard.getHeight());
+                logFile << player << ": MoveForward from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << newPosition.x << ", " << newPosition.y << ")." << std::endl;
+                std::cout << "Moved forward from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << newPosition.x << ", " << newPosition.y << ").\n";
+            } else {
+                logFile << player << ": MoveForward failed due to obstruction." << std::endl;
+                std::cout << "Failed to move forward due to obstruction.\n";
             }
             break;
-        case ActionType::MoveBackward:
+        }
+        case ActionType::MoveBackward: {
             if (tank->getBackwardStatus() == 0) {
-                next = tank->getPosition() + tank->getDirection().getOppositeDirection().toVector();
-                if(gameBoard.isPassable(next.x,next.y)) {
-                    tank->setBackward(4); // Initialize backward movement
-                    logFile << player << ": Started MoveBackward proccess" << std::endl;
-                }
-                else{
-                    logFile << player << ": MoveBackward failed-wall (Bad Step)" << std::endl;
-                    //badStep = true;
+                Position newPosition = initialPosition + direction.getOppositeDirection().toVector();
+                if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
+                    tank->setBackward(4);
+                    logFile << player << ": Started MoveBackward process." << std::endl;
+                    std::cout << "Started MoveBackward process from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << newPosition.x << ", " << newPosition.y << ").\n";
+                } else {
+                    logFile << player << ": MoveBackward failed due to obstruction." << std::endl;
+                    std::cout << "Failed to move backward due to obstruction.\n";
                 }
             }
             break;
-        case ActionType::Shoot:
+        }
+        case ActionType::Shoot: {
             if (tank->getShootingStatus() == 0 && tank->getAmmo() > 0) {
-                std::cout << player << ": Shoot" << std::endl; 
-                tank->shoot();
-                Position pos = tank->getPosition() + tank->getDirection().toVector();
-                int x = (pos.x + gameBoard.getWidth()) % gameBoard.getWidth();
-                int y = (pos.y + gameBoard.getHeight()) % gameBoard.getHeight();
-                Shell* newShell = new Shell(Position(x, y), tank->getDirection(), tank->getSymbol());
+                Position shootPosition = initialPosition + direction.toVector();
+                int x = (shootPosition.x + gameBoard.getWidth()) % gameBoard.getWidth();
+                int y = (shootPosition.y + gameBoard.getHeight()) % gameBoard.getHeight();
+                Shell* newShell = new Shell(Position(x, y), direction, tank->getSymbol());
                 gameBoard.addObject(newShell, x, y);
-                logFile << player << ": Shoot" << std::endl;
-            }
-            else{
-                logFile << player << ": Shoot (Bad Step)" << std::endl;
-                //badStep = true;
+                logFile << player << ": Shoot from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << x << ", " << y << ") in direction " << direction.getDirection() << "." << std::endl;
+                std::cout << "Shot from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << x << ", " << y << ") in direction " << direction.getDirection() << ".\n";
+            } else {
+                logFile << player << ": Shoot failed due to status or ammo." << std::endl;
+                std::cout << "Attempted to shoot but could not due to status or ammo.\n";
             }
             break;
+        }
         case ActionType::RotateLeft8:
-            tank->rotateLeft8();
-            logFile << player << ": RotateLeft8" << std::endl;
-
-            break;
         case ActionType::RotateRight8:
-            tank->rotateRight8();
-            logFile << player << ": RotateRight8" << std::endl;
-            break;
         case ActionType::RotateLeft4:
-            tank->rotateLeft4();
-            logFile << player << ": RotateLeft4" << std::endl;
+        case ActionType::RotateRight4: {
+            std::string rotation = action.getType() == ActionType::RotateLeft8 ? "left by 90 degrees" :
+                                   action.getType() == ActionType::RotateRight8 ? "right by 90 degrees" :
+                                   action.getType() == ActionType::RotateLeft4 ? "left by 45 degrees" :
+                                   "right by 45 degrees";
+            logFile << player << ": Rotated " << rotation << "." << std::endl;
+            std::cout << "Rotated " << rotation << ".\n";
             break;
-        case ActionType::RotateRight4:
-            tank->rotateRight4();
-            logFile << player << ": RotateRight4" << std::endl;
-            break;
+        }
         default:
-            logFile << player << ": None" << std::endl;
+            logFile << player << ": No action taken." << std::endl;
+            std::cout << "No action taken.\n";
             break;
     }
-
-
 }
+
 
 void GameManager::checkCollisions() {
     auto& shells = gameBoard.getShells();

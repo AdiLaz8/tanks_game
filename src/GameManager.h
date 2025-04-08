@@ -16,7 +16,6 @@ private:
     Tank* tank1;
     Tank* tank2;
     int currentStep;
-    bool isAlgo1Turn;
     int postAmmoSteps; // Steps after both tanks run out of ammo
 
 public:

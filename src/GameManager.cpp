@@ -60,11 +60,26 @@ void GameManager::gameLoop() {
 
 void GameManager::moveShells() {
     auto& shells = gameBoard.getShells();
-    for (auto it = shells.begin(); it != shells.end();) {
-        Shell* shell = *it;
+    std::vector<Shell*> toMove = shells; // יוצרים עותק של כל הפגזים הקיימים
+
+    for (Shell* shell : toMove) {
+        Position oldPos = shell->getPosition();
+
+        // הסרה מהמיקום הנוכחי בלוח
+        gameBoard.removeObject(shell, oldPos.x, oldPos.y);
+
+        // תזוזה לוגית של הפגז
         shell->move(gameBoard.getWidth(), gameBoard.getHeight());
+
+        Position newPos = shell->getPosition();
+
+        // החזרה ללוח במיקום החדש
+        gameBoard.addObject(shell, newPos.x, newPos.y);
+
+        std::cout << "📦 Shell moved from (" << oldPos.x << "," << oldPos.y << ") to (" << newPos.x << "," << newPos.y << ")" << std::endl;
     }
 }
+
 
 void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo) {
     if (!tank) return;
@@ -118,17 +133,25 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
             break;
         }
         case ActionType::RotateLeft8:
-        case ActionType::RotateRight8:
-        case ActionType::RotateLeft4:
-        case ActionType::RotateRight4: {
-            std::string rotation = action.getType() == ActionType::RotateLeft8 ? "left by 90 degrees" :
-                                   action.getType() == ActionType::RotateRight8 ? "right by 90 degrees" :
-                                   action.getType() == ActionType::RotateLeft4 ? "left by 45 degrees" :
-                                   "right by 45 degrees";
-            logFile << player << ": Rotated " << rotation << "." << std::endl;
-            std::cout << "Rotated " << rotation << ".\n";
+            tank->rotateLeft8();  // Executes a 90-degree counterclockwise rotation
+            logFile << player << ": Rotated left by 90 degrees." << std::endl;
+            std::cout << "Rotated left by 90 degrees.\n";
             break;
-        }
+        case ActionType::RotateRight8:
+            tank->rotateRight8();  // Executes a 90-degree clockwise rotation
+            logFile << player << ": Rotated right by 90 degrees." << std::endl;
+            std::cout << "Rotated right by 90 degrees.\n";
+            break;
+        case ActionType::RotateLeft4:
+            tank->rotateLeft4();  // Executes a 45-degree counterclockwise rotation
+            logFile << player << ": Rotated left by 45 degrees." << std::endl;
+            std::cout << "Rotated left by 45 degrees.\n";
+            break;
+        case ActionType::RotateRight4:
+            tank->rotateRight4();  // Executes a 45-degree clockwise rotation
+            logFile << player << ": Rotated right by 45 degrees." << std::endl;
+            std::cout << "Rotated right by 45 degrees.\n";
+            break;
         default:
             logFile << player << ": No action taken." << std::endl;
             std::cout << "No action taken.\n";

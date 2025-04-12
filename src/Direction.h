@@ -13,6 +13,9 @@ private:
     Value currentDirection;
 
 public:
+    bool operator==(const Direction& other) const{
+        return currentDirection==other.currentDirection;
+    }
     Direction(Value dir) : currentDirection(dir) {}
 
     Position toVector() const;  // רק הכרזה, המימוש ילך ל־cpp

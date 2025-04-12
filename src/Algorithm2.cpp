@@ -1,76 +1,69 @@
 #include "Algorithm2.h"
+#include <iostream>
 Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
-    if(idleTurns%5==0){
-        idleTurns++;
-        return Action(ActionType::Shoot);
-    }
-    idleTurns++;
-    // Check for incoming shells
-    if (isThreatenedByShells(board, self.getPosition())) {
-        Action safeMove = moveIfThreatened(board, self);
-        if (safeMove.getType() != ActionType::None) {
-            return safeMove;
+    Position myPos = self.getPosition();
+    int width = board.getWidth();
+    int height = board.getHeight();
+
+    for (Shell* shell : board.getShells()) {
+        Position sPos = shell->getPosition();
+        Direction::Value sDir = shell->getDirection().getDirection();
+
+        int dx = myPos.x - sPos.x;
+        int dy = myPos.y - sPos.y;
+
+        // האם הפגז בכלל באותו קו או אלכסון
+        if ((dx == 0 || dy == 0 || abs(dx) == abs(dy))) {
+            Position shellNext = sPos + Direction(sDir).toVector();
+            int dShellX = shellNext.x - sPos.x;
+            int dShellY = shellNext.y - sPos.y;
+
+            // האם הפגז נע בכיוון של הטנק
+            if ((dx * dShellX >= 0) && (dy * dShellY >= 0)) {
+                // נבדוק אם תזוזה קדימה מקרבת אותנו לפגז – ואז נימנע ממנה
+                Position forward = myPos + self.getDirection().toVector();
+                if (forward.x >= 0 && forward.x < width && forward.y >= 0 && forward.y < height) {
+                    // int currDist = abs(dx) + abs(dy);
+                    // int nextDist = abs(forward.x - sPos.x) + abs(forward.y - sPos.y);
+
+                    const CellSlot& fSlot = board.getSlot(forward.x, forward.y);
+                    bool forwardSafe = !fSlot.getWall() && !fSlot.getMine() && !fSlot.getTank();
+
+                    if (forwardSafe && !(self.getDirection().getOppositeDirection() == shell->getDirection())) {
+                        return Action(ActionType::MoveForward);
+                    }
+                }
+
+                // נבחר כיוון בטוח אחר
+                for (int i = 0; i < 8; ++i) {
+                    Direction::Value tryDir = static_cast<Direction::Value>(i);
+                    Position tryPos = myPos + Direction(tryDir).toVector();
+                    if (tryPos.x < 0 || tryPos.x >= width || tryPos.y < 0 || tryPos.y >= height) {
+                        continue;
+                    }
+                    const CellSlot& trySlot = board.getSlot(tryPos.x, tryPos.y);
+                    if (!trySlot.getWall() && !trySlot.getMine() && !trySlot.getTank()) {
+                        if (self.getDirection().getDirection() != tryDir) { // אם הכיוון הנוכחי שונה
+                            return Action(rotateTowards(self.getDirection().getDirection(), tryDir));
+                        }
+                    }
+                }
+
+                return Action(ActionType::None); // אין לאן לברוח
+            }
         }
     }
 
-    // // Attempt to move every 3 turns, starting from the second turn
-    // if (counter % 3 == 1) {
-    //     Action safeMove = moveIfThreatened(board, self);
-    //     if (safeMove.getType() != ActionType::None) {
-    //         return safeMove;
-    //     }
-    // }
-
-    // Try to shoot if there is no immediate threat
-    if (canShoot(self, enemy, board)) {
-        return Action(ActionType::Shoot);
-    }
-
-    // If no threats and can't shoot, stay in position
+    // אין איום – לא עושה כלום או תוסיף לוגיקה רגילה
     return Action(ActionType::None);
 }
 
-bool Algorithm2::isThreatenedByShells(const Board& board, const Position& pos) {
-    for (const Shell* shell : board.getShells()) {
-        Position shellPos = shell->getPosition();
-        Direction shellDir = shell->getDirection();
-
-        // Calculate the next two positions the shell will move to
-        Position nextPos1 = shellPos + shellDir.toVector();  // First move
-        Position nextPos2 = nextPos1 + shellDir.toVector();  // Second move
-
-        // Check if either position collides with the tank's current position
-        if (nextPos1 == pos || nextPos2 == pos) {
-            return true;
-        }
+ActionType rotateTowards(Direction::Value current, Direction::Value desired) {
+    if (current == desired) return ActionType::None;
+    int diff = (desired - current + 8) % 8;
+    if (diff > 4) {
+        return (diff == 5) ? ActionType::RotateLeft4 : ActionType::RotateLeft8;
+    } else {
+        return (diff == 1) ? ActionType::RotateRight8 : ActionType::RotateRight4;
     }
-    return false;
-}
-
-Action Algorithm2::moveIfThreatened(const Board& board, const Tank& self) {
-    std::vector<Direction::Value> directions = {
-        Direction::U, Direction::D, Direction::L, Direction::R,
-        Direction::UL, Direction::UR, Direction::DL, Direction::DR
-    };
-
-    for (Direction::Value dir : directions) {
-   
-        Position nextPos = self.getPosition() + Direction(dir).toVector();
-
-        // אם אפשר לעבור לשם והוא לא מוקש
-        if (board.isPassable(nextPos.x, nextPos.y) &&
-            !board.getSlot(nextPos.x, nextPos.y).getMine()) {
-
-            // אם הטנק פונה לכיוון הזה — נבצע תזוזה
-            if (dir == self.getDirection().getDirection()) {
-                return Action(ActionType::MoveForward);
-            }
-
-            // אחרת נסתובב כדי לפנות לשם בתור הבא
-            ActionType rotate = rotateTowards(self.getDirection().getDirection(), dir);
-            return Action(rotate);
-        }
-    }
-
-    return Action(ActionType::None); // לא נמצאה תזוזה בטוחה
 }

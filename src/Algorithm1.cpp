@@ -25,110 +25,109 @@ Direction::Value Algorithm1::getDirectionTo(const Position& from, const Position
 }
 
 
-std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const Tank& self, const Tank& enemy) {
-    struct Node {
-        Position pos;
-        std::vector<Direction::Value> path;
-        int penalty;
+// std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const Tank& self, const Tank& enemy) {
+//     struct Node {
+//         Position pos;
+//         std::vector<Direction::Value> path;
+//         int penalty;
 
-        bool operator>(const Node& other) const {
-            return penalty > other.penalty;
-        }
-    };
+//         bool operator>(const Node& other) const {
+//             return penalty > other.penalty;
+//         }
+//     };
 
-    int width = board.getWidth();
-    int height = board.getHeight();
+//     int width = board.getWidth();
+//     int height = board.getHeight();
 
-    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
-    std::set<std::pair<int, int>> visited;
+//     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
+//     std::set<std::pair<int, int>> visited;
 
-    pq.push({self.getPosition(), {}, 0});
+//     pq.push({self.getPosition(), {}, 0});
 
-    while (!pq.empty()) {
-        Node current = pq.top();
-        pq.pop();
+//     while (!pq.empty()) {
+//         Node current = pq.top();
+//         pq.pop();
 
-        auto currentKey = std::make_pair(current.pos.x, current.pos.y);
-        if (visited.count(currentKey)) continue;
-        visited.insert(currentKey);
+//         auto currentKey = std::make_pair(current.pos.x, current.pos.y);
+//         if (visited.count(currentKey)) continue;
+//         visited.insert(currentKey);
 
-        // בודק אם אפשר לירות מכאן
-        Tank tempTank(self.getSymbol(), self.getAmmo(), self.getDirection(), current.pos, self.getShootingStatus(), self.getBackwardStatus());
-        if (canShoot(tempTank, enemy, board)) {
-            return current.path;  // הצלחנו
-        }
+//         // בודק אם אפשר לירות מכאן
+//         Tank tempTank(self.getSymbol(), self.getAmmo(), self.getDirection(), current.pos, self.getShootingStatus(), self.getBackwardStatus());
+//         if (canShoot(tempTank, enemy, board)) {
+//             return current.path;  // הצלחנו
+//         }
 
-        // בודק את כל 8 הכיוונים
-        for (int i = 0; i < 8; ++i) {
-            Direction::Value dir = static_cast<Direction::Value>(i);
-            Position nextPos = current.pos;
-            nextPos.move(Direction(dir), width, height);
+//         // בודק את כל 8 הכיוונים
+//         for (int i = 0; i < 8; ++i) {
+//             Direction::Value dir = static_cast<Direction::Value>(i);
+//             Position nextPos = current.pos;
+//             nextPos.move(Direction(dir), width, height);
 
-            auto nextKey = std::make_pair(nextPos.x, nextPos.y);
-            if (visited.count(nextKey)) continue;
+//             auto nextKey = std::make_pair(nextPos.x, nextPos.y);
+//             if (visited.count(nextKey)) continue;
 
-            CellSlot& slot = board.getSlot(nextPos.x, nextPos.y);
+//             CellSlot& slot = board.getSlot(nextPos.x, nextPos.y);
 
-            // אם יש מוקש אי אפשר לעבור
-            if (slot.getMine()) continue;
+//             // אם יש מוקש אי אפשר לעבור
+//             if (slot.getMine()) continue;
 
-            // קיר זה מסלול חוקי אבל עם עונש
-            int newPenalty = current.penalty;
-            if (slot.getWall()) {
-                newPenalty += 10;  // נעניש כדי ש-BFS יבחר רק אם אין ברירה
-            }
+//             // קיר זה מסלול חוקי אבל עם עונש
+//             int newPenalty = current.penalty;
+//             if (slot.getWall()) {
+//                 newPenalty += 10;  // נעניש כדי ש-BFS יבחר רק אם אין ברירה
+//             }
 
-            // מייצרים את המסלול המעודכן
-            std::vector<Direction::Value> newPath = current.path;
-            newPath.push_back(dir);
+//             // מייצרים את המסלול המעודכן
+//             std::vector<Direction::Value> newPath = current.path;
+//             newPath.push_back(dir);
 
-            pq.push({nextPos, newPath, newPenalty});
-        }
-    }
+//             pq.push({nextPos, newPath, newPenalty});
+//         }
+//     }
 
-    return {};  // לא נמצא מסלול תקף
-}
+//     return {};  // לא נמצא מסלול תקף
+// }
 Action Algorithm1::nextAction(const Board& board,const Tank& self, const Tank& enemy){
     // 1. בדיקה אם אפשר לירות
     if (canShoot(self, enemy, board)) {
         return Action(ActionType::Shoot);
     }
 
-    // 2. בדיקה אם המיקום של האויב השתנה או שאין מסלול
-    if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)) {
-        currentPath = computeBFS(board, self, enemy);
-        lastEnemyPos = enemy.getPosition();
-    }
+//     // 2. בדיקה אם המיקום של האויב השתנה או שאין מסלול
+//     if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)) {
+//         currentPath = computeBFS(board, self, enemy);
+//         lastEnemyPos = enemy.getPosition();
+//     }
 
-    // 3. אם אין מסלול — פשוט לא לזוז (או נוכל לכתוב התנהגות אחרת)
-    if (currentPath.empty()) {
-    // 🔥 ננסה לירות בקיר שנמצא מול הכיוון הנוכחי
-        Position ahead = self.getPosition() + self.getDirection().toVector();
-        const CellSlot& slot = board.getSlot(ahead.x, ahead.y);
+//     // 3. אם אין מסלול — פשוט לא לזוז (או נוכל לכתוב התנהגות אחרת)
+//     if (currentPath.empty()) {
+//     // 🔥 ננסה לירות בקיר שנמצא מול הכיוון הנוכחי
+//         Position ahead = self.getPosition() + self.getDirection().toVector();
+//         const CellSlot& slot = board.getSlot(ahead.x, ahead.y);
 
-        if (slot.getWall() && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
-            return Action(ActionType::Shoot);
-        }
-
-    // אם אין קיר לירות עליו, לא נעשה כלום
-    return Action(ActionType::None);
-}
+//         if (slot.getWall() && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+//             return Action(ActionType::Shoot);
+//         }
 
     // 4. פעולה הבאה במסלול
-    Direction::Value targetDir = currentPath.front();
+    // Direction::Value targetDir = currentPath.front();
 
-    // 5. אם הטנק כבר פונה לכיוון הנכון — נתקדם קדימה ונמחק את הצעד
-    if (self.getDirection().getDirection() == targetDir) {
-        if (canShoot(self, enemy, board)) {
-            return Action(ActionType::Shoot);
-    }
-        currentPath.erase(currentPath.begin());
-        return Action(ActionType::MoveForward);
-    }
+    // // 5. אם הטנק כבר פונה לכיוון הנכון — נתקדם קדימה ונמחק את הצעד
+    // if (self.getDirection().getDirection() == targetDir) {
+    //     if (canShoot(self, enemy, board)) {
+    //         return Action(ActionType::Shoot);
+    // }
+    //     currentPath.erase(currentPath.begin());
+    //     return Action(ActionType::MoveForward);
+    // }
 
-    // 6. אחרת — נסובב לכיוון המתאים (נשאיר את הצעד לתור הבא)
-    ActionType turn = rotateTowards(self.getDirection().getDirection(), targetDir);
-    return Action(turn);
+    // // 6. אחרת — נסובב לכיוון המתאים (נשאיר את הצעד לתור הבא)
+    // ActionType turn = rotateTowards(self.getDirection().getDirection(), targetDir);
+    // return Action(turn);
+
+    //     // אם אין קיר לירות עליו, לא נעשה כלום
+    return Action(ActionType::None);
 
 }
 ActionType Algorithm1::rotateTowards(Direction::Value current, Direction::Value desired) const {

@@ -1,32 +1,5 @@
-Player 1: Rotated right by 45 degrees.
-Player 2: Shoot from (6, 5) to (0, 5) in direction 2.
-Shell fired at position (0, 5)Shell hit wall. Wall health is now 1
-Player 1: Rotated right by 45 degrees.
-Player 2: No action taken.
-Player 1: MoveForward from (1, 1) to (2, 1).
-Player 2: No action taken.
-Player 1: MoveForward from (2, 1) to (3, 1).
-Player 2: No action taken.
-Player 1: MoveForward from (3, 1) to (4, 1).
-Player 2: No action taken.
-Player 1: Rotated right by 90 degrees.
-Player 2: Shoot from (6, 5) to (0, 5) in direction 2.
-Shell fired at position (0, 5)Shell hit wall. Wall health is now 0
-Wall destroyed.
-Player 1: MoveForward from (4, 1) to (5, 2).
-Player 2: No action taken.
-Player 1: Rotated right by 90 degrees.
-Player 2: No action taken.
-Player 1: MoveForward from (5, 2) to (5, 3).
-Player 2: No action taken.
-Player 1: Rotated right by 90 degrees.
-Player 2: No action taken.
-Player 1: MoveForward failed due to obstruction.
-Player 2: Shoot from (6, 5) to (0, 5) in direction 2.
-Shell fired at position (0, 5)Shell fired at position (1, 5)Shell fired at position (2, 5)Player 1: MoveForward failed due to obstruction.
-Player 2: No action taken.
-Shell fired at position (2, 5)Shell fired at position (3, 5)Shell fired at position (4, 5)Player 1: Rotated right by 90 degrees.
-Player 2: Rotated right by 45 degrees.
-Shell fired at position (4, 5)Shell fired at position (5, 5)Shell fired at position (6, 5)Shell: Player 2 was hit by shell and destroyed.
+Player 1: Shoot from (0, 0) to (7, 0) in direction 6.
+Player 2: Rotated right by 90 degrees.
+Shell fired at position (7, 0)Shell: Player 2 was hit by shell and destroyed.
 Game Over!
 Result: Player 1 wins - Player 2 destroyed

@@ -7,8 +7,6 @@
 #include "Action.h"
 
 class Algorithm2 : public IAlgorithm {
-    private:
-        int idleTurns = 0;
     public:
         Action nextAction(const Board& board, const Tank& self, const Tank& enemy) override;
     private:

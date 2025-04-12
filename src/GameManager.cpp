@@ -139,23 +139,23 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
             break;
         }
         case ActionType::RotateLeft8:
-            tank->rotateLeft8();  // Executes a 90-degree counterclockwise rotation
-            logFile << player << ": Rotated left by 90 degrees." << std::endl;
+            tank->rotateLeft8();  // Executes a 45-degree counterclockwise rotation
+            logFile << player << ": Rotated left by 45 degrees." << std::endl;
             std::cout << "Rotated left by 90 degrees.\n";
             break;
         case ActionType::RotateRight8:
             tank->rotateRight8();  // Executes a 90-degree clockwise rotation
-            logFile << player << ": Rotated right by 90 degrees." << std::endl;
+            logFile << player << ": Rotated right by 45 degrees." << std::endl;
             std::cout << "Rotated right by 90 degrees.\n";
             break;
         case ActionType::RotateLeft4:
-            tank->rotateLeft4();  // Executes a 45-degree counterclockwise rotation
-            logFile << player << ": Rotated left by 45 degrees." << std::endl;
+            tank->rotateLeft4();  // Executes a 90-degree counterclockwise rotation
+            logFile << player << ": Rotated left by 90 degrees." << std::endl;
             std::cout << "Rotated left by 45 degrees.\n";
             break;
         case ActionType::RotateRight4:
-            tank->rotateRight4();  // Executes a 45-degree clockwise rotation
-            logFile << player << ": Rotated right by 45 degrees." << std::endl;
+            tank->rotateRight4();  // Executes a 90-degree clockwise rotation
+            logFile << player << ": Rotated right by 90 degrees." << std::endl;
             std::cout << "Rotated right by 45 degrees.\n";
             break;
         default:

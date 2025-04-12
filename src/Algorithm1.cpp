@@ -42,6 +42,9 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
     std::set<std::pair<int, int>> visited;
     q.push({self.getPosition(), {}});
 
+    std::vector<Direction::Value> bestPath;
+    int shortestLength = std::numeric_limits<int>::max();
+
     while (!q.empty()) {
         Node current = q.front(); q.pop();
         auto key = std::make_pair(current.pos.x, current.pos.y);
@@ -52,21 +55,24 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
                       self.getShootingStatus(), self.getBackwardStatus());
 
         if (canShoot(fakeTank, enemy, board)) {
-            return current.path;
+            if (current.path.size() < shortestLength) {
+                bestPath = current.path;
+                shortestLength = current.path.size();
+            }
+            continue; // ממשיך לבדוק עוד אופציות
         }
 
         for (int i = 0; i < 8; ++i) {
             Direction::Value dir = static_cast<Direction::Value>(i);
             Position next = current.pos + Direction(dir).toVector();
 
-            // ✅ בדיקת גבולות לפני כל פעולה
             if (next.x < 0 || next.x >= width || next.y < 0 || next.y >= height)
                 continue;
 
             if (visited.count({next.x, next.y})) continue;
 
             const CellSlot& slot = board.getSlot(next.x, next.y);
-            if (slot.getMine()) continue;
+            if (slot.getMine()) continue; // אל תעבור דרך מוקש
 
             std::vector<Direction::Value> newPath = current.path;
             newPath.push_back(dir);
@@ -74,8 +80,9 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
         }
     }
 
-    return {};
+    return bestPath; // עשוי להיות ריק אם אין שום מסלול לירי
 }
+
 
 Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
     int width = board.getWidth(), height = board.getHeight();
@@ -84,6 +91,12 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
     if (canShoot(self, enemy, board) && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
         return Action(ActionType::Shoot);
     }
+      if (self.getAmmo() == 0) {
+        std::cout << " tamk1 no ammo.\n";
+        return Action(ActionType::None);
+    }
+    
+
 
     // אם אין מסלול או האויב זז – מחשב מסלול חדש
     if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)) {

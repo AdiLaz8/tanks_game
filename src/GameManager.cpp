@@ -75,7 +75,6 @@ void GameManager::moveShells() {
         // החזרה ללוח במיקום החדש
         gameBoard.addObject(shell, newPos.x, newPos.y);
 
-        std::cout << "📦 Shell moved from (" << oldPos.x << "," << oldPos.y << ") to (" << newPos.x << "," << newPos.y << ")" << std::endl;
     }
 }
 

@@ -8,15 +8,11 @@ bool IAlgorithm::canShoot(const Tank& self, const Tank& enemy, const Board& boar
     Position check = self.getPosition();
     Direction dir = self.getDirection();
 
-    std::cout << "Starting position: " << check.x << ", " << check.y << "\n";
-    std::cout << "Shooting direction: " << dir.getDirection() << "\n";
     int counter = 0;
     while (true) {
         check.move(dir, board.getWidth(), board.getHeight());
-        std::cout << "Checking position: " << check.x << ", " << check.y << "\n";
 
         if (counter == std::max(board.getWidth(),board.getHeight())) {
-            std::cout << "Back to start position. Stopping.\n";
             return false;
         }
 
@@ -27,7 +23,6 @@ bool IAlgorithm::canShoot(const Tank& self, const Tank& enemy, const Board& boar
 
         const CellSlot& slot = board.getSlot(check.x, check.y);
         if (slot.getWall()) {
-            std::cout << "Wall at position: " << check.x << ", " << check.y << ". Stopping.\n";
             return false;
         }
         counter++;

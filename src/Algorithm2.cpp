@@ -1,6 +1,10 @@
 #include "Algorithm2.h"
 #include <iostream>
 Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
+    if(enemy.getAmmo()==0){
+        return Action(ActionType::Shoot);
+    
+    }
     Position myPos = self.getPosition();
     int width = board.getWidth();
     int height = board.getHeight();

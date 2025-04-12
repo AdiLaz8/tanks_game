@@ -57,47 +57,47 @@ int main(int argc, char* argv[]) {
     std::cout << "✅ Board loaded successfully." << std::endl;
     std::cout << "📦 Objects on board:" << std::endl;
 
-for (int y = 0; y < board.getHeight(); ++y) {
-    for (int x = 0; x < board.getWidth(); ++x) {
-        const CellSlot& slot = board.getSlot(x, y);
-        const auto& objects = slot.getAll();
-        for (Cell* obj : objects) {
-            std::cout << "[" << x << "," << y << "] "
-                      << obj->toString() << std::endl;
-        }
-    }
-}
+// for (int y = 0; y < board.getHeight(); ++y) {
+//     for (int x = 0; x < board.getWidth(); ++x) {
+//         const CellSlot& slot = board.getSlot(x, y);
+//         const auto& objects = slot.getAll();
+//         for (Cell* obj : objects) {
+//             std::cout << "[" << x << "," << y << "] "
+//                       << obj->toString() << std::endl;
+//         }
+//     }
+// }
 
 
-for (int y = 0; y < board.getHeight(); ++y) {
-    for (int x = 0; x < board.getWidth(); ++x) {
-        const CellSlot& slot = board.getSlot(x, y);
-        const std::vector<Cell*>& objects = slot.getAll();
+// for (int y = 0; y < board.getHeight(); ++y) {
+//     for (int x = 0; x < board.getWidth(); ++x) {
+//         const CellSlot& slot = board.getSlot(x, y);
+//         const std::vector<Cell*>& objects = slot.getAll();
 
-        if (!objects.empty()) {
-            Cell* obj = objects.back();
-            char symbol = obj->getSymbol();
-            std::cout << symbol;
+//         if (!objects.empty()) {
+//             Cell* obj = objects.back();
+//             char symbol = obj->getSymbol();
+//             std::cout << symbol;
 
-            // בדיקה: איזה אובייקט זה באמת?
-            if (dynamic_cast<Tank*>(obj)) {
-                std::cout << "(T)";
-            } else if (dynamic_cast<Wall*>(obj)) {
-                std::cout << "(W)";
-            } else if (dynamic_cast<Mine*>(obj)) {
-                std::cout << "(M)";
-            } else if (dynamic_cast<Shell*>(obj)) {
-                std::cout << "(S)";
-            } else {
-                std::cout << "(?)";  // משהו לא צפוי
-            }
+//             // בדיקה: איזה אובייקט זה באמת?
+//             if (dynamic_cast<Tank*>(obj)) {
+//                 std::cout << "(T)";
+//             } else if (dynamic_cast<Wall*>(obj)) {
+//                 std::cout << "(W)";
+//             } else if (dynamic_cast<Mine*>(obj)) {
+//                 std::cout << "(M)";
+//             } else if (dynamic_cast<Shell*>(obj)) {
+//                 std::cout << "(S)";
+//             } else {
+//                 std::cout << "(?)";  // משהו לא צפוי
+//             }
 
-        } else {
-            std::cout << ' ';
-        }
-    }
-    std::cout << '\n';
-}
+//         } else {
+//             std::cout << ' ';
+//         }
+//     }
+//     std::cout << '\n';
+// }
     GameManager game(board);
     game.gameLoop();
 

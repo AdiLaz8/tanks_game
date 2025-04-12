@@ -77,3 +77,7 @@ void Tank::rotateRight4() {
 void Tank::rotateRight8() {
     d.rotateClockwise8();
 }
+
+void Tank::setPosition(Position newPos){
+    p = newPos;
+}

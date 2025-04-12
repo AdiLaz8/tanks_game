@@ -36,6 +36,7 @@ public:
     void shoot();
     void decreaseShooting();
     void hit();
+    void setPosition(Position newPos);
 
     void rotateLeft4();
     void rotateLeft8();

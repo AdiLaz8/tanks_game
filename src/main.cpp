@@ -48,12 +48,17 @@ int main(int argc, char* argv[]) {
                     board.addObject(new Tank('1', 16, Direction(Direction::L), Position(x, y)), x, y);
                     tank1=true;
                 }
+
             }
             else if (c == '2') {
                 if(tank2==false){
                     board.addObject(new Tank('2', 16, Direction(Direction::R), Position(x, y)), x, y);
                     tank2=true;
                 }
+
+            }
+            else{
+                continue;
             }
     }
     }
@@ -61,16 +66,16 @@ int main(int argc, char* argv[]) {
     std::cout << "✅ Board loaded successfully." << std::endl;
     std::cout << "📦 Objects on board:" << std::endl;
 
-// for (int y = 0; y < board.getHeight(); ++y) {
-//     for (int x = 0; x < board.getWidth(); ++x) {
-//         const CellSlot& slot = board.getSlot(x, y);
-//         const auto& objects = slot.getAll();
-//         for (Cell* obj : objects) {
-//             std::cout << "[" << x << "," << y << "] "
-//                       << obj->toString() << std::endl;
-//         }
-//     }
-// }
+    for (int y = 0; y < board.getHeight(); ++y) {
+        for (int x = 0; x < board.getWidth(); ++x) {
+            const CellSlot& slot = board.getSlot(x, y);
+            const auto& objects = slot.getAll();
+            for (Cell* obj : objects) {
+                std::cout << "[" << x << "," << y << "] "
+                        << obj->toString() << std::endl;
+            }
+        }
+    }
 
 
 // for (int y = 0; y < board.getHeight(); ++y) {
@@ -121,19 +126,19 @@ int main(int argc, char* argv[]) {
 
     outFile.close();
         // 📤 הדפסת debug_log.txt
-    std::ifstream debugFile("debug_log.txt");
-    if (!debugFile) {
-        std::cerr << "Failed to open debug_log.txt" << std::endl;
-        return 1;
-    }
+    // std::ifstream debugFile("debug_log.txt");
+    // if (!debugFile) {
+    //     std::cerr << "Failed to open debug_log.txt" << std::endl;
+    //     return 1;
+    // }
 
-    std::cout << "\n🪵 Debug Log:\n";
-    std::string debugLine;
-    while (std::getline(debugFile, debugLine)) {
-        std::cout << debugLine << std::endl;
-    }
+    // std::cout << "\n🪵 Debug Log:\n";
+    // std::string debugLine;
+    // while (std::getline(debugFile, debugLine)) {
+    //     std::cout << debugLine << std::endl;
+    // }
 
-    debugFile.close();
+    // debugFile.close();
 
     Logger::shutdown(); // סגירת קובץ הלוג
 

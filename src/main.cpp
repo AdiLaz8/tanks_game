@@ -7,6 +7,8 @@
 #include "Wall.h"
 #include "Mine.h"
 #include "GameManager.h"
+#include "Logger.h"
+
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -18,6 +20,8 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error: Could not open file!" << std::endl;
         return 1;
     }
+    Logger::init("log_config.txt");  // הפעלת לוגים על בסיס הקונפיג
+
     int width, height;
     file >> width >> height;
     file.ignore();// \n
@@ -114,7 +118,25 @@ int main(int argc, char* argv[]) {
         std::cout << line << std::endl;
     }
 
+
     outFile.close();
+        // 📤 הדפסת debug_log.txt
+    std::ifstream debugFile("debug_log.txt");
+    if (!debugFile) {
+        std::cerr << "Failed to open debug_log.txt" << std::endl;
+        return 1;
+    }
+
+    std::cout << "\n🪵 Debug Log:\n";
+    std::string debugLine;
+    while (std::getline(debugFile, debugLine)) {
+        std::cout << debugLine << std::endl;
+    }
+
+    debugFile.close();
+
+    Logger::shutdown(); // סגירת קובץ הלוג
+
 
 
     return 0;

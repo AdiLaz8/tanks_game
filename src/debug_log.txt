@@ -1,0 +1,366 @@
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (1,1)
+Algorithm1: Rotating from direction 6 to 3
+Player 1 initiates action:
+Rotated left by 45 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Rotating from direction 4 to 3
+Player 1 initiates action:
+Rotated left by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (1, 1) to (2, 2) in direction 3.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (2, 2)
+Shell hit wall. Wall health is now 1
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (1, 1) to (2, 2) in direction 3.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (2, 2)
+Shell hit wall. Wall health is now 0
+Wall destroyed.
+Algorithm1: Moving forward to (2,2)
+Player 1 initiates action:
+Moved forward from (1, 1) to (2, 2).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Rotating from direction 3 to 5
+Player 1 initiates action:
+Rotated right by 45 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Moving forward to (1,3)
+Player 1 initiates action:
+Moved forward from (2, 2) to (1, 3).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Rotating from direction 5 to 4
+Player 1 initiates action:
+Rotated left by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Moving forward to (1,4)
+Player 1 initiates action:
+Moved forward from (1, 3) to (1, 4).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Rotating from direction 4 to 5
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (1, 4) to (0, 5) in direction 5.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (0, 5)
+Shell hit wall. Wall health is now 1
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (1, 4) to (0, 5) in direction 5.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (0, 5)
+Shell hit wall. Wall health is now 0
+Wall destroyed.
+Algorithm1: Moving forward to (0,5)
+Player 1 initiates action:
+Moved forward from (1, 4) to (0, 5).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (0,5)
+Algorithm1: No valid path to shooting position. Trying fallback.
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (0,5)
+Algorithm1: No valid path to shooting position. Trying fallback.
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (0,5)
+Algorithm1: No valid path to shooting position. Trying fallback.
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (0,5)
+Algorithm1: Rotating from direction 0 to 1
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Moving forward to (1,4)
+Player 1 initiates action:
+Moved forward from (0, 5) to (1, 4).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Rotating from direction 1 to 2
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (1, 4) to (2, 4) in direction 2.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (2, 4)
+Shell hit wall. Wall health is now 1
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (1, 4) to (2, 4) in direction 2.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (2, 4)
+Shell hit wall. Wall health is now 0
+Wall destroyed.
+Algorithm1: Moving forward to (2,4)
+Player 1 initiates action:
+Moved forward from (1, 4) to (2, 4).
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (2, 4) to (3, 4) in direction 2.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (3, 4)
+Shell hit wall. Wall health is now 1
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (2, 4) to (3, 4) in direction 2.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (3, 4)
+Shell hit wall. Wall health is now 0
+Wall destroyed.
+Algorithm1: Moving forward to (3,4)
+Player 1 initiates action:
+Moved forward from (2, 4) to (3, 4).
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (3, 4) to (4, 4) in direction 2.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (4, 4)
+Shell hit wall. Wall health is now 1
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (3, 4) to (4, 4) in direction 2.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (4, 4)
+Shell hit wall. Wall health is now 0
+Wall destroyed.
+Algorithm1: Moving forward to (4,4)
+Player 1 initiates action:
+Moved forward from (3, 4) to (4, 4).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Rotating from direction 2 to 3
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Moving forward to (5,5)
+Player 1 initiates action:
+Moved forward from (4, 4) to (5, 5).
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (5, 5) to (6, 6) in direction 3.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (6, 6)
+Shell hit wall. Wall health is now 1
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Player 1 initiates action:
+No action taken.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Wall detected ahead. Attempting to shoot it.
+Player 1 initiates action:
+Shot from (5, 5) to (6, 6) in direction 3.
+Player 2 initiates action:
+No action taken.
+Shell fired at position (6, 6)
+Shell hit wall. Wall health is now 0
+Wall destroyed.
+Algorithm1: Moving forward to (6,6)
+Player 1 initiates action:
+Moved forward from (5, 5) to (6, 6).
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (6,6)
+Algorithm1: No valid path to shooting position. Trying fallback.
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (6,6)
+Algorithm1: No valid path to shooting position. Trying fallback.
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (6,6)
+Algorithm1: No valid path to shooting position. Trying fallback.
+Player 1 initiates action:
+Rotated right by 90 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Computing BFS because enemy moved or path is empty.
+BFS: starting BFS from position (6,6)
+Algorithm1: Rotating from direction 6 to 0
+Player 1 initiates action:
+Rotated right by 45 degrees.
+Player 2 initiates action:
+No action taken.
+Algorithm1: Enemy in direct line of fire. Shooting now.
+Player 1 initiates action:
+Shot from (6, 6) to (6, 5) in direction 0.
+Player 2 initiates action:
+Rotated right by 45 degrees.
+Shell fired at position (6, 5)
+Shell: Player 2 was hit by shell and destroyed.
+Game Over!
+Result: Player 1 wins - Player 2 destroyed

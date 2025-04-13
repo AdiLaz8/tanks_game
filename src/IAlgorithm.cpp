@@ -17,7 +17,6 @@ bool IAlgorithm::canShoot(const Tank& self, const Tank& enemy, const Board& boar
         }
 
         if (check == enemy.getPosition()) {
-            std::cout << "Direct hit on enemy at position: " << check.x << ", " << check.y << "\n";
             return true;
         }
 

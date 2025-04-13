@@ -2,6 +2,9 @@
 #include <queue>
 #include <set>
 #include <iostream>
+#include "Logger.h"
+
+bool triedPathWithoutSuccess = false;
 
 Direction::Value Algorithm1::getDirectionTo(const Position& from, const Position& to) const {
     int dx = to.x - from.x;
@@ -36,6 +39,8 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
         Position pos;
         std::vector<Direction::Value> path;
     };
+    Logger::debug("BFS: starting BFS from position (" + std::to_string(self.getPosition().x) + "," + std::to_string(self.getPosition().y) + ")");
+
 
     int width = board.getWidth(), height = board.getHeight();
     std::queue<Node> q;
@@ -89,24 +94,44 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
 
     // אם אפשר לירות – יורה מיד
     if (canShoot(self, enemy, board) && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+        Logger::debug("Algorithm1: Enemy in direct line of fire. Shooting now.");
+        currentPath.clear();
         return Action(ActionType::Shoot);
     }
       if (self.getAmmo() == 0) {
-        std::cout << " tamk1 no ammo.\n";
+        Logger::debug("Algorithm1: Tank has no ammo. Skipping action.");
         return Action(ActionType::None);
     }
     
 
 
     // אם אין מסלול או האויב זז – מחשב מסלול חדש
-    if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)) {
+    if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)|| triedPathWithoutSuccess) {
+        Logger::debug("Algorithm1: Computing BFS because enemy moved or path is empty.");
         currentPath = computeBFS(board, self, enemy);
         lastEnemyPos = enemy.getPosition();
+        triedPathWithoutSuccess = false;
     }
 
     if (currentPath.empty()) {
-        return Action(ActionType::None);
+        if (!canShoot(self, enemy, board)) {
+            Logger::debug("Algorithm1: No valid path to shooting position. Trying fallback.");
+            triedPathWithoutSuccess = true;
+
+            // ניסיון לצאת מהתקיעה:
+            if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+                // אולי יירה על משהו אחר, אולי לא – עדיף מלא לעשות כלום
+                Logger::debug("Algorithm1: Trying to shoot randomly due to stuck state.");
+                return Action(ActionType::Shoot);
+            }
+
+            // הסתובבות רנדומלית (כדי להכניס שינוי)
+            return Action(ActionType::RotateRight8);
+        }
+    Logger::debug("Algorithm1: No path but line of fire is available. Shooting.");
+    return Action(ActionType::Shoot);
     }
+
 
     Direction::Value targetDir = currentPath.front();
 
@@ -122,14 +147,20 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
 
         if (slot.getWall()) {
             if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+                Logger::debug("Algorithm1: Wall detected ahead. Attempting to shoot it.");
                 return Action(ActionType::Shoot);
             }
             return Action(ActionType::None);
         }
 
         currentPath.erase(currentPath.begin());
+        Logger::debug("Algorithm1: Moving forward to (" +
+              std::to_string(nextPos.x) + "," +
+              std::to_string(nextPos.y) + ")");
         return Action(ActionType::MoveForward);
     }
-
+    Logger::debug("Algorithm1: Rotating from direction " +
+              std::to_string(self.getDirection().getDirection()) +
+              " to " + std::to_string(targetDir));
     return Action(rotateTowards(self.getDirection().getDirection(), targetDir));
 }

@@ -108,6 +108,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
             if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
                 tank->moveForward(gameBoard.getWidth(), gameBoard.getHeight());
                 logFile << player << ": MoveForward from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << newPosition.x << ", " << newPosition.y << ")." << std::endl;
+                logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
                 Logger::debug("Moved forward from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
               ") to (" + std::to_string(newPosition.x) + ", " + std::to_string(newPosition.y) + ").");
 
@@ -123,6 +124,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                 if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
                     tank->setBackward(4);
                     logFile << player << ": Started MoveBackward process." << std::endl;
+                    logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
                     Logger::debug("Started MoveBackward process from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
               ") to (" + std::to_string(newPosition.x) + ", " + std::to_string(newPosition.y) + ").");
 
@@ -142,6 +144,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                 Shell* newShell = new Shell(Position(x, y), direction, tank->getSymbol());
                 gameBoard.addObject(newShell, x, y);
                 logFile << player << ": Shoot from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << x << ", " << y << ") in direction " << direction.getDirection() << "." << std::endl;
+                logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
                 Logger::debug("Shot from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
               ") to (" + std::to_string(x) + ", " + std::to_string(y) + ") in direction " + std::to_string(direction.getDirection()) + ".");
 
@@ -157,25 +160,30 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
         case ActionType::RotateLeft8:
             tank->rotateLeft8();  // Executes a 45-degree counterclockwise rotation
             logFile << player << ": Rotated left by 45 degrees." << std::endl;
+            logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
             Logger::debug("Rotated left by 90 degrees.");
             break;
         case ActionType::RotateRight8:
             tank->rotateRight8();  // Executes a 90-degree clockwise rotation
             logFile << player << ": Rotated right by 45 degrees." << std::endl;
+            logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
             Logger::debug("Rotated right by 90 degrees.");
             break;
         case ActionType::RotateLeft4:
             tank->rotateLeft4();  // Executes a 90-degree counterclockwise rotation
             logFile << player << ": Rotated left by 90 degrees." << std::endl;
+            logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
             Logger::debug("Rotated left by 45 degrees.");
             break;
         case ActionType::RotateRight4:
             tank->rotateRight4();  // Executes a 90-degree clockwise rotation
             logFile << player << ": Rotated right by 90 degrees." << std::endl;
+            logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
             Logger::debug("Rotated right by 45 degrees.");
             break;
         default:
             logFile << player << ": No action taken." << std::endl;
+            logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
             Logger::debug("No action taken.");
             break;
     }
@@ -209,7 +217,7 @@ void GameManager::checkCollisions() {
     }
     for (Shell* shell : shells) {
         Position shellPos = shell->getPosition();
-        logFile << "Shell fired at position (" << shellPos.x << ", " << shellPos.y << ")";
+        logFile << "Shell fired at position (" << shellPos.x << ", " << shellPos.y << ")"<< std::endl;
         Logger::debug("Shell fired at position (" + std::to_string(shellPos.x) + ", " + std::to_string(shellPos.y) + ")");
         bool hitTank1 = (shellPos == posTank1);
         bool hitTank2 = (shellPos == posTank2);

@@ -48,7 +48,7 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
     q.push({self.getPosition(), {}});
 
     std::vector<Direction::Value> bestPath;
-    int shortestLength = std::numeric_limits<int>::max();
+    size_t shortestLength = std::numeric_limits<size_t>::max();
 
     while (!q.empty()) {
         Node current = q.front(); q.pop();

@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     for (int y = 0; y < height && file; ++y) {
         std::string line;
         std::getline(file, line);
-        while (line.length() < width){
+        while (line.length() < static_cast<size_t>(width)){
             line += ' ';
         }
         for (int x = 0; x < width; ++x) {

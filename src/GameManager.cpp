@@ -7,13 +7,13 @@
 
 
 
-GameManager::GameManager(Board& board) : gameBoard(board), currentStep(0), postAmmoSteps(80) {
+GameManager::GameManager(Board& board,std::string inputFileName) : gameBoard(board), currentStep(0), postAmmoSteps(80), inputFileName(inputFileName) {
     tank1 = gameBoard.getTank(1);
     tank2 = gameBoard.getTank(2);
     algorithm1 = std::make_unique<Algorithm1>();
     algorithm2 = std::make_unique<Algorithm2>();
-    logFile.open("game_output.txt");
-
+    std::string outputFile = "output_" + inputFileName;
+    logFile.open(outputFile);
 }
 GameManager::~GameManager() {
     if (logFile.is_open()) {

@@ -107,11 +107,12 @@ int main(int argc, char* argv[]) {
 //     }
 //     std::cout << '\n';
 // }
-    GameManager game(board);
+    GameManager game(board, std::string(argv[1]));
     game.gameLoop();
 
     // 📤 הדפסת קובץ פלט
-    std::ifstream outFile("game_output.txt");
+    std::string outputFileName = "output_" + std::string(argv[1]);
+    std::ifstream outFile(outputFileName);
     if (!outFile) {
         std::cerr << "Failed to open game_output.txt" << std::endl;
         return 1;

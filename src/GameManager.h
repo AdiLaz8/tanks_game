@@ -17,9 +17,10 @@ private:
     Tank* tank2;
     int currentStep;
     int postAmmoSteps; // Steps after both tanks run out of ammo
+    std::string inputFileName;
 
 public:
-    GameManager(Board& board);
+    GameManager(Board& board,std::string inputFileName);
     ~GameManager();
     void gameLoop();
     void moveShells();

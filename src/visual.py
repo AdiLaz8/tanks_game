@@ -3,8 +3,6 @@ import matplotlib.patches as patches
 from matplotlib.widgets import Button
 import sys
 
-# שימוש: python visualizer.py map1.txt game_output.txt
-
 map_file = sys.argv[1]
 output_file = sys.argv[2]
 
@@ -15,7 +13,7 @@ valid_symbols = {'#', '@', '1', '2', ' '}
 grid = [[c if c in valid_symbols else ' ' for c in line] for line in lines[1:]]
 
 with open(output_file) as f:
-    game_lines = [line.strip() for line in f.readlines() if "Player" in line or "Wall destroyed" in line or "Shell fired at position" in line or "Shell hit wall" in line]
+    game_lines = [line.strip() for line in f.readlines()]
 
 def get_initial_board():
     return [[cell for cell in row] for row in grid]
@@ -30,6 +28,7 @@ tank_directions = {'1': 0, '2': 0}
 wall_health = {}
 frames = []
 last_shell_hit = None
+destroyed_tanks = {}
 
 for y in range(height):
     for x in range(width):
@@ -64,6 +63,12 @@ for line in game_lines:
         if last_shell_hit in current_wall_health:
             current_wall_health[last_shell_hit] = 0
 
+    elif "Player 1 was hit by shell and destroyed" in line:
+        destroyed_tanks['1'] = current_positions['1']
+
+    elif "Player 2 was hit by shell and destroyed" in line:
+        destroyed_tanks['2'] = current_positions['2']
+
     elif "Player" in line:
         player = '1' if "Player 1" in line else '2'
         if "MoveForward from" in line:
@@ -90,7 +95,8 @@ for line in game_lines:
         current_directions.copy(),
         list(shells),
         line,
-        wall_health_snapshot
+        wall_health_snapshot,
+        destroyed_tanks.copy()
     ))
 
 index = [0]
@@ -100,7 +106,7 @@ fig, ax = plt.subplots(figsize=(width / 1.8, height / 1.8))
 plt.subplots_adjust(bottom=0.2)
 
 def draw_frame(i):
-    board, tank_positions, tank_directions, shell_positions, step_text, wall_health_snapshot = frames[i]
+    board, tank_positions, tank_directions, shell_positions, step_text, wall_health_snapshot, destroyed_tanks_snapshot = frames[i]
     ax.clear()
     ax.set_xlim(0, width)
     ax.set_ylim(0, height)
@@ -135,6 +141,11 @@ def draw_frame(i):
 
     for sx, sy in shell_positions:
         ax.add_patch(patches.Circle((sx + 0.5, height - sy - 0.5), 0.1, color='orange'))
+
+    for player, pos in destroyed_tanks_snapshot.items():
+        if pos:
+            x, y = pos
+            ax.text(x + 0.5, height - y - 0.5, 'x', ha='center', va='center', fontsize=20, color='red')
 
     fig.canvas.draw_idle()
 

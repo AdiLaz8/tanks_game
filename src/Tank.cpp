@@ -81,3 +81,6 @@ void Tank::rotateRight8() {
 void Tank::setPosition(Position newPos){
     p = newPos;
 }
+void Tank::setDirection(Direction newDirection){
+    d = newDirection;
+}

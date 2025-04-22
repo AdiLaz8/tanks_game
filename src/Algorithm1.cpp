@@ -93,14 +93,32 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
     int width = board.getWidth(), height = board.getHeight();
 
     // אם אפשר לירות – יורה מיד
-    if (canShoot(self, enemy, board) && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
-        Logger::debug("Algorithm1: Enemy in direct line of fire. Shooting now.");
-        currentPath.clear();
-        return Action(ActionType::Shoot);
-    }
-      if (self.getAmmo() == 0) {
+
+    if (self.getAmmo() == 0) {
         Logger::debug("Algorithm1: Tank has no ammo. Skipping action.");
         return Action(ActionType::None);
+    }
+    for (int dir = 0; dir < 8; ++dir) {
+        Direction checkDir = Direction(static_cast<Direction::Value>(dir));
+        Tank dummy = self;
+        dummy.setDirection(checkDir);
+
+        if (canShoot(dummy, enemy, board)) {
+            if (dir == self.getDirection().getDirection()) {
+                if (self.getShootingStatus() == 0) {
+                    Logger::debug("Algorithm1: Enemy in direction " + std::to_string(dir) + ". Shooting now.");
+                    currentPath.clear();
+                    return Action(ActionType::Shoot);
+                }
+            } else {
+                Logger::debug("Algorithm1: Enemy in direction " + std::to_string(dir) + ", turning toward it.");
+                currentPath.clear();  // נניח שצריך לשנות יעד
+                return Action(rotateTowards(self.getDirection().getDirection(),dummy.getDirection().getDirection()));
+            }
+        }
+    }
+    if (isThreatenedByShells(board, self.getPosition())) {
+        return moveIfThreatened(board, self);
     }
     
 
@@ -134,16 +152,21 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
 
 
     Direction::Value targetDir = currentPath.front();
-
     if (self.getDirection().getDirection() == targetDir) {
         Position nextPos = self.getPosition() + self.getDirection().toVector();
 
-        // ✅ בדיקת גבולות לפני getSlot
         if (nextPos.x < 0 || nextPos.x >= width || nextPos.y < 0 || nextPos.y >= height) {
             return Action(ActionType::None);
         }
 
         const CellSlot& slot = board.getSlot(nextPos.x, nextPos.y);
+
+        if (slot.getMine()) {
+            Logger::debug("Algorithm1: Next cell is a mine – recomputing BFS.");
+            currentPath.clear(); // נאפס את המסלול ונחשב מחדש בתור הבא
+            triedPathWithoutSuccess = true;
+            return Action(ActionType::None); // אפשר גם להחזיר Rotate כדי לא לבזבז תור
+        }
 
         if (slot.getWall()) {
             if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
@@ -155,10 +178,11 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
 
         currentPath.erase(currentPath.begin());
         Logger::debug("Algorithm1: Moving forward to (" +
-              std::to_string(nextPos.x) + "," +
-              std::to_string(nextPos.y) + ")");
+                    std::to_string(nextPos.x) + "," +
+                    std::to_string(nextPos.y) + ")");
         return Action(ActionType::MoveForward);
     }
+
     Logger::debug("Algorithm1: Rotating from direction " +
               std::to_string(self.getDirection().getDirection()) +
               " to " + std::to_string(targetDir));

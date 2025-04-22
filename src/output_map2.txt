@@ -1,0 +1,32 @@
+Player 1: Rotated left by 90 degrees.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated left by 45 degrees.
+Player 1: Direction is now 3
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Shoot from (1, 1) to (2, 2) in direction 3.
+Player 1: Direction is now 3
+Player 2: Rotated left by 90 degrees.
+Player 2: Direction is now 0
+Shell fired at position (2, 2)
+Shell fired at position (3, 3)
+Shell fired at position (4, 4)
+Player 1: Rotated left by 45 degrees.
+Player 1: Direction is now 2
+Player 2: Rotated left by 90 degrees.
+Player 2: Direction is now 6
+Shell fired at position (4, 4)
+Shell fired at position (5, 5)
+Shell fired at position (6, 6)
+Player 1: Rotated right by 90 degrees.
+Player 1: Direction is now 4
+Player 2: Rotated right by 90 degrees.
+Player 2: Direction is now 0
+Shell fired at position (6, 6)
+Shell fired at position (7, 7)
+Shell fired at position (8, 8)
+Shell: Player 2 was hit by shell and destroyed.
+Game Over!
+Result: Player 1 wins - Player 2 destroyed

@@ -13,6 +13,7 @@ struct Position
     Position operator+(const Position delta) const {
         return {x + delta.x, y + delta.y};
     }
+    
     void move(Direction dir,int width, int height);
     
 };

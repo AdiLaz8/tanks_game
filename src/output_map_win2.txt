@@ -192,29 +192,37 @@ Player 2: No action taken.
 Player 2: Direction is now 2
 Player 1: Shoot from (7, 3) to (8, 4) in direction 3.
 Player 1: Direction is now 3
-Player 2: Rotated left by 45 degrees.
-Player 2: Direction is now 1
+Player 2: MoveForward from (11, 7) to (12, 7).
+Player 2: Direction is now 2
 Shell fired at position (8, 4)
 Shell hit wall. Wall health is now 1
-Player 1: No action taken.
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 6
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 7
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated right by 90 degrees.
+Player 1: Direction is now 1
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated right by 90 degrees.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
-Player 1: No action taken.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 1
-Player 1: No action taken.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 1
-Player 1: No action taken.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: Shoot from (7, 3) to (8, 4) in direction 3.
 Player 1: Direction is now 3
-Player 2: Rotated right by 45 degrees.
+Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (8, 4)
 Shell hit wall. Wall health is now 0
@@ -237,29 +245,29 @@ Player 2: No action taken.
 Player 2: Direction is now 2
 Player 1: Shoot from (8, 4) to (9, 5) in direction 3.
 Player 1: Direction is now 3
-Player 2: Rotated left by 45 degrees.
-Player 2: Direction is now 1
+Player 2: No action taken.
+Player 2: Direction is now 2
 Shell fired at position (9, 5)
 Shell hit wall. Wall health is now 1
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: Shoot from (8, 4) to (9, 5) in direction 3.
 Player 1: Direction is now 3
-Player 2: Rotated right by 45 degrees.
+Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (9, 5)
 Shell hit wall. Wall health is now 0
@@ -282,29 +290,29 @@ Player 2: No action taken.
 Player 2: Direction is now 2
 Player 1: Shoot from (9, 5) to (10, 6) in direction 3.
 Player 1: Direction is now 3
-Player 2: Rotated left by 45 degrees.
-Player 2: Direction is now 1
+Player 2: No action taken.
+Player 2: Direction is now 2
 Shell fired at position (10, 6)
 Shell hit wall. Wall health is now 1
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: No action taken.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 1
+Player 2: Direction is now 2
 Player 1: Shoot from (9, 5) to (10, 6) in direction 3.
 Player 1: Direction is now 3
-Player 2: Rotated right by 45 degrees.
+Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (10, 6)
 Shell hit wall. Wall health is now 0
@@ -324,51 +332,39 @@ Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 4
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 3
 Player 2: No action taken.
 Player 2: Direction is now 2
-Player 1: MoveForward from (10, 6) to (10, 7).
-Player 1: Direction is now 4
+Player 1: Bad step - tried to move into wall or blocked cell.
 Player 2: No action taken.
 Player 2: Direction is now 2
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 6
+Player 1: Rotated left by 90 degrees.
+Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
-Player 1: Rotated right by 90 degrees.
+Player 1: Rotated left by 45 degrees.
 Player 1: Direction is now 0
 Player 2: No action taken.
 Player 2: Direction is now 2
-Player 1: MoveForward from (10, 7) to (10, 6).
+Player 1: MoveForward from (10, 6) to (10, 5).
 Player 1: Direction is now 0
+Player 2: No action taken.
+Player 2: Direction is now 2
+Player 1: Rotated right by 90 degrees.
+Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
 Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 2
-Player 1: MoveForward from (10, 6) to (11, 5).
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 2
-Player 1: Rotated right by 90 degrees.
 Player 1: Direction is now 3
 Player 2: No action taken.
 Player 2: Direction is now 2
-Player 1: MoveForward from (11, 5) to (12, 6).
+Player 1: Shoot from (10, 5) to (11, 6) in direction 3.
 Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 2
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 5
-Player 2: No action taken.
-Player 2: Direction is now 2
-Player 1: Shoot from (12, 6) to (11, 7) in direction 5.
-Player 1: Direction is now 5
-Player 2: Rotated left by 45 degrees.
-Player 2: Direction is now 1
-Shell fired at position (11, 7)
+Player 2: Rotated left by 90 degrees.
+Player 2: Direction is now 0
+Shell fired at position (11, 6)
+Shell fired at position (12, 7)
 Shell: Player 2 was hit by shell and destroyed.
 Game Over!
 Result: Player 1 wins - Player 2 destroyed

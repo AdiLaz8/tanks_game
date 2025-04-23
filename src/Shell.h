@@ -15,6 +15,8 @@ private:
 
 public:
     Shell(Position p, Direction d, char ownerId);
+    ~Shell();
+
 
     char getSymbol() const override;
 
@@ -24,13 +26,8 @@ public:
 
     Direction getDirection() const;
     char getOwnerId() const;
-    std::string toString() const override {
-        std::stringstream ss;
-        ss << "Shell(owner=" << ownerId
-            << ", dir=" << d.getDirection()
-            << ", pos=(" << p.x << "," << p.y << "))";
-        return ss.str();
-}
+    std::string toString() const override;
+
 
 };
 

@@ -65,6 +65,12 @@ void GameManager::gameLoop() {
         logFile << "Result: Unknown" << std::endl;
         Logger::debug("Result: Unknown");
     }
+    for (Shell* shell : gameBoard.getShells()) {
+        Position pos = shell->getPosition();
+        gameBoard.removeObject(shell, pos.x, pos.y);
+        delete shell;
+    }
+
 
 }
 
@@ -249,6 +255,8 @@ void GameManager::checkCollisions() {
         // Remove the shell if it hits any tank
         if (hitTank1 || hitTank2) {
             gameBoard.removeObject(shell, shellPos.x, shellPos.y);
+            delete shell;
+            
         }
         CellSlot& slot = gameBoard.getSlot(shellPos.x, shellPos.y);
         if (slot.getWall()) {
@@ -257,6 +265,7 @@ void GameManager::checkCollisions() {
             Logger::debug("Shell hit wall. Wall health is now " + std::to_string(hp));
 
             gameBoard.removeObject(shell, shellPos.x, shellPos.y);
+            delete shell;
             if (hp <= 0) {
                 gameBoard.removeObject(slot.getWall(), shellPos.x, shellPos.y);
                 logFile << "Wall destroyed." << std::endl;
@@ -273,6 +282,8 @@ void GameManager::checkCollisions() {
                 gameBoard.removeObject(otherShell, shellPos2.x, shellPos2.y);
                 logFile << "Shell: Two shells collided and were destroyed." << std::endl;
                 Logger::debug("Shell: Two shells collided and were destroyed.");
+                delete shell;
+                delete otherShell;
                 break;
             }
         }

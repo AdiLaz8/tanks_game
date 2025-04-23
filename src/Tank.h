@@ -18,6 +18,7 @@ private:
 
 public:
     Tank(char owner, int ammunation = 16, Direction d = Direction(Direction::L), Position p = Position(0, 0), int shooting_status = 0, int backward_status = 0, bool is_alive = true);
+    virtual ~Tank();
 
     char getSymbol() const override;
 

@@ -32,6 +32,10 @@ ActionType Algorithm2::rotateTowards(Direction::Value current, Direction::Value 
 }
 
 Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
+    if (isThreatenedByShells(board, self.getPosition())) {
+        return moveIfThreatened(board, self);
+    }
+    
     if (canShoot(self, enemy, board) && self.getShootingStatus() == 0 && self.getAmmo() > 0) {
         Logger::debug("Algorithm2: Enemy in direct line of fire. Shooting now.");
         return Action(ActionType::Shoot);
@@ -44,10 +48,11 @@ Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& 
         }
         return Action(rotateTowards(from, to));
     }
-
-    if (isThreatenedByShells(board, self.getPosition())) {
-        return moveIfThreatened(board, self);
-    }
-
+    // Direction::Value to = getDirectionTo(self.getPosition(), enemy.getPosition());
+    // Direction::Value from = self.getDirection().getDirection();
+    // if (from != to) {
+    //     Logger::debug("Algorithm2: Rotating to face enemy.");
+    //     return Action(rotateTowards(from, to));
+    // }
     return Action(ActionType::None);
 }

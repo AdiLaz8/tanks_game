@@ -8,6 +8,7 @@ class Mine : public Cell
 {
 public:
     Mine() = default;
+    virtual ~Mine() override {}
     char getSymbol() const override {
         return '@';
     }

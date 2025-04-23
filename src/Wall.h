@@ -10,6 +10,7 @@ private:
 
 public:
     Wall();
+    virtual ~Wall() override {}
     int onHit();
     char getSymbol() const override;
     std::string toString() const override {

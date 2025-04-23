@@ -30,6 +30,7 @@ bool IAlgorithm::canShoot(const Tank& self, const Tank& enemy, const Board& boar
 }
 
 
+
 ActionType IAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired) const {
     int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
     if (diff == 0) return ActionType::None;
@@ -45,24 +46,43 @@ ActionType IAlgorithm::rotateTowards(Direction::Value current, Direction::Value 
 }
 Action IAlgorithm::moveIfThreatened(const Board& board, const Tank& self) {
     Position myPos = self.getPosition();
+    Direction::Value myDir = self.getDirection().getDirection();
     int width = board.getWidth();
     int height = board.getHeight();
 
-    for (int i = 0; i < 8; ++i) {
-        Direction::Value tryDir = static_cast<Direction::Value>(i);
-        Position tryPos = myPos + Direction(tryDir).toVector();
-        if (tryPos.x < 0 || tryPos.x >= width || tryPos.y < 0 || tryPos.y >= height)
-            continue;
+    // ננסה קודם צעד קדימה בכיוון הנוכחי
+    Position forwardPos = myPos + Direction(myDir).toVector();
+    forwardPos.x = (forwardPos.x + width) % width;
+    forwardPos.y = (forwardPos.y + height) % height;
 
-        const CellSlot& trySlot = board.getSlot(tryPos.x, tryPos.y);
-        if (!trySlot.getWall() && !trySlot.getMine() && !trySlot.getTank()) {
-            if (self.getDirection().getDirection() != tryDir)
-                return Action(rotateTowards(self.getDirection().getDirection(), tryDir));
+    const CellSlot& forwardSlot = board.getSlot(forwardPos.x, forwardPos.y);
+    if (!forwardSlot.getWall() && !forwardSlot.getMine() && !forwardSlot.getTank()) {
+        if (!isThreatenedByShells(board, forwardPos)) {
+            return Action(ActionType::MoveForward);
         }
     }
 
+    // נבדוק כיוונים אחרים לסיבוב בטוח
+    for (int i = 0; i < 8; ++i) {
+        Direction::Value tryDir = static_cast<Direction::Value>(i);
+        Position tryPos = myPos + Direction(tryDir).toVector();
+        tryPos.x = (tryPos.x + width) % width;
+        tryPos.y = (tryPos.y + height) % height;
+
+        const CellSlot& trySlot = board.getSlot(tryPos.x, tryPos.y);
+        if (!trySlot.getWall() && !trySlot.getMine() && !trySlot.getTank()) {
+            if (!isThreatenedByShells(board, tryPos)) {
+                if (myDir != tryDir) {
+                    return Action(rotateTowards(myDir, tryDir));
+                }
+            }
+        }
+    }
+
+    // אין צעד בטוח
     return Action(ActionType::None);
 }
+
 
 bool IAlgorithm::isThreatenedByShells(const Board& board, const Position& pos) {
     int width = board.getWidth();

@@ -6,7 +6,8 @@ Tank::Tank(char owner, int ammunation, Direction d, Position p, int shooting_sta
 char Tank::getSymbol() const {
     return owner;
 }
-
+Tank::~Tank() {
+}
 const Position& Tank::getPosition() const {
     return p;
 }

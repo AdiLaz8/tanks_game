@@ -8,6 +8,8 @@
 #include "Mine.h"
 #include "GameManager.h"
 #include "Logger.h"
+#include <set> // בתחילת הקובץ אם עדיין לא מופיע
+
 
 
 int main(int argc, char* argv[]) {
@@ -141,6 +143,24 @@ int main(int argc, char* argv[]) {
 
     // debugFile.close();
 
+    std::set<Cell*> uniqueObjects;
+
+    for (int y = 0; y < board.getHeight(); ++y) {
+        for (int x = 0; x < board.getWidth(); ++x) {
+            const CellSlot& slot = board.getSlot(x, y);
+            const auto& objects = slot.getAll();
+            for (Cell* obj : objects) {
+                uniqueObjects.insert(obj); // נכנס רק פעם אחת לכל אובייקט
+            }
+        }
+    }
+
+    // חשוב: לא לכלול Shells כי הם כבר נמחקו על ידי GameManager
+    for (Cell* obj : uniqueObjects) {
+        if (dynamic_cast<Shell*>(obj) == nullptr) {
+            delete obj;
+        }
+    }
     Logger::shutdown(); // סגירת קובץ הלוג
 
 

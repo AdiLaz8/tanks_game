@@ -99,11 +99,18 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
         return Action(ActionType::None);
     }
     for (int dir = 0; dir < 8; ++dir) {
-        Direction checkDir = Direction(static_cast<Direction::Value>(dir));
-        Tank dummy = self;
-        dummy.setDirection(checkDir);
+        Direction dirVal = Direction(static_cast<Direction::Value>(dir));
+        Tank testTank(
+            self.getSymbol(),
+            self.getAmmo(),
+            dirVal,
+            self.getPosition(),
+            self.getShootingStatus(),
+            self.getBackwardStatus(),
+            self.isAlive()
+        );
 
-        if (canShoot(dummy, enemy, board)) {
+        if (canShoot(testTank, enemy, board)) {
             if (dir == self.getDirection().getDirection()) {
                 if (self.getShootingStatus() == 0) {
                     Logger::debug("Algorithm1: Enemy in direction " + std::to_string(dir) + ". Shooting now.");
@@ -112,8 +119,8 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
                 }
             } else {
                 Logger::debug("Algorithm1: Enemy in direction " + std::to_string(dir) + ", turning toward it.");
-                currentPath.clear();  // נניח שצריך לשנות יעד
-                return Action(rotateTowards(self.getDirection().getDirection(),dummy.getDirection().getDirection()));
+                currentPath.clear();
+                return Action(rotateTowards(self.getDirection().getDirection(), testTank.getDirection().getDirection()));
             }
         }
     }

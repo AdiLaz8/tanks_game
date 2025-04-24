@@ -1,33 +1,41 @@
+Turn : 1
 Player 1: Rotated right by 90 degrees.
 Player 1: Direction is now 0
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 2
 Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 3
 Player 1: Shoot from (1, 1) to (2, 0) in direction 1.
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (2, 0)
 Shell hit wall. Wall health is now 1
+Turn : 4
 Player 1: No action taken.
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 5
 Player 1: No action taken.
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 6
 Player 1: No action taken.
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 7
 Player 1: No action taken.
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 8
 Player 1: Shoot from (1, 1) to (2, 0) in direction 1.
 Player 1: Direction is now 1
 Player 2: No action taken.
@@ -35,44 +43,54 @@ Player 2: Direction is now 2
 Shell fired at position (2, 0)
 Shell hit wall. Wall health is now 0
 Wall destroyed.
+Turn : 9
 Player 1: MoveForward from (1, 1) to (2, 0).
 Player 1: Direction is now 1
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 10
 Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 11
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 12
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 13
 Player 1: Shoot from (2, 0) to (3, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (3, 0)
 Shell hit wall. Wall health is now 1
+Turn : 14
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 15
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 16
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 17
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 18
 Player 1: Shoot from (2, 0) to (3, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
@@ -80,44 +98,54 @@ Player 2: Direction is now 2
 Shell fired at position (3, 0)
 Shell hit wall. Wall health is now 0
 Wall destroyed.
+Turn : 19
 Player 1: MoveForward from (2, 0) to (3, 0).
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 20
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 21
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 22
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 23
 Player 1: Shoot from (3, 0) to (4, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (4, 0)
 Shell hit wall. Wall health is now 1
+Turn : 24
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 25
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 26
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 27
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 28
 Player 1: Shoot from (3, 0) to (4, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
@@ -125,44 +153,54 @@ Player 2: Direction is now 2
 Shell fired at position (4, 0)
 Shell hit wall. Wall health is now 0
 Wall destroyed.
+Turn : 29
 Player 1: MoveForward from (3, 0) to (4, 0).
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 30
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 31
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 32
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 33
 Player 1: Shoot from (4, 0) to (5, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (5, 0)
 Shell hit wall. Wall health is now 1
+Turn : 34
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 35
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 36
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 37
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 38
 Player 1: Shoot from (4, 0) to (5, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
@@ -170,44 +208,54 @@ Player 2: Direction is now 2
 Shell fired at position (5, 0)
 Shell hit wall. Wall health is now 0
 Wall destroyed.
+Turn : 39
 Player 1: MoveForward from (4, 0) to (5, 0).
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 40
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 41
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 42
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 43
 Player 1: Shoot from (5, 0) to (6, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
 Shell fired at position (6, 0)
 Shell hit wall. Wall health is now 1
+Turn : 44
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 45
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 46
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 47
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 48
 Player 1: Shoot from (5, 0) to (6, 0) in direction 2.
 Player 1: Direction is now 2
 Player 2: No action taken.
@@ -215,26 +263,32 @@ Player 2: Direction is now 2
 Shell fired at position (6, 0)
 Shell hit wall. Wall health is now 0
 Wall destroyed.
+Turn : 49
 Player 1: MoveForward from (5, 0) to (6, 0).
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 50
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 51
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 52
 Player 1: No action taken.
 Player 1: Direction is now 2
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 53
 Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 3
 Player 2: No action taken.
 Player 2: Direction is now 2
+Turn : 54
 Player 1: Shoot from (6, 0) to (7, 1) in direction 3.
 Player 1: Direction is now 3
 Player 2: Rotated left by 90 degrees.
@@ -242,4 +296,4 @@ Player 2: Direction is now 0
 Shell fired at position (7, 1)
 Shell: Player 2 was hit by shell and destroyed.
 Game Over!
-Result: Player 1 wins - Player 2 destroyed
+RESULT: Player 1 wins - Player 2 destroyed

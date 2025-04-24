@@ -30,6 +30,9 @@ void GameManager::gameLoop() {
             moveShells();
             checkCollisions();
         } else {
+            std::string turn= std::to_string((currentStep / 2 )+1);
+            Logger::debug("Turn : "+ turn);
+            logFile << "Turn : "+turn << std::endl;
             IAlgorithm& algo1 = *algorithm1;
             moveShells();
             checkCollisions();
@@ -48,22 +51,22 @@ void GameManager::gameLoop() {
     Logger::debug("Game Over!");
 
     if (!tank1->isAlive() && !tank2->isAlive()) {
-        logFile << "Result: Tie - Both tanks destroyed" << std::endl;
-        Logger::debug("Result: Tie - Both tanks destroyed");
+        logFile << "RESULT: Tie - Both tanks destroyed" << std::endl;
+        Logger::debug("RESULT: Tie - Both tanks destroyed");
     } else if (!tank1->isAlive()) {
-        logFile << "Result: Player 2 wins - Player 1 destroyed" << std::endl;
-        Logger::debug("Result: Player 2 wins - Player 1 destroyed");
+        logFile << "RESULT: Player 2 wins - Player 1 destroyed" << std::endl;
+        Logger::debug("RESULT: Player 2 wins - Player 1 destroyed");
 
     } else if (!tank2->isAlive()) {
-        logFile << "Result: Player 1 wins - Player 2 destroyed" << std::endl;
-        Logger::debug("Result: Player 1 wins - Player 2 destroyed");
+        logFile << "RESULT: Player 1 wins - Player 2 destroyed" << std::endl;
+        Logger::debug("RESULT: Player 1 wins - Player 2 destroyed");
 
     } else if (tank1->getAmmo() == 0 && tank2->getAmmo() == 0 && postAmmoSteps <= 0) {
-        logFile << "Result: Tie - No ammo left and time ended" << std::endl;
-        Logger::debug("Result: Tie - No ammo left and time ended");
+        logFile << "RESULT: Tie - No ammo left and time ended" << std::endl;
+        Logger::debug("RESULT: Tie - No ammo left and time ended");
     } else {
-        logFile << "Result: Unknown" << std::endl;
-        Logger::debug("Result: Unknown");
+        logFile << "RESULT: Unknown" << std::endl;
+        Logger::debug("RESULT: Unknown");
     }
     for (Shell* shell : gameBoard.getShells()) {
         Position pos = shell->getPosition();
@@ -115,12 +118,12 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                 tank->moveForward(gameBoard.getWidth(), gameBoard.getHeight());
                 logFile << player << ": MoveForward from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << newPosition.x << ", " << newPosition.y << ")." << std::endl;
                 logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-                Logger::debug("Moved forward from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
+                Logger::debug(player+ " Moved forward from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
               ") to (" + std::to_string(newPosition.x) + ", " + std::to_string(newPosition.y) + ").");
 
             } else {
                 logFile << player << ": Bad step - tried to move into wall or blocked cell." << std::endl;
-                Logger::debug("MoveForward failed due to obstruction.");
+                Logger::debug(player+ " MoveForward failed due to obstruction.Bad step.");
             }
             break;
         }
@@ -131,12 +134,12 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                     tank->setBackward(4);
                     logFile << player << ": Started MoveBackward process." << std::endl;
                     logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-                    Logger::debug("Started MoveBackward process from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
+                    Logger::debug(player+ " Started MoveBackward process from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
               ") to (" + std::to_string(newPosition.x) + ", " + std::to_string(newPosition.y) + ").");
 
                 } else {
                     logFile << player << ": MoveBackward failed due to obstruction." << std::endl;
-                    Logger::debug("MoveBackward failed due to obstruction.");
+                    Logger::debug(player+ " MoveBackward failed due to obstruction.");
                 }
             }
             break;
@@ -151,7 +154,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                 gameBoard.addObject(newShell, x, y);
                 logFile << player << ": Shoot from (" << initialPosition.x << ", " << initialPosition.y << ") to (" << x << ", " << y << ") in direction " << direction.getDirection() << "." << std::endl;
                 logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-                Logger::debug("Shot from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
+                Logger::debug(player+ " Shot from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
               ") to (" + std::to_string(x) + ", " + std::to_string(y) + ") in direction " + std::to_string(direction.getDirection()) + ".");
 
             } else {
@@ -159,7 +162,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                     tank->decreaseShooting();
                 }
                 logFile << player << ": Bad step - attempted to shoot with no ammo." << std::endl;
-                Logger::debug("Shoot failed due to status or ammo.");
+                Logger::debug(player+ " Shoot failed due to status or ammo.Bad Step");
             }
             break;
         }
@@ -167,30 +170,30 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
             tank->rotateLeft8();  // Executes a 45-degree counterclockwise rotation
             logFile << player << ": Rotated left by 45 degrees." << std::endl;
             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-            Logger::debug("Rotated left by 90 degrees.");
+            Logger::debug(player+ " Rotated left by 90 degrees.");
             break;
         case ActionType::RotateRight8:
             tank->rotateRight8();  // Executes a 90-degree clockwise rotation
             logFile << player << ": Rotated right by 45 degrees." << std::endl;
             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-            Logger::debug("Rotated right by 90 degrees.");
+            Logger::debug(player+ " Rotated right by 90 degrees.");
             break;
         case ActionType::RotateLeft4:
             tank->rotateLeft4();  // Executes a 90-degree counterclockwise rotation
             logFile << player << ": Rotated left by 90 degrees." << std::endl;
             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-            Logger::debug("Rotated left by 45 degrees.");
+            Logger::debug(player+ " Rotated left by 45 degrees.");
             break;
         case ActionType::RotateRight4:
             tank->rotateRight4();  // Executes a 90-degree clockwise rotation
             logFile << player << ": Rotated right by 90 degrees." << std::endl;
             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-            Logger::debug("Rotated right by 45 degrees.");
+            Logger::debug(player+ " Rotated right by 45 degrees.");
             break;
         default:
             logFile << player << ": No action taken." << std::endl;
             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-            Logger::debug("No action taken.");
+            Logger::debug(player+ " No action taken.");
             break;
     }
 }

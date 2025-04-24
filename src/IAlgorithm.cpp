@@ -93,24 +93,27 @@ bool IAlgorithm::isThreatenedByShells(const Board& board, const Position& pos) {
         Direction::Value sDir = shell->getDirection().getDirection();
         Position moveVec = Direction(sDir).toVector();
 
-        // נבנה מסלול של הפגז עד שהוא יפגע במשהו
         Position current = sPos;
 
         for (int i = 0; i < std::max(width, height); ++i) {
-            // בדוק האם הפוזיציה הנוכחית של הפגז שווה לזו של הטנק
             if (current == pos) {
                 return true;
             }
 
+            // לפני שמעדכנים את המיקום – בדוק האם יש קיר במסלול
+            CellSlot& slot = board.getSlot(current.x, current.y);
+            if (slot.getWall()) {
+                break;  // הפגז לא יכול להמשיך, אז אין איום מהכיוון הזה
+            }
+
             current.x = (current.x + moveVec.x + width) % width;
             current.y = (current.y + moveVec.y + height) % height;
-
-            // תוכל להוסיף כאן בדיקה אם הפגז נעצר בגלל קיר/מוקש
         }
     }
 
     return false;
 }
+
 
 Direction::Value IAlgorithm::getDirectionTo(const Position& from, const Position& to) const {
     int dx = to.x - from.x;

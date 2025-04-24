@@ -5,14 +5,15 @@
 #include "Logger.h"
 
 bool triedPathWithoutSuccess = false;
+Position lastEnemyPos = {-1, -1}; // ערך לא חוקי להתחלה
+std::vector<Direction::Value> currentPath;
 
 std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const Tank& self, const Tank& enemy) {
     struct Node {
         Position pos;
         std::vector<Direction::Value> path;
     };
-    Logger::debug("BFS: starting BFS from position (" + std::to_string(self.getPosition().x) + "," + std::to_string(self.getPosition().y) + ")");
-
+    Logger::debug("Player 1 - BFS: starting BFS from position (" + std::to_string(self.getPosition().x) + "," + std::to_string(self.getPosition().y) + ")");
 
     int width = board.getWidth(), height = board.getHeight();
     std::queue<Node> q;
@@ -36,7 +37,7 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
                 bestPath = current.path;
                 shortestLength = current.path.size();
             }
-            continue; // ממשיך לבדוק עוד אופציות
+            continue;
         }
 
         for (int i = 0; i < 8; ++i) {
@@ -49,7 +50,7 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
             if (visited.count({next.x, next.y})) continue;
 
             const CellSlot& slot = board.getSlot(next.x, next.y);
-            if (slot.getMine()) continue; // אל תעבור דרך מוקש
+            if (slot.getMine()) continue;
 
             std::vector<Direction::Value> newPath = current.path;
             newPath.push_back(dir);
@@ -57,110 +58,97 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
         }
     }
 
-    return bestPath; // עשוי להיות ריק אם אין שום מסלול לירי
+    return bestPath;
 }
 
 Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
     if (isThreatenedByShells(board, self.getPosition())) {
+        Logger::debug("Player 1: Threatened By Shells");
         return moveIfThreatened(board, self);
     }
-    int width = board.getWidth(), height = board.getHeight();
 
     if (self.getAmmo() == 0) {
-        Logger::debug("Algorithm1: Tank has no ammo. Skipping action.");
+        Logger::debug("Player 1: No ammo");
         return Action(ActionType::None);
     }
-        // אם אפשר לירות – יורה מיד
-    for (int dir = 0; dir < 8; ++dir) {
-        Direction dirVal = Direction(static_cast<Direction::Value>(dir));
-        Tank testTank(
-            self.getSymbol(),
-            self.getAmmo(),
-            dirVal,
-            self.getPosition(),
-            self.getShootingStatus(),
-            self.getBackwardStatus(),
-            self.isAlive()
-        );
 
-        if (canShoot(testTank, enemy, board)) {
-            if (dir == self.getDirection().getDirection()) {
-                if (self.getShootingStatus() == 0) {
-                    Logger::debug("Algorithm1: Enemy in direction " + std::to_string(dir) + ". Shooting now.");
-                    currentPath.clear();
-                    return Action(ActionType::Shoot);
-                }
-            } else {
-                Logger::debug("Algorithm1: Enemy in direction " + std::to_string(dir) + ", turning toward it.");
-                currentPath.clear();
-                return Action(rotateTowards(self.getDirection().getDirection(), testTank.getDirection().getDirection()));
-            }
+    if (canShoot(self, enemy, board) && self.getShootingStatus() == 0) {
+        Logger::debug("Player 1: Enemy in direction " + std::to_string(self.getDirection().getDirection()) + ". Shooting now.");
+        triedPathWithoutSuccess = false;
+        return Action(ActionType::Shoot);
+    }
+
+    for (int dir = 0; dir < 8; ++dir) {
+        if (self.getDirection().getDirection() == dir) continue;
+        Direction d = Direction(static_cast<Direction::Value>(dir));
+        Tank fake(self.getSymbol(), self.getAmmo(), d, self.getPosition(), self.getShootingStatus(), self.getBackwardStatus());
+
+        if (canShoot(fake, enemy, board)) {
+            Logger::debug("Player 1: Enemy in direction " + std::to_string(dir) + ", turning toward it.");
+            currentPath.clear();
+            triedPathWithoutSuccess = false;
+            return Action(rotateTowards(self.getDirection().getDirection(), d.getDirection()));
         }
     }
-    
 
-    // אם אין מסלול או האויב זז – מחשב מסלול חדש
-    if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)|| triedPathWithoutSuccess) {
-        Logger::debug("Algorithm1: Computing BFS because enemy moved or path is empty.");
+    bool enemyMoved = !(enemy.getPosition() == lastEnemyPos);
+    bool shouldComputeBFS = currentPath.empty() || enemyMoved || triedPathWithoutSuccess;
+
+    if (shouldComputeBFS) {
+        std::string reason = currentPath.empty() ? "empty" : (enemyMoved ? "enemy moved" : "triedPathWithoutSuccess");
+        Logger::debug("Player 1: Computing BFS (reason: " + reason + ")");
         currentPath = computeBFS(board, self, enemy);
+        triedPathWithoutSuccess = currentPath.empty();
         lastEnemyPos = enemy.getPosition();
-        triedPathWithoutSuccess = false;
     }
 
     if (currentPath.empty()) {
         if (!canShoot(self, enemy, board)) {
-            Logger::debug("Algorithm1: No valid path to shooting position. Trying fallback.");
+            Logger::debug("Player 1: Stuck, rotating randomly");
             triedPathWithoutSuccess = true;
 
-            // ניסיון לצאת מהתקיעה:
             if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
-                // אולי יירה על משהו אחר, אולי לא – עדיף מלא לעשות כלום
-                Logger::debug("Algorithm1: Trying to shoot randomly due to stuck state.");
+                Logger::debug("Player 1: Shooting randomly due to stuck state");
                 return Action(ActionType::Shoot);
             }
 
-            // הסתובבות רנדומלית (כדי להכניס שינוי)
             return Action(ActionType::RotateRight8);
         }
-    Logger::debug("Algorithm1: No path but line of fire is available. Shooting.");
-    return Action(ActionType::Shoot);
-    }
 
+        Logger::debug("Player 1: No path but can shoot directly");
+        triedPathWithoutSuccess = false;
+        return Action(ActionType::Shoot);
+    }
 
     Direction::Value targetDir = currentPath.front();
     if (self.getDirection().getDirection() == targetDir) {
-        Position nextPos = self.getPosition() + self.getDirection().toVector();
-
-        if (nextPos.x < 0 || nextPos.x >= width || nextPos.y < 0 || nextPos.y >= height) {
-            return Action(ActionType::None);
-        }
+        Position nextPos = self.getPosition() + Direction(targetDir).toVector();
 
         const CellSlot& slot = board.getSlot(nextPos.x, nextPos.y);
 
         if (slot.getMine()) {
-            Logger::debug("Algorithm1: Next cell is a mine – recomputing BFS.");
-            currentPath.clear(); // נאפס את המסלול ונחשב מחדש בתור הבא
+            Logger::debug("Player 1: Mine ahead – aborting move and resetting path");
+            currentPath.clear();
             triedPathWithoutSuccess = true;
-            return Action(ActionType::None); // אפשר גם להחזיר Rotate כדי לא לבזבז תור
+            return Action(ActionType::None);
         }
 
         if (slot.getWall()) {
             if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
-                Logger::debug("Algorithm1: Wall detected ahead. Attempting to shoot it.");
+                Logger::debug("Player 1: Wall ahead – shooting it");
+                triedPathWithoutSuccess = false;
                 return Action(ActionType::Shoot);
             }
             return Action(ActionType::None);
         }
 
         currentPath.erase(currentPath.begin());
-        Logger::debug("Algorithm1: Moving forward to (" +
-                    std::to_string(nextPos.x) + "," +
-                    std::to_string(nextPos.y) + ")");
+        Logger::debug("Player 1: Moving forward to (" + std::to_string(nextPos.x) + "," + std::to_string(nextPos.y) + ")");
+        triedPathWithoutSuccess = false;
         return Action(ActionType::MoveForward);
     }
 
-    Logger::debug("Algorithm1: Rotating from direction " +
-              std::to_string(self.getDirection().getDirection()) +
-              " to " + std::to_string(targetDir));
+    Logger::debug("Player 1: Rotating from " + std::to_string(self.getDirection().getDirection()) + " to " + std::to_string(targetDir));
+    triedPathWithoutSuccess = false;
     return Action(rotateTowards(self.getDirection().getDirection(), targetDir));
 }

@@ -11,7 +11,8 @@ class Algorithm1 : public IAlgorithm
 {
     private:
         std::vector<Direction::Value> currentPath;
-        Position lastEnemyPos = Position(0, 0);
+        Position lastEnemyPos = Position(-1, -1);
+        Position lastComputePosition = Position(-1, -1);
     public:
         Action nextAction(const Board& board,const Tank& self, const Tank& enemy) override;
     private:

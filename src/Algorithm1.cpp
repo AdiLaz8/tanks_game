@@ -71,6 +71,9 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
         Logger::debug("Player 1: No ammo");
         return Action(ActionType::None);
     }
+    Logger::debug("Player 1: Checking shooting condition - canShoot: " +
+              std::string(canShoot(self, enemy, board) ? "true" : "false") +
+              ", shootingStatus: " + std::to_string(self.getShootingStatus()));
 
     if (canShoot(self, enemy, board) && self.getShootingStatus() == 0) {
         Logger::debug("Player 1: Enemy in direction " + std::to_string(self.getDirection().getDirection()) + ". Shooting now.");

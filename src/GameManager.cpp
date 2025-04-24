@@ -111,6 +111,23 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
     if (action.getType() != ActionType::Shoot && tank->getShootingStatus() > 0){
         tank->decreaseShooting();
     }
+    if(tank->getBackwardStatus() == 3){
+        if(action.getType()==ActionType::MoveForward){
+            tank->setBackward(0);
+        }
+        else{
+            tank->decreaseBackward();
+            return;
+        }
+    }
+    if(tank->getBackwardStatus() == 2){
+        tank->moveBackward(gameBoard.getWidth(), gameBoard.getHeight());
+        tank->decreaseBackward();
+        return;
+    }
+    if(tank->getBackwardStatus() == 1 && action.getType()!=ActionType::MoveBackward){
+        tank->decreaseBackward();
+    }
     switch (action.getType()) {
         case ActionType::MoveForward: {
             Position newPosition = initialPosition + direction.toVector();
@@ -131,7 +148,7 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
             if (tank->getBackwardStatus() == 0) {
                 Position newPosition = initialPosition + direction.getOppositeDirection().toVector();
                 if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
-                    tank->setBackward(4);
+                    tank->setBackward(3);
                     logFile << player << ": Started MoveBackward process." << std::endl;
                     logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
                     Logger::debug(player+ " Started MoveBackward process from (" + std::to_string(initialPosition.x) + ", " + std::to_string(initialPosition.y) +
@@ -142,6 +159,10 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
                     Logger::debug(player+ " MoveBackward failed due to obstruction.");
                 }
             }
+            else if(tank->getBackwardStatus() == 1){
+                tank->moveBackward(gameBoard.getWidth(), gameBoard.getHeight());
+            }
+
             break;
         }
         case ActionType::Shoot: {

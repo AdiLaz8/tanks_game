@@ -79,24 +79,22 @@ void GameManager::gameLoop() {
 
 void GameManager::moveShells() {
     auto& shells = gameBoard.getShells();
-    std::vector<Shell*> toMove = shells; // יוצרים עותק של כל הפגזים הקיימים
+    
+    // נבצע מעבר עם אינדקסים ולא ניצור עותק של הוקטור
+    for (size_t i = 0; i < shells.size(); ++i) {
+        Shell* shell = shells[i];
+        if (!shell) continue; // בדיקה ביטחונית
 
-    for (Shell* shell : toMove) {
         Position oldPos = shell->getPosition();
-
-        // הסרה מהמיקום הנוכחי בלוח
         gameBoard.removeObject(shell, oldPos.x, oldPos.y);
 
-        // תזוזה לוגית של הפגז
         shell->move(gameBoard.getWidth(), gameBoard.getHeight());
 
         Position newPos = shell->getPosition();
-
-        // החזרה ללוח במיקום החדש
         gameBoard.addObject(shell, newPos.x, newPos.y);
-
     }
 }
+
 
 
 void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo) {

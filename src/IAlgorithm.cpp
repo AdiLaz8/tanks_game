@@ -112,3 +112,21 @@ bool IAlgorithm::isThreatenedByShells(const Board& board, const Position& pos) {
     return false;
 }
 
+Direction::Value IAlgorithm::getDirectionTo(const Position& from, const Position& to) const {
+    int dx = to.x - from.x;
+    int dy = to.y - from.y;
+    int dirX = (dx > 0) ? 1 : (dx < 0 ? -1 : 0);
+    int dirY = (dy > 0) ? 1 : (dy < 0 ? -1 : 0);
+
+    if (dirX == 0 && dirY == -1) return Direction::U;
+    if (dirX == 1 && dirY == -1) return Direction::UR;
+    if (dirX == 1 && dirY == 0) return Direction::R;
+    if (dirX == 1 && dirY == 1) return Direction::DR;
+    if (dirX == 0 && dirY == 1) return Direction::D;
+    if (dirX == -1 && dirY == 1) return Direction::DL;
+    if (dirX == -1 && dirY == 0) return Direction::L;
+    if (dirX == -1 && dirY == -1) return Direction::UL;
+
+    return Direction::U;
+}
+

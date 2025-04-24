@@ -6,34 +6,6 @@
 
 bool triedPathWithoutSuccess = false;
 
-Direction::Value Algorithm1::getDirectionTo(const Position& from, const Position& to) const {
-    int dx = to.x - from.x;
-    int dy = to.y - from.y;
-    int dirX = (dx > 0) ? 1 : (dx < 0 ? -1 : 0);
-    int dirY = (dy > 0) ? 1 : (dy < 0 ? -1 : 0);
-
-    if (dirX == 0 && dirY == -1) return Direction::U;
-    if (dirX == 1 && dirY == -1) return Direction::UR;
-    if (dirX == 1 && dirY == 0) return Direction::R;
-    if (dirX == 1 && dirY == 1) return Direction::DR;
-    if (dirX == 0 && dirY == 1) return Direction::D;
-    if (dirX == -1 && dirY == 1) return Direction::DL;
-    if (dirX == -1 && dirY == 0) return Direction::L;
-    if (dirX == -1 && dirY == -1) return Direction::UL;
-
-    return Direction::U;
-}
-
-ActionType Algorithm1::rotateTowards(Direction::Value current, Direction::Value desired) const {
-    int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
-    if (diff == 0) return ActionType::None;
-    if (diff == 1) return ActionType::RotateRight8;
-    if (diff == 2 || diff == 3 || diff == 4) return ActionType::RotateRight4;
-    if (diff == 5 || diff == 6) return ActionType::RotateLeft4;
-    if (diff == 7) return ActionType::RotateLeft8;
-    return ActionType::None;
-}
-
 std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const Tank& self, const Tank& enemy) {
     struct Node {
         Position pos;
@@ -88,16 +60,17 @@ std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const T
     return bestPath; // עשוי להיות ריק אם אין שום מסלול לירי
 }
 
-
 Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& enemy) {
+    if (isThreatenedByShells(board, self.getPosition())) {
+        return moveIfThreatened(board, self);
+    }
     int width = board.getWidth(), height = board.getHeight();
-
-    // אם אפשר לירות – יורה מיד
 
     if (self.getAmmo() == 0) {
         Logger::debug("Algorithm1: Tank has no ammo. Skipping action.");
         return Action(ActionType::None);
     }
+        // אם אפשר לירות – יורה מיד
     for (int dir = 0; dir < 8; ++dir) {
         Direction dirVal = Direction(static_cast<Direction::Value>(dir));
         Tank testTank(
@@ -124,11 +97,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
             }
         }
     }
-    if (isThreatenedByShells(board, self.getPosition())) {
-        return moveIfThreatened(board, self);
-    }
     
-
 
     // אם אין מסלול או האויב זז – מחשב מסלול חדש
     if (currentPath.empty() || !(enemy.getPosition() == lastEnemyPos)|| triedPathWithoutSuccess) {

@@ -16,8 +16,6 @@ class Algorithm1 : public IAlgorithm
         Action nextAction(const Board& board,const Tank& self, const Tank& enemy) override;
     private:
         std::vector<Direction::Value> computeBFS(const Board& board, const Tank& self, const Tank& enemy);
-        Direction::Value getDirectionTo(const Position& from, const Position& to) const;
-        ActionType rotateTowards(Direction::Value current, Direction::Value desired) const;
 };
 
 #endif

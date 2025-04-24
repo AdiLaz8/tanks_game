@@ -14,7 +14,7 @@ public:
     ActionType rotateTowards(Direction::Value current, Direction::Value desired) const;
     Action moveIfThreatened(const Board& board, const Tank& self);
     bool isThreatenedByShells(const Board& board, const Position& pos);
-    
+    Direction::Value getDirectionTo(const Position& from, const Position& to) const;
 };
 
 #endif

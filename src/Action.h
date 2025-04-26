@@ -2,7 +2,7 @@
 #define ACTION_H
 
 #include "ActionType.h"
-#include "Direction.h"  // Include if actions need to specify a direction
+#include "Direction.h"
 
 class Action {
 private:
@@ -23,4 +23,4 @@ public:
     void setDirection(Direction newDirection) { direction = newDirection; }
 };
 
-#endif // ACTION_H
+#endif 

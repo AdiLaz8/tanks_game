@@ -13,9 +13,9 @@ private:
     Board& gameBoard;
     std::unique_ptr<IAlgorithm> algorithm1;
     std::unique_ptr<IAlgorithm> algorithm2;
-    Tank* tank1;
-    Tank* tank2;
-    int currentStep;
+    Tank* tank1; // the tank of player 1
+    Tank* tank2; // the tank of player 2
+    int currentStep; // a counter for the current step i the game, to know if to only move shells or to get actions for tanks as well
     int postAmmoSteps; // Steps after both tanks run out of ammo
     std::string inputFileName;
 
@@ -29,4 +29,4 @@ public:
     bool checkGameOver();
 };
 
-#endif // GAMEMANAGER_H
+#endif

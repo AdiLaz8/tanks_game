@@ -11,7 +11,7 @@ class Shell : public Cell {
 private:
     Position p;
     Direction d;
-    char ownerId;
+    char ownerId; // 1 if it's a shell fired by a tank of player 1 and 2 if fired by a tank of player 2
 
 public:
     Shell(Position p, Direction d, char ownerId);

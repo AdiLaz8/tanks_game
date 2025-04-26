@@ -12,4 +12,4 @@ enum class ActionType {
     None  // This can be used to represent no action or an invalid action
 };
 
-#endif // ACTION_TYPE_H
+#endif

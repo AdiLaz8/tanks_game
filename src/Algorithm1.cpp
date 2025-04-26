@@ -4,11 +4,12 @@
 #include <iostream>
 #include "Logger.h"
 
-bool triedPathWithoutSuccess = false;
-Position lastEnemyPos = {-1, -1}; // ערך לא חוקי להתחלה
-std::vector<Direction::Value> currentPath;
+bool triedPathWithoutSuccess = false; // a boolean to indicate if we are stuck in the current BFS path and need to recompute the path
+Position lastEnemyPos = {-1, -1}; // invalid value for the start
+std::vector<Direction::Value> currentPath; // the current path we got from the BFS computation
 
 std::vector<Direction::Value> Algorithm1::computeBFS(const Board& board, const Tank& self, const Tank& enemy) {
+    // a struct for nodes to help us with the BFS computation
     struct Node {
         Position pos;
         std::vector<Direction::Value> path;

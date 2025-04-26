@@ -14,16 +14,17 @@ private:
     std::vector<Cell*> objects;
 
 public:
-    void add(Cell* obj);
-    void remove(Cell* obj);
+    void addObject(Cell* obj);
+    void removeObject(Cell* obj);
     const std::vector<Cell*>& getAll() const;
 
     Tank* getTank() const;
     Wall* getWall() const;
     Mine* getMine() const;
     std::vector<Shell*> getShells() const;
-    int countTanks() const;
-    int countShells() const;
+    // for now the next functions aren't useful, but we keep this in comment in case we'll need them in the next assignment
+    // int countTanks() const;
+    // int countShells() const;
 };
 
-#endif // CELLSLOT_H
+#endif

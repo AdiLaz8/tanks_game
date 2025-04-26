@@ -8,6 +8,7 @@ Board::Board(int w, int h) : width(w), height(h) {
     }
 }
 
+// constructs a new board with empty grids
 Board::~Board() {
     for (int i = 0; i < height; ++i) {
         delete[] grid[i];
@@ -15,13 +16,15 @@ Board::~Board() {
     delete[] grid;
 }
 
+// returns the cellslot in this position
 CellSlot& Board::getSlot(int x, int y) const{
     return grid[y][x];
 }
 
+// add any object to the grid
 void Board::addObject(Cell* obj, int x, int y) {
-    grid[y][x].add(obj);
-    // Check if the object is a shell and add it to the vector
+    grid[y][x].addObject(obj);
+    // Check if the object is a shell and add it to the vector of shells
     Shell* shell = dynamic_cast<Shell*>(obj);
     if (shell) {
         shells.push_back(shell);
@@ -35,9 +38,10 @@ void Board::addObject(Cell* obj, int x, int y) {
     }
 }
 
+// remove any object from the grid
 void Board::removeObject(Cell* obj, int x, int y) {
-    grid[y][x].remove(obj);
-    // Check if the object is a shell and remove it from the vector
+    grid[y][x].removeObject(obj);
+    // Check if the object is a shell and remove it from the vector of shells
     Shell* shell = dynamic_cast<Shell*>(obj);
     if (shell) {
         auto it = std::find(shells.begin(), shells.end(), shell);
@@ -47,6 +51,7 @@ void Board::removeObject(Cell* obj, int x, int y) {
     }
 }
 
+// checks and returns if the cellslot in this position has a mine or a wall
 bool Board::isPassable(int x, int y) const {
     const CellSlot& slot = grid[y][x];
     return !slot.getWall() && !slot.getTank();
@@ -60,6 +65,7 @@ int Board::getHeight() const {
     return height;
 }
 
+// returns the tank of the player required
 Tank* Board::getTank(int tankNumber) {
     if (tankNumber == 1) {
         return tank1;

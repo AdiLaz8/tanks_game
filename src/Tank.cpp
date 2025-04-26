@@ -32,11 +32,13 @@ bool Tank::isAlive() const {
     return is_alive;
 }
 
+// Moves the tank forward in its direction and returns the new position
 Position Tank::moveForward(int width, int height) {
     p.move(d, width, height);
     return p;
 }
 
+// Moves the tank backwards in its direction and returns the new position
 Position Tank::moveBackward(int width, int height) {
     p.move(d.getOppositeDirection(), width, height);
     return p;
@@ -50,11 +52,13 @@ void Tank::setBackward(int status) {
     backward_status = status;
 }
 
+// shoots a shell in the direction of the tank, reduces one shell from the ammo and set the shooting cooldown to 4 steps
 void Tank::shoot() {
     ammunation--;
     shooting_status = 4;
 }
 
+// The tank has one live only so if it got hit by a shell/mine/tank it is no longer alive
 void Tank::hit() {
     is_alive = false;
 }
@@ -63,6 +67,7 @@ void Tank::decreaseShooting() {
     shooting_status--;
 }
 
+// rotates for the tank's direction
 void Tank::rotateLeft4() {
     d.rotateCounterClockwise4();
 }

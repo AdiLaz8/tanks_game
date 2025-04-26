@@ -11,15 +11,13 @@ const Position& Shell::getPosition() const {
     return p;
 }
 Shell::~Shell() {
-    // כרגע כנראה לא צריך לעשות כלום, אבל כדאי שיהיה דיסטרקטור
 }
 
-
-
-
+// moves the shell in it's direction
 void Shell::move(int width, int height) {
     p.move(d, width, height);
 }
+
 std::string Shell::toString() const {
     std::stringstream ss;
     ss << "Shell(owner=" << ownerId
@@ -27,7 +25,6 @@ std::string Shell::toString() const {
        << ", pos=(" << p.x << "," << p.y << "))";
     return ss.str();
 }
-
 
 Direction Shell::getDirection() const {
     return d;

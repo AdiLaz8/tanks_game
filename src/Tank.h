@@ -8,20 +8,19 @@
 
 class Tank : public Cell {
 private:
-    char owner;
-    int ammunation;
-    Direction d;
-    Position p;
-    int shooting_status;
-    int backward_status;
-    bool is_alive;
+    char owner; // 1 if it's a tank of player 1 and 2 if it's a tank of player 2
+    int ammunation; // how much shells the tanks has in its inventory
+    Direction d; // direction of the cannon of the tank - where he shoots and moves
+    Position p; // the current position of the tank on the board
+    int shooting_status; // a number that tells us if the tank can shoot if it's 0 or if it's in cooldown
+    int backward_status; // a number that tells us if the tank can move backwards if it's 0 or if it's in cooldown
+    bool is_alive; // weather the tank alive and in the game or it's dead
 
 public:
     Tank(char owner, int ammunation = 16, Direction d = Direction(Direction::L), Position p = Position(0, 0), int shooting_status = 0, int backward_status = 0, bool is_alive = true);
     virtual ~Tank();
 
     char getSymbol() const override;
-
     const Position& getPosition() const;
     const Direction& getDirection() const;
     int getAmmo() const;

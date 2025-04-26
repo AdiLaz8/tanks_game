@@ -1,7 +1,7 @@
 #include "Direction.h"
 #include "Position.h"
 
-// מחזיר וקטור תנועה עבור כל כיוון
+// Returns a vector movemenet based on the direction we want to go
 Position Direction::toVector() const {
     switch (currentDirection) {
         case U:  return Position(0, -1);
@@ -12,11 +12,11 @@ Position Direction::toVector() const {
         case DL: return Position(-1, 1);
         case L:  return Position(-1, 0);
         case UL: return Position(-1, -1);
-        default: return Position(0, 0); // לא אמור לקרות
+        default: return Position(0, 0); // not supposed to happen
     }
 }
 
-// סיבוב שמאלה/ימינה
+// Rotate functions
 void Direction::rotateClockwise8() {
     currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 1) % 8);
 }
@@ -33,13 +33,12 @@ void Direction::rotateCounterClockwise4() {
     currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 6) % 8);
 }
 
-// הכיוון ההפוך
+// Returns the opposite direction to the direction we currently face
 Direction Direction::getOppositeDirection() const {
     int oppositeIndex = (static_cast<int>(currentDirection) + 4) % 8;
     return Direction(static_cast<Value>(oppositeIndex));
 }
 
-// גטרים/סטרים
 Direction::Value Direction::getDirection() const {
     return currentDirection;
 }

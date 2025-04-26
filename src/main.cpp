@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -8,7 +7,7 @@
 #include "Mine.h"
 #include "GameManager.h"
 #include "Logger.h"
-#include <set> // בתחילת הקובץ אם עדיין לא מופיע
+#include <set> 
 
 
 
@@ -22,8 +21,9 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error: Could not open file!" << std::endl;
         return 1;
     }
-    Logger::init("log_config.txt");  // הפעלת לוגים על בסיס הקונפיג
+    Logger::init("log_config.txt");
 
+    // loading the board from the input file
     int width, height;
     file >> width >> height;
     file.ignore();// \n
@@ -50,14 +50,12 @@ int main(int argc, char* argv[]) {
                     board.addObject(new Tank('1', 16, Direction(Direction::L), Position(x, y)), x, y);
                     tank1=true;
                 }
-
             }
             else if (c == '2') {
                 if(tank2==false){
                     board.addObject(new Tank('2', 16, Direction(Direction::R), Position(x, y)), x, y);
                     tank2=true;
                 }
-
             }
             else{
                 continue;
@@ -65,105 +63,37 @@ int main(int argc, char* argv[]) {
     }
     }
     file.close();
-    std::cout << "✅ Board loaded successfully." << std::endl;
-    std::cout << "📦 Objects on board:" << std::endl;
 
-    for (int y = 0; y < board.getHeight(); ++y) {
-        for (int x = 0; x < board.getWidth(); ++x) {
-            const CellSlot& slot = board.getSlot(x, y);
-            const auto& objects = slot.getAll();
-            for (Cell* obj : objects) {
-                std::cout << "[" << x << "," << y << "] "
-                        << obj->toString() << std::endl;
-            }
-        }
-    }
-
-
-// for (int y = 0; y < board.getHeight(); ++y) {
-//     for (int x = 0; x < board.getWidth(); ++x) {
-//         const CellSlot& slot = board.getSlot(x, y);
-//         const std::vector<Cell*>& objects = slot.getAll();
-
-//         if (!objects.empty()) {
-//             Cell* obj = objects.back();
-//             char symbol = obj->getSymbol();
-//             std::cout << symbol;
-
-//             // בדיקה: איזה אובייקט זה באמת?
-//             if (dynamic_cast<Tank*>(obj)) {
-//                 std::cout << "(T)";
-//             } else if (dynamic_cast<Wall*>(obj)) {
-//                 std::cout << "(W)";
-//             } else if (dynamic_cast<Mine*>(obj)) {
-//                 std::cout << "(M)";
-//             } else if (dynamic_cast<Shell*>(obj)) {
-//                 std::cout << "(S)";
-//             } else {
-//                 std::cout << "(?)";  // משהו לא צפוי
-//             }
-
-//         } else {
-//             std::cout << ' ';
-//         }
-//     }
-//     std::cout << '\n';
-// }
+    // creating the GameManager and starting the game
     GameManager game(board, std::string(argv[1]));
     game.gameLoop();
 
-    // 📤 הדפסת קובץ פלט
+    // writing to the output file the entire game turns
     std::string outputFileName = "output_" + std::string(argv[1]);
     std::ifstream outFile(outputFileName);
     if (!outFile) {
         std::cerr << "Failed to open game_output.txt" << std::endl;
         return 1;
     }
-
-    std::cout << "\n📄 Game Output:\n";
-    std::string line;
-    while (std::getline(outFile, line)) {
-        std::cout << line << std::endl;
-    }
-
-
     outFile.close();
-        // 📤 הדפסת debug_log.txt
-    // std::ifstream debugFile("debug_log.txt");
-    // if (!debugFile) {
-    //     std::cerr << "Failed to open debug_log.txt" << std::endl;
-    //     return 1;
-    // }
 
-    // std::cout << "\n🪵 Debug Log:\n";
-    // std::string debugLine;
-    // while (std::getline(debugFile, debugLine)) {
-    //     std::cout << debugLine << std::endl;
-    // }
-
-    // debugFile.close();
-
+    // deleting the objects remained in the game board at the end
     std::set<Cell*> uniqueObjects;
-
     for (int y = 0; y < board.getHeight(); ++y) {
         for (int x = 0; x < board.getWidth(); ++x) {
             const CellSlot& slot = board.getSlot(x, y);
             const auto& objects = slot.getAll();
             for (Cell* obj : objects) {
-                uniqueObjects.insert(obj); // נכנס רק פעם אחת לכל אובייקט
+                uniqueObjects.insert(obj); // only one time for each object
             }
         }
     }
-
-    // חשוב: לא לכלול Shells כי הם כבר נמחקו על ידי GameManager
+    // GameManager itself deletes the shells, so we delete only objects that are not shells
     for (Cell* obj : uniqueObjects) {
         if (dynamic_cast<Shell*>(obj) == nullptr) {
             delete obj;
         }
     }
-    Logger::shutdown(); // סגירת קובץ הלוג
-
-
-
+    Logger::shutdown(); // closing the logger
     return 0;
 }

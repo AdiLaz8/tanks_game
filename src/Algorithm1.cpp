@@ -111,10 +111,10 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
             Logger::debug("Player 1: Stuck, rotating randomly");
             triedPathWithoutSuccess = true;
 
-            if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
-                Logger::debug("Player 1: Shooting randomly due to stuck state");
-                return Action(ActionType::Shoot);
-            }
+            // if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
+            //     Logger::debug("Player 1: Shooting randomly due to stuck state");
+            //     return Action(ActionType::Shoot);
+            // }
 
             return Action(ActionType::RotateRight8);
         }

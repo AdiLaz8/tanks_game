@@ -31,12 +31,13 @@ Action Algorithm2::nextAction(const Board& board, const Tank& self, const Tank& 
         Logger::debug("Player 2: Trying to rotate towards the enemy in order to shoot him because the enemy tank wasted its entire ammo.");
         return Action(rotateTowards(from, to));
     }
-    // Direction::Value to = getDirectionTo(self.getPosition(), enemy.getPosition());
-    // Direction::Value from = self.getDirection().getDirection();
-    // if (from != to) {
-    //     Logger::debug("Player 2: Rotating to face enemy.");
-    //     return Action(rotateTowards(from, to));
-    // }
+    // if not threatened, try to see if you can rotate to a shooting direction
+    Direction::Value to = getDirectionTo(self.getPosition(), enemy.getPosition());
+    Direction::Value from = self.getDirection().getDirection();
+    if (from != to) {
+        Logger::debug("Player 2: Rotating to face enemy.");
+        return Action(rotateTowards(from, to));
+    }
     
     // if not threatened and also can't shoot, be passive and don't do anything
     return Action(ActionType::None);

@@ -8,9 +8,19 @@ output_file = sys.argv[2]
 
 with open(map_file) as f:
     lines = f.read().splitlines()
+
 width, height = map(int, lines[0].split())
 valid_symbols = {'#', '@', '1', '2', ' '}
-grid = [[c if c in valid_symbols else ' ' for c in line] for line in lines[1:]]
+
+grid = []
+for line in lines[1:]:
+    row = [c if c in valid_symbols else ' ' for c in line]
+    if len(row) < width:
+        row += [' '] * (width - len(row))
+    grid.append(row)
+
+while len(grid) < height:
+    grid.append([' '] * width)
 
 with open(output_file) as f:
     game_lines = [line.strip() for line in f.readlines()]
@@ -58,10 +68,12 @@ for line in game_lines:
     elif "Shell hit wall" in line and last_shell_hit:
         if last_shell_hit in current_wall_health:
             current_wall_health[last_shell_hit] -= 1
+            if current_wall_health[last_shell_hit] <= 0:
+                del current_wall_health[last_shell_hit]  # מוחקים לגמרי מהחיים
 
     elif "Wall destroyed" in line and last_shell_hit:
         if last_shell_hit in current_wall_health:
-            current_wall_health[last_shell_hit] = 0
+            del current_wall_health[last_shell_hit]  # מוחקים לגמרי מהחיים
 
     elif "Player 1 was hit by shell and destroyed" in line:
         destroyed_tanks['1'] = current_positions['1']
@@ -101,9 +113,10 @@ for line in game_lines:
 
 index = [0]
 playing = [False]
+speed_multiplier = [1]
 
 fig, ax = plt.subplots(figsize=(width / 1.8, height / 1.8))
-plt.subplots_adjust(bottom=0.2)
+plt.subplots_adjust(bottom=0.25)
 
 def draw_frame(i):
     board, tank_positions, tank_directions, shell_positions, step_text, wall_health_snapshot, destroyed_tanks_snapshot = frames[i]
@@ -116,20 +129,17 @@ def draw_frame(i):
 
     for y in range(height):
         for x in range(width):
-            cell = board[y][x]
             if (x, y) in wall_health_snapshot:
                 hp = wall_health_snapshot[(x, y)]
-                if hp == 2:
-                    ax.add_patch(patches.Rectangle((x, height - y - 1), 1, 1, color='gray'))
-                elif hp == 1:
-                    ax.add_patch(patches.Rectangle((x, height - y - 1), 1, 1, color='gray'))
+                ax.add_patch(patches.Rectangle((x, height - y - 1), 1, 1, color='gray'))
+                if hp == 1:
                     ax.text(x + 0.5, height - y - 0.5, 'x', ha='center', va='center', fontsize=16, color='red')
-                else:
-                    ax.add_patch(patches.Rectangle((x, height - y - 1), 1, 1, facecolor='white', edgecolor='lightgray'))
-            elif cell == '@':
-                ax.add_patch(patches.Circle((x + 0.5, height - y - 0.5), 0.3, color='black'))
             else:
-                ax.add_patch(patches.Rectangle((x, height - y - 1), 1, 1, edgecolor='lightgray', facecolor='white'))
+                cell = board[y][x]
+                if cell == '@':
+                    ax.add_patch(patches.Circle((x + 0.5, height - y - 0.5), 0.3, color='black'))
+                else:
+                    ax.add_patch(patches.Rectangle((x, height - y - 1), 1, 1, edgecolor='lightgray', facecolor='white'))
 
     for player, pos in tank_positions.items():
         if pos:
@@ -145,7 +155,7 @@ def draw_frame(i):
     for player, pos in destroyed_tanks_snapshot.items():
         if pos:
             x, y = pos
-            ax.text(x + 0.5, height - y - 0.5, 'x', ha='center', va='center', fontsize=20, color='red')
+            ax.text(x + 0.5, height - y - 0.5, 'x', ha='center', va='center', fontsize=20, color='black')
 
     fig.canvas.draw_idle()
 
@@ -154,7 +164,7 @@ def play_loop(event):
     update_play_button_label()
     while playing[0] and index[0] < len(frames):
         draw_frame(index[0])
-        plt.pause(0.5)
+        plt.pause(0.5 / speed_multiplier[0])
         index[0] += 1
 
 def update_play_button_label():
@@ -170,17 +180,29 @@ def prev_frame(event):
         index[0] -= 1
         draw_frame(index[0])
 
-axprev = plt.axes([0.25, 0.05, 0.1, 0.075])
-axnext = plt.axes([0.55, 0.05, 0.1, 0.075])
-axplay = plt.axes([0.4, 0.05, 0.1, 0.075])
+def double_speed(event):
+    speed_multiplier[0] *= 2
+    if speed_multiplier[0] > 4:
+        speed_multiplier[0] = 1
+    update_speed_button_label()
 
-bnext = Button(axnext, 'Next')
-bprev = Button(axprev, 'Previous')
+def update_speed_button_label():
+    bspeed.label.set_text(f"x{speed_multiplier[0]} Speed")
+
+axprev = plt.axes([0.2, 0.05, 0.1, 0.075])
+axnext = plt.axes([0.5, 0.05, 0.1, 0.075])
+axplay = plt.axes([0.35, 0.05, 0.1, 0.075])
+axspeed = plt.axes([0.7, 0.05, 0.15, 0.075])
+
+bprev = Button(axprev, '<--')
+bnext = Button(axnext, '-->')
 bplay = Button(axplay, 'Play')
+bspeed = Button(axspeed, 'x1 Speed')
 
-bnext.on_clicked(next_frame)
 bprev.on_clicked(prev_frame)
+bnext.on_clicked(next_frame)
 bplay.on_clicked(play_loop)
+bspeed.on_clicked(double_speed)
 
 draw_frame(index[0])
 plt.show()

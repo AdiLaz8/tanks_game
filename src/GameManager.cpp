@@ -23,7 +23,7 @@ GameManager::~GameManager() {
 
 // the main loop of the game, as long as the game is not over it is moving the shells and tanks and check for collisions
 void GameManager::gameLoop() {
-    while (!checkGameOver()) {
+    while (!checkGameOver()&&currentStep<=2000) {
         // if both don't have ammo then every step we decrease the time of steps until draw
         if (tank1->getAmmo() == 0 && tank2->getAmmo() == 0){
             postAmmoSteps = postAmmoSteps - 1;
@@ -70,15 +70,10 @@ void GameManager::gameLoop() {
         logFile << "RESULT: Tie - No ammo left and time ended" << std::endl;
         Logger::debug("RESULT: Tie - No ammo left and time ended");
     } else {
-        logFile << "RESULT: Unknown" << std::endl;
-        Logger::debug("RESULT: Unknown");
+        logFile << "RESULT: Tie - game reached the limit turns possible. No way of winning" << std::endl;
+        Logger::debug("RESULT: Tie - game reached the limit turns possible. No way of winning");
     }
-    // // deleting all the shells after the game is over
-    // for (Shell* shell : gameBoard.getShells()) {
-    //     Position pos = shell->getPosition();
-    //     gameBoard.removeObject(shell, pos.x, pos.y);
-    //     delete shell;
-    // }
+
 
 
 }
@@ -97,7 +92,7 @@ void GameManager::moveShells() {
         shell->move(gameBoard.getWidth(), gameBoard.getHeight());
 
         Position newPos = shell->getPosition();
-        logFile << "Shell number " << shell->getId() << " fired at position (" << newPos.x << ", " << newPos.y << ")" << std::endl;
+        //logFile << "Shell number " << shell->getId() << " fired at position (" << newPos.x << ", " << newPos.y << ")" << std::endl;
         Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(newPos.x) + ", " + std::to_string(newPos.y) + ")");
         gameBoard.addObject(shell, newPos.x, newPos.y);
     }
@@ -305,7 +300,7 @@ void GameManager::checkCollisions() {
     std::vector<Shell*> shellsCopy = shells;
     for (Shell* shell : shellsCopy) {
         Position shellPos = shell->getPosition();
-        logFile << "Shell number " << shell->getId() << " fired at position (" << shellPos.x << ", " << shellPos.y << ")" << std::endl;
+        //logFile << "Shell number " << shell->getId() << " fired at position (" << shellPos.x << ", " << shellPos.y << ")" << std::endl;
         Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(shellPos.x) + ", " + std::to_string(shellPos.y) + ")");
 
         bool hitTank1 = (shellPos == posTank1);

@@ -4,6 +4,8 @@
 #include "Algorithm2.h"
 #include <iostream>
 #include "Logger.h"
+#include <unordered_set>
+
 
 GameManager::GameManager(Board& board,std::string inputFileName) : gameBoard(board), currentStep(0), postAmmoSteps(80), inputFileName(inputFileName) {
     tank1 = gameBoard.getTank(1);
@@ -71,12 +73,12 @@ void GameManager::gameLoop() {
         logFile << "RESULT: Unknown" << std::endl;
         Logger::debug("RESULT: Unknown");
     }
-    // deleting all the shells after the game is over
-    for (Shell* shell : gameBoard.getShells()) {
-        Position pos = shell->getPosition();
-        gameBoard.removeObject(shell, pos.x, pos.y);
-        delete shell;
-    }
+    // // deleting all the shells after the game is over
+    // for (Shell* shell : gameBoard.getShells()) {
+    //     Position pos = shell->getPosition();
+    //     gameBoard.removeObject(shell, pos.x, pos.y);
+    //     delete shell;
+    // }
 
 
 }
@@ -95,6 +97,8 @@ void GameManager::moveShells() {
         shell->move(gameBoard.getWidth(), gameBoard.getHeight());
 
         Position newPos = shell->getPosition();
+        logFile << "Shell number " << shell->getId() << " fired at position (" << newPos.x << ", " << newPos.y << ")" << std::endl;
+        Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(newPos.x) + ", " + std::to_string(newPos.y) + ")");
         gameBoard.addObject(shell, newPos.x, newPos.y);
     }
 }
@@ -297,10 +301,13 @@ void GameManager::checkCollisions() {
         }
     }
     // now we check for each shell if it hits another shell, wall or tank
-    for (Shell* shell : shells) {
+    std::unordered_set<Shell*> shellsToRemove;
+    std::vector<Shell*> shellsCopy = shells;
+    for (Shell* shell : shellsCopy) {
         Position shellPos = shell->getPosition();
-        logFile << "Shell fired at position (" << shellPos.x << ", " << shellPos.y << ")"<< std::endl;
-        Logger::debug("Shell fired at position (" + std::to_string(shellPos.x) + ", " + std::to_string(shellPos.y) + ")");
+        logFile << "Shell number " << shell->getId() << " fired at position (" << shellPos.x << ", " << shellPos.y << ")" << std::endl;
+        Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(shellPos.x) + ", " + std::to_string(shellPos.y) + ")");
+
         bool hitTank1 = (shellPos == posTank1);
         bool hitTank2 = (shellPos == posTank2);
 
@@ -351,22 +358,25 @@ void GameManager::checkCollisions() {
             continue;
         }
 
-        // checking if the shell hits another shell, and removing both of them if so
-        for (Shell* otherShell : slot.getShells()) {
-            Position shellPos2 = otherShell->getPosition();
-            if (otherShell != shell && shellPos==shellPos2 ) {
-                gameBoard.removeObject(shell, shellPos.x, shellPos.y);
-                gameBoard.removeObject(otherShell, shellPos2.x, shellPos2.y);
-                logFile << "Shell: Two shells collided and were destroyed." << std::endl;
-                Logger::debug("Shell: Two shells collided and were destroyed.");
-                delete shell;
-                delete otherShell;
-                break;
-            }
+ // בודק אם יש פגזים אחרים באותו תא
+    for (Shell* otherShell : slot.getShells()) {
+        if (otherShell != shell && shellPos == otherShell->getPosition()) {
+            shellsToRemove.insert(shell);
+            shellsToRemove.insert(otherShell);
+            logFile << "Shell: Two shells collided and were destroyed." << std::endl;
+            Logger::debug("Shell: Two shells collided and were destroyed.");
+            break;
         }
-
     }
 }
+
+    for (Shell* shell : shellsToRemove) {
+        Position pos = shell->getPosition();
+        gameBoard.removeObject(shell, pos.x, pos.y);
+        delete shell;
+    }
+}
+
 
 // checks if the game is over if we finished the number of turns after both tanks lost all ammo, or if one of the tanks is dead
 bool GameManager::checkGameOver() {

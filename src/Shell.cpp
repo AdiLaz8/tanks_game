@@ -1,7 +1,9 @@
 #include "Shell.h"
 
+int Shell::globalIdCounter = 1;
+
 Shell::Shell(Position p, Direction d, char ownerId)
-    : p(p), d(d), ownerId(ownerId) {}
+    : p(p), d(d), ownerId(ownerId), id(globalIdCounter++) {}
 
 char Shell::getSymbol() const {
     return '*';

@@ -54,6 +54,7 @@
         "variant": "cpp",
         "algorithm": "cpp",
         "queue": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "unordered_set": "cpp"
     }
 }

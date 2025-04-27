@@ -18,7 +18,7 @@ Board::~Board() {
 
 // returns the cellslot in this position
 CellSlot& Board::getSlot(int x, int y) const{
-    return grid[y][x];
+    return grid[(y + height) % height][(x + width) % width];
 }
 
 // add any object to the grid
@@ -53,7 +53,7 @@ void Board::removeObject(Cell* obj, int x, int y) {
 
 // checks and returns if the cellslot in this position has a mine or a wall
 bool Board::isPassable(int x, int y) const {
-    const CellSlot& slot = grid[y][x];
+    const CellSlot& slot = grid[(y + height) % height][(x + width) % width];
     return !slot.getWall() && !slot.getTank();
 }
 

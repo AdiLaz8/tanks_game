@@ -10,7 +10,7 @@ struct Position
     bool operator==(const Position& other) const{
         return x==other.x && y==other.y;
     }
-    
+
     Position operator+(const Position delta) const {
         return {x + delta.x, y + delta.y};
     }

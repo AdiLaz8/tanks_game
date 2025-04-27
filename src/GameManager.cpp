@@ -19,9 +19,9 @@ GameManager::~GameManager() {
     }
 }
 
-// the main loop of the game, as long as the game is not over (or got to 1000 turns) it is moving the shells and tanks and check for collisions
+// the main loop of the game, as long as the game is not over it is moving the shells and tanks and check for collisions
 void GameManager::gameLoop() {
-    while (!checkGameOver() && currentStep <= 2000) {
+    while (!checkGameOver()) {
         // if both don't have ammo then every step we decrease the time of steps until draw
         if (tank1->getAmmo() == 0 && tank2->getAmmo() == 0){
             postAmmoSteps = postAmmoSteps - 1;
@@ -68,8 +68,8 @@ void GameManager::gameLoop() {
         logFile << "RESULT: Tie - No ammo left and time ended" << std::endl;
         Logger::debug("RESULT: Tie - No ammo left and time ended");
     } else {
-        logFile << "RESULT: Tie - reached maximum turns" << std::endl;
-        Logger::debug("RESULT: Tie - reached maximum turns");
+        logFile << "RESULT: Unknown" << std::endl;
+        Logger::debug("RESULT: Unknown");
     }
     // deleting all the shells after the game is over
     for (Shell* shell : gameBoard.getShells()) {

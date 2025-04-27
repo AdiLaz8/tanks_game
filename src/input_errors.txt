@@ -1,0 +1,8 @@
+Warning: Row 1 longer than declared width, extra characters ignored.
+Warning: Extra Tank 1 at (7,1) ignored.
+Warning: Row 3 longer than declared width, extra characters ignored.
+Warning: Extra Tank 1 at (3,3) ignored.
+Warning: Row 5 shorter than declared width, filled with spaces.
+Warning: Extra Tank 2 at (12,5) ignored.
+Warning: Extra row beyond declared height ignored.
+Warning: Extra row beyond declared height ignored.

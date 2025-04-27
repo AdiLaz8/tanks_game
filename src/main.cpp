@@ -22,6 +22,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     Logger::init("log_config.txt");
+    std::ofstream inputErrorsFile;
+
 
     // loading the board from the input file
     int width, height;
@@ -30,11 +32,30 @@ int main(int argc, char* argv[]) {
     Board board(width, height);
     bool tank1=false;
     bool tank2=false;
-    for (int y = 0; y < height && file; ++y) {
+    int y = 0;
+    for (; y < height; ++y) {
         std::string line;
-        std::getline(file, line);
+        if (!std::getline(file, line)) {
+            // אם חסרות שורות – נמלא ידנית
+            line = std::string(width, ' ');
+            if (!inputErrorsFile.is_open()) {
+                inputErrorsFile.open("input_errors.txt");
+            }
+            inputErrorsFile << "Warning: Missing row " << y << ", filled with spaces.\n";
+        }
+        if (line.length() > static_cast<size_t>(width)) {
+            line = line.substr(0, width);
+            if (!inputErrorsFile.is_open()) {
+                inputErrorsFile.open("input_errors.txt");
+            }
+            inputErrorsFile << "Warning: Row " << y << " longer than declared width, extra characters ignored.\n";
+        }
         while (line.length() < static_cast<size_t>(width)){
             line += ' ';
+            if (!inputErrorsFile.is_open()) {
+                inputErrorsFile.open("input_errors.txt");
+            }
+            inputErrorsFile << "Warning: Row " << y << " shorter than declared width, filled with spaces.\n";
         }
         for (int x = 0; x < width; ++x) {
             char c = line[x];
@@ -49,20 +70,55 @@ int main(int argc, char* argv[]) {
                 if(tank1==false){
                     board.addObject(new Tank('1', 16, Direction(Direction::L), Position(x, y)), x, y);
                     tank1=true;
-                }
+                } else {
+                        if (!inputErrorsFile.is_open()) {
+                            inputErrorsFile.open("input_errors.txt");
+                        }
+                        inputErrorsFile << "Warning: Extra Tank 1 at (" << x << "," << y << ") ignored.\n";
+                    }
             }
             else if (c == '2') {
                 if(tank2==false){
                     board.addObject(new Tank('2', 16, Direction(Direction::R), Position(x, y)), x, y);
                     tank2=true;
+                }else {
+                    if (!inputErrorsFile.is_open()) {
+                        inputErrorsFile.open("input_errors.txt");
+                    }
+                    inputErrorsFile << "Warning: Extra Tank 2 at (" << x << "," << y << ") ignored.\n";
                 }
             }
             else{
+                if (!inputErrorsFile.is_open()) {
+                    inputErrorsFile.open("input_errors.txt");
+                }
+                inputErrorsFile << "Warning: Unrecognized character '" << c << "' at (" << x << "," << y << "), treated as space.\n";
                 continue;
             }
     }
     }
+
+    // אם יש שורות מיותרות מעבר ל־height – לדווח
+    std::string extraLine;
+    while (std::getline(file, extraLine)) {
+        if (!extraLine.empty()) {
+            if (!inputErrorsFile.is_open()) {
+                inputErrorsFile.open("input_errors.txt");
+            }
+            inputErrorsFile << "Warning: Extra row beyond declared height ignored.\n";
+        }
+    }
+
+    if (inputErrorsFile.is_open()) {
+        inputErrorsFile.close();
+    }
+
     file.close();
+    if (!tank1 || !tank2) {
+        std::cerr << "Error: Missing tank(s) in input file!" << std::endl;
+        return 1;
+    }
+
 
     // creating the GameManager and starting the game
     GameManager game(board, std::string(argv[1]));

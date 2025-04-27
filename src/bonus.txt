@@ -11,3 +11,4 @@ Bonus 2: Visual Simulation
 - Visual.py reads the initial map (input file) and the moves (output file) and shows the tanks, walls, mines, and shells moving and interacting on the board graphically.
 - How to check: run the provided visual.py script after running the game. It will use the input and output files to recreate the visual simulation of the game progress.
 - Visual.py is external to the game execution (does not affect gameplay) and is optional.
+-python3 visual.py mapX.txt output_mapX.txt

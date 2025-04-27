@@ -13,3 +13,9 @@ void Position::move(Direction dir, int width, int height) {
         y = (y + delta.y + height)%height;
     }
 }
+void Position::setx(int xx){
+    x=xx;
+}
+void Position::sety(int yy){
+    y=yy;
+}

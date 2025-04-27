@@ -1,21 +1,103 @@
 Turn : 1
 Player 1: Checking shooting condition - canShoot: false, shootingStatus: 0
-Player 1: Enemy in direction 1, turning toward it.
+Player 1: Enemy in direction 5, turning toward it.
 Player 1 initiates action:
-Player 1 Rotated right by 45 degrees.
+Player 1 Rotated left by 90 degrees.
 Player 2 initiates action:
 Player 2 No action taken.
 Turn : 2
-Player 1: Checking shooting condition - canShoot: false, shootingStatus: 0
-Player 1: Enemy in direction 1, turning toward it.
+Player 1: Checking shooting condition - canShoot: true, shootingStatus: 0
+Player 1: Enemy in direction 5. Shooting now.
+Player 1 initiates action:
+Player 1 Shot from (2, 1) to (1, 2) in direction 5.
+Player 2: Threatened By Shells
+Player 2 initiates action:
+Player 2 Moved forward from (6, 4) to (0, 4).
+Shell fired at position (1, 2)
+Shell fired at position (0, 3)
+Turn : 3
+Shell fired at position (6, 4)
+Player 1: Checking shooting condition - canShoot: false, shootingStatus: 4
+Player 1: Computing BFS (reason: empty)
+Player 1 - BFS: starting BFS from position (2,1)
+Player 1: Stuck, rotating randomly
 Player 1 initiates action:
 Player 1 Rotated right by 90 degrees.
 Player 2 initiates action:
 Player 2 No action taken.
-Turn : 3
-Player 1: Checking shooting condition - canShoot: true, shootingStatus: 0
-Player 1: Enemy in direction 1. Shooting now.
+Shell fired at position (6, 4)
+Shell fired at position (5, 0)
+Turn : 4
+Shell fired at position (4, 1)
+Player 1: Checking shooting condition - canShoot: false, shootingStatus: 3
+Player 1: Computing BFS (reason: empty)
+Player 1 - BFS: starting BFS from position (2,1)
+Player 1: Stuck, rotating randomly
 Player 1 initiates action:
-Player 1 Shot from (1, 1) to (2, 0) in direction 1.
+Player 1 Rotated right by 90 degrees.
+Player 2 initiates action:
+Player 2 No action taken.
+Shell fired at position (4, 1)
+Shell fired at position (3, 2)
+Turn : 5
+Shell fired at position (2, 3)
+Player 1: Checking shooting condition - canShoot: false, shootingStatus: 2
+Player 1: Computing BFS (reason: empty)
+Player 1 - BFS: starting BFS from position (2,1)
+Player 1: Stuck, rotating randomly
+Player 1 initiates action:
+Player 1 Rotated right by 90 degrees.
+Player 2 initiates action:
+Player 2 No action taken.
+Shell fired at position (2, 3)
+Shell fired at position (1, 4)
+Turn : 6
+Shell fired at position (0, 0)
+Player 1: Checking shooting condition - canShoot: false, shootingStatus: 1
+Player 1: Computing BFS (reason: empty)
+Player 1 - BFS: starting BFS from position (2,1)
+Player 1: Stuck, rotating randomly
+Player 1 initiates action:
+Player 1 Rotated right by 90 degrees.
+Player 2 initiates action:
+Player 2 No action taken.
+Shell fired at position (0, 0)
+Shell fired at position (6, 1)
+Turn : 7
+Shell fired at position (5, 2)
+Player 1: Checking shooting condition - canShoot: false, shootingStatus: 0
+Player 1: Enemy in direction 7, turning toward it.
+Player 1 initiates action:
+Player 1 Rotated left by 45 degrees.
+Player 2 initiates action:
+Player 2 No action taken.
+Shell fired at position (5, 2)
+Shell fired at position (4, 3)
+Turn : 8
+Shell fired at position (3, 4)
+Player 1: Checking shooting condition - canShoot: true, shootingStatus: 0
+Player 1: Enemy in direction 7. Shooting now.
+Player 1 initiates action:
+Player 1 Shot from (2, 1) to (1, 0) in direction 7.
 Player 2: Threatened By Shells
 Player 2 initiates action:
+Player 2 Moved forward from (0, 4) to (1, 4).
+Shell fired at position (3, 4)
+Shell fired at position (1, 0)
+Shell fired at position (1, 0)
+Shell fired at position (1, 1)
+Turn : 9
+Shell fired at position (1, 1)
+Shell fired at position (6, 3)
+Player 1: Checking shooting condition - canShoot: false, shootingStatus: 4
+Player 1: Computing BFS (reason: empty)
+Player 1 - BFS: starting BFS from position (2,1)
+Player 1: Stuck, rotating randomly
+Player 1 initiates action:
+Player 1 Rotated right by 90 degrees.
+Player 2 initiates action:
+Player 2 No action taken.
+Shell fired at position (1, 1)
+Shell fired at position (6, 3)
+Shell fired at position (6, 3)
+Shell: Two shells collided and were destroyed.

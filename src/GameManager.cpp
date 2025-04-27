@@ -130,6 +130,10 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
     // the tank finished the cooldown - the first turn was the turn he decided to move backward, then the turn that the status was 3, and not it's the third turn
     if(tank->getBackwardStatus() == 2){
         Position newPosition = initialPosition + direction.getOppositeDirection().toVector();
+        int xx=(newPosition.x+gameBoard.getWidth())%gameBoard.getWidth();
+        int yy=(newPosition.y+gameBoard.getHeight())%gameBoard.getHeight();
+        newPosition.setx(xx);
+        newPosition.sety(yy);
         // does the moving backward and decrease the status to 1, in order to support multiple moving backwards in a row
         tank->moveBackward(gameBoard.getWidth(), gameBoard.getHeight());
         logFile << player << ": Moving backward now." << std::endl;
@@ -147,6 +151,10 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
     switch (action.getType()) {
         case ActionType::MoveForward: {
             Position newPosition = initialPosition + direction.toVector();
+            int xx=(newPosition.x+gameBoard.getWidth())%gameBoard.getWidth();
+            int yy=(newPosition.y+gameBoard.getHeight())%gameBoard.getHeight();
+            newPosition.setx(xx);
+            newPosition.sety(yy);
             // if we can pass the cell and there are no mines or walls in the cell
             if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
                 tank->moveForward(gameBoard.getWidth(), gameBoard.getHeight());
@@ -165,6 +173,10 @@ void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& alg
         case ActionType::MoveBackward: {
             // we start initiate the moving backwards but doesn't do it immediately
             Position newPosition = initialPosition + direction.getOppositeDirection().toVector();
+            int xx=(newPosition.x+gameBoard.getWidth())%gameBoard.getWidth();
+            int yy=(newPosition.y+gameBoard.getHeight())%gameBoard.getHeight();
+            newPosition.setx(xx);
+            newPosition.sety(yy);
             if (tank->getBackwardStatus() == 0) {
                 if (gameBoard.isPassable(newPosition.x, newPosition.y)) {
                     tank->setBackward(3);

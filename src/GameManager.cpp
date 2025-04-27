@@ -339,8 +339,9 @@ void GameManager::checkCollisions() {
         CellSlot& slot = gameBoard.getSlot(shellPos.x, shellPos.y);
         if (slot.getWall()) {
             int hp = slot.getWall()->onHit();
-            logFile << "Shell hit wall. Wall health is now " << hp << std::endl;
-            Logger::debug("Shell hit wall. Wall health is now " + std::to_string(hp));
+            logFile << "Shell hit wall at position (" << shellPos.x << ", " << shellPos.y << "). Wall health is now " << hp << std::endl;
+            Logger::debug("Shell hit wall at position (" + std::to_string(shellPos.x) + ", " + std::to_string(shellPos.y) + "). Wall health is now " + std::to_string(hp));
+
             // removing the shell because it hit the wall
             gameBoard.removeObject(shell, shellPos.x, shellPos.y);
             delete shell;

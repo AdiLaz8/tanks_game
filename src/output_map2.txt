@@ -9,369 +9,104 @@ Player 1: Direction is now 3
 Player 2: No action taken.
 Player 2: Direction is now 2
 Turn : 3
-Player 1: Shoot from (1, 1) to (2, 2) in direction 3.
+Player 1: MoveForward from (2, 1) to (3, 2).
 Player 1: Direction is now 3
-Player 2: Rotated left by 90 degrees.
-Player 2: Direction is now 0
-Shell fired at position (2, 2)
-Shell fired at position (3, 3)
+Player 2: No action taken.
+Player 2: Direction is now 2
 Turn : 4
-Shell fired at position (4, 4)
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 4
-Player 2: MoveForward from (8, 8) to (8, 7).
-Player 2: Direction is now 0
-Shell fired at position (4, 4)
-Shell fired at position (5, 5)
+Player 1: MoveForward from (3, 2) to (4, 3).
+Player 1: Direction is now 3
+Player 2: No action taken.
+Player 2: Direction is now 2
 Turn : 5
-Shell fired at position (6, 6)
-Player 1: Rotated right by 45 degrees.
+Player 1: Rotated right by 90 degrees.
 Player 1: Direction is now 5
 Player 2: No action taken.
-Player 2: Direction is now 0
-Shell fired at position (6, 6)
-Shell fired at position (7, 7)
+Player 2: Direction is now 2
 Turn : 6
-Shell fired at position (8, 8)
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 6
-Player 2: No action taken.
-Player 2: Direction is now 0
-Shell fired at position (8, 8)
-Shell fired at position (9, 9)
-Shell hit wall. Wall health is now 1
+Player 1: Shoot from (4, 3) to (3, 4) in direction 5.
+Player 1: Direction is now 5
+Player 2: MoveForward from (2, 5) to (3, 5).
+Player 2: Direction is now 2
 Turn : 7
 Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 6
+Player 2: No action taken.
+Player 2: Direction is now 2
+Shell hit wall at position (0, 0). Wall health is now 1
+Turn : 8
+Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 7
 Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 8
-Player 1: Rotated left by 90 degrees.
-Player 1: Direction is now 5
-Player 2: No action taken.
-Player 2: Direction is now 0
+Player 2: Direction is now 2
 Turn : 9
-Player 1: Rotated left by 45 degrees.
-Player 1: Direction is now 4
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 0
 Player 2: No action taken.
-Player 2: Direction is now 0
+Player 2: Direction is now 2
 Turn : 10
-Player 1: MoveForward from (1, 1) to (1, 2).
-Player 1: Direction is now 4
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 1
 Player 2: No action taken.
-Player 2: Direction is now 0
+Player 2: Direction is now 2
 Turn : 11
-Player 1: Rotated left by 45 degrees.
+Player 1: Rotated right by 90 degrees.
 Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 0
+Player 2: Direction is now 2
 Turn : 12
-Player 1: MoveForward from (1, 2) to (2, 3).
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 13
-Player 1: Rotated left by 45 degrees.
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 14
-Player 1: MoveForward from (2, 3) to (3, 3).
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 15
-Player 1: MoveForward from (3, 3) to (4, 3).
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 16
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 17
-Player 1: Shoot from (4, 3) to (5, 4) in direction 3.
-Player 1: Direction is now 3
-Player 2: MoveForward from (8, 7) to (8, 6).
-Player 2: Direction is now 0
-Shell fired at position (5, 4)
-Shell fired at position (6, 5)
-Turn : 18
-Shell fired at position (7, 6)
 Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 4
 Player 2: No action taken.
-Player 2: Direction is now 0
-Shell fired at position (7, 6)
-Shell fired at position (8, 7)
-Turn : 19
-Shell fired at position (9, 8)
-Shell hit wall. Wall health is now 1
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 5
+Player 2: Direction is now 2
+Turn : 13
+Player 1: Shoot from (4, 3) to (4, 4) in direction 4.
+Player 1: Direction is now 4
 Player 2: No action taken.
-Player 2: Direction is now 0
+Player 2: Direction is now 2
+Shell hit wall at position (4, 4). Wall health is now 1
+Turn : 14
+Player 1: No action taken.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 15
+Player 1: No action taken.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 16
+Player 1: No action taken.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 17
+Player 1: No action taken.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 18
+Player 1: Shoot from (4, 3) to (4, 4) in direction 4.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Shell hit wall at position (4, 4). Wall health is now 0
+Wall destroyed.
+Turn : 19
+Player 1: MoveForward from (4, 3) to (4, 4).
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
 Turn : 20
 Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 6
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 21
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 7
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 22
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 23
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 24
-Player 1: MoveForward from (4, 3) to (5, 3).
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 25
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 26
-Player 1: Shoot from (5, 3) to (6, 4) in direction 3.
-Player 1: Direction is now 3
-Player 2: MoveForward from (8, 6) to (8, 5).
-Player 2: Direction is now 0
-Shell fired at position (6, 4)
-Shell fired at position (7, 5)
-Turn : 27
-Shell fired at position (8, 6)
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 4
-Player 2: No action taken.
-Player 2: Direction is now 0
-Shell fired at position (8, 6)
-Shell fired at position (9, 7)
-Shell hit wall. Wall health is now 1
-Turn : 28
-Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 5
 Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 29
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 6
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 30
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 7
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 31
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 32
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 33
-Player 1: MoveForward from (5, 3) to (6, 3).
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 34
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 35
-Player 1: Shoot from (6, 3) to (7, 4) in direction 3.
-Player 1: Direction is now 3
-Player 2: MoveForward from (8, 5) to (8, 4).
-Player 2: Direction is now 0
-Shell fired at position (7, 4)
-Shell fired at position (8, 5)
-Turn : 36
-Shell fired at position (9, 6)
-Shell hit wall. Wall health is now 1
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 4
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 37
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 5
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 38
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 6
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 39
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 7
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 40
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 41
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 42
-Player 1: MoveForward from (6, 3) to (7, 3).
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 43
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 44
-Player 1: Shoot from (7, 3) to (8, 4) in direction 3.
-Player 1: Direction is now 3
-Player 2: MoveForward from (8, 4) to (8, 3).
-Player 2: Direction is now 0
-Shell fired at position (8, 4)
-Shell fired at position (9, 5)
-Shell hit wall. Wall health is now 1
-Turn : 45
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 4
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 46
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 5
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 47
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 6
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 48
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 7
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 49
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 50
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 51
-Player 1: Shoot from (7, 3) to (8, 3) in direction 2.
-Player 1: Direction is now 2
-Player 2: MoveForward from (8, 3) to (8, 2).
-Player 2: Direction is now 0
-Shell fired at position (8, 3)
-Shell fired at position (9, 3)
-Shell hit wall. Wall health is now 1
-Turn : 52
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 53
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 4
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 54
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 5
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 55
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 6
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 56
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 0
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 57
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 58
-Player 1: Shoot from (7, 3) to (8, 2) in direction 1.
-Player 1: Direction is now 1
-Player 2: MoveForward from (8, 2) to (8, 1).
-Player 2: Direction is now 0
-Shell fired at position (8, 2)
-Shell fired at position (9, 1)
-Shell hit wall. Wall health is now 1
-Turn : 59
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 2
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 60
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 61
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 4
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 62
-Player 1: Rotated right by 45 degrees.
-Player 1: Direction is now 5
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 63
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 7
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 64
-Player 1: Rotated right by 90 degrees.
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 65
-Player 1: MoveForward from (7, 3) to (8, 2).
-Player 1: Direction is now 1
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 66
-Player 1: Rotated left by 45 degrees.
-Player 1: Direction is now 0
-Player 2: No action taken.
-Player 2: Direction is now 0
-Turn : 67
-Player 1: Shoot from (8, 2) to (8, 1) in direction 0.
-Player 1: Direction is now 0
-Player 2: Rotated right by 90 degrees.
 Player 2: Direction is now 2
-Shell fired at position (8, 1)
-Shell: Player 2 was hit by shell and destroyed.
+Turn : 21
+Player 1: MoveForward from (4, 4) to (3, 5).
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Collision: Tank1 and Tank2 collided -> Tie (both destroyed)
 Game Over!
-RESULT: Player 1 wins - Player 2 destroyed
+RESULT: Tie - Both tanks destroyed

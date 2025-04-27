@@ -60,20 +60,24 @@ for line in game_lines:
     board = get_initial_board()
     shells = []
 
-    if "Shell fired at position" in line:
-        coords = line.split("position (")[1].split(")")[0].split(",")
+    if "Shoot from" in line:
+        coords = line.split("to (")[1].split(")")[0].split(",")
         last_shell_hit = (int(coords[0]), int(coords[1]))
         shells.append(last_shell_hit)
+
+    elif "Shell fired at position" in line:
+        coords = line.split("position (")[1].split(")")[0].split(",")
+        shells.append((int(coords[0]), int(coords[1])))
 
     elif "Shell hit wall" in line and last_shell_hit:
         if last_shell_hit in current_wall_health:
             current_wall_health[last_shell_hit] -= 1
             if current_wall_health[last_shell_hit] <= 0:
-                del current_wall_health[last_shell_hit]  # מוחקים לגמרי מהחיים
+                del current_wall_health[last_shell_hit]
 
     elif "Wall destroyed" in line and last_shell_hit:
         if last_shell_hit in current_wall_health:
-            del current_wall_health[last_shell_hit]  # מוחקים לגמרי מהחיים
+            del current_wall_health[last_shell_hit]
 
     elif "Player 1 was hit by shell and destroyed" in line:
         destroyed_tanks['1'] = current_positions['1']
@@ -94,9 +98,6 @@ for line in game_lines:
             current_directions[player] = (current_directions[player] + 2) % 8
         elif "Rotated left by 90" in line:
             current_directions[player] = (current_directions[player] - 2) % 8
-        elif "Shoot from" in line:
-            to_coords = line.split("to (")[1].split(")")[0].split(",")
-            shells.append((int(to_coords[0]), int(to_coords[1])))
         elif "Direction is now" in line:
             current_directions[player] = int(line.split("Direction is now")[1].strip())
 
@@ -110,6 +111,7 @@ for line in game_lines:
         wall_health_snapshot,
         destroyed_tanks.copy()
     ))
+
 
 index = [0]
 playing = [False]

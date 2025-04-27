@@ -1,66 +1,99 @@
 Turn : 1
 Player 1: Rotated left by 90 degrees.
 Player 1: Direction is now 4
-Player 2: Rotated left by 90 degrees.
-Player 2: Direction is now 0
-Turn : 2
-Player 1: Rotated left by 45 degrees.
-Player 1: Direction is now 3
-Player 2: Rotated left by 45 degrees.
-Player 2: Direction is now 7
-Turn : 3
-Player 1: Shoot from (0, 0) to (1, 1) in direction 3.
-Player 1: Direction is now 3
 Player 2: No action taken.
-Player 2: Direction is now 7
-Shell hit wall. Wall health is now 1
+Player 2: Direction is now 2
+Turn : 2
+Player 1: Shoot from (1, 1) to (1, 2) in direction 4.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Shell hit wall at position (1, 2). Wall health is now 1
+Turn : 3
+Player 1: No action taken.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
 Turn : 4
 Player 1: No action taken.
-Player 1: Direction is now 3
+Player 1: Direction is now 4
 Player 2: No action taken.
-Player 2: Direction is now 7
+Player 2: Direction is now 2
 Turn : 5
 Player 1: No action taken.
-Player 1: Direction is now 3
+Player 1: Direction is now 4
 Player 2: No action taken.
-Player 2: Direction is now 7
+Player 2: Direction is now 2
 Turn : 6
 Player 1: No action taken.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 7
-Turn : 7
-Player 1: No action taken.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 7
-Turn : 8
-Player 1: Shoot from (0, 0) to (1, 1) in direction 3.
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 7
-Shell hit wall. Wall health is now 0
-Wall destroyed.
-Turn : 9
-Player 1: MoveForward from (0, 0) to (1, 1).
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 7
-Turn : 10
-Player 1: MoveForward from (1, 1) to (2, 2).
-Player 1: Direction is now 3
-Player 2: No action taken.
-Player 2: Direction is now 7
-Turn : 11
-Player 1: MoveForward from (2, 2) to (3, 3).
-Player 1: Direction is now 3
-Player 2: Rotated left by 45 degrees.
-Player 2: Direction is now 6
-Turn : 12
-Player 1: Rotated right by 45 degrees.
 Player 1: Direction is now 4
-Player 2: Shoot from (4, 3) to (3, 3) in direction 6.
-Player 2: Direction is now 6
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 7
+Player 1: Shoot from (1, 1) to (1, 2) in direction 4.
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Shell hit wall at position (1, 2). Wall health is now 0
+Wall destroyed.
+Turn : 8
+Player 1: MoveForward from (1, 1) to (1, 2).
+Player 1: Direction is now 4
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 9
+Player 1: Rotated right by 45 degrees.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 10
+Player 1: No action taken.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 11
+Player 1: No action taken.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 12
+Player 1: Shoot from (1, 2) to (0, 3) in direction 5.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Shell hit wall at position (0, 3). Wall health is now 1
+Turn : 13
+Player 1: No action taken.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 14
+Player 1: No action taken.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 15
+Player 1: No action taken.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 16
+Player 1: No action taken.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Turn : 17
+Player 1: Shoot from (1, 2) to (0, 3) in direction 5.
+Player 1: Direction is now 5
+Player 2: No action taken.
+Player 2: Direction is now 2
+Shell hit wall at position (0, 3). Wall health is now 0
+Wall destroyed.
+Turn : 18
+Player 1: MoveForward from (1, 2) to (0, 3).
+Player 1: Direction is now 5
+Player 2: Shoot from (12, 3) to (13, 3) in direction 2.
+Player 2: Direction is now 2
 Shell: Player 1 was hit by shell and destroyed.
 Game Over!
 RESULT: Player 2 wins - Player 1 destroyed

@@ -13,16 +13,19 @@ private:
     Board& gameBoard;
     std::unique_ptr<IAlgorithm> algorithm1;
     std::unique_ptr<IAlgorithm> algorithm2;
-    Tank* tank1; // the tank of player 1
-    Tank* tank2; // the tank of player 2
+    std::vector<Tank*> tanks1; // the tanks for player 1
+    std::vector<Tank*> tanks2; // the tanks for player 2
     int currentStep; // a counter for the current step i the game, to know if to only move shells or to get actions for tanks as well
     int postAmmoSteps; // Steps after both tanks run out of ammo
     std::string inputFileName;
+    int numShells;
+    int maxSteps;
 
 public:
     GameManager(Board& board,std::string inputFileName);
     ~GameManager();
     void gameLoop();
+    void readBoard(const std::string& filename);
     void moveShells();
     void executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo);
     void checkCollisions();

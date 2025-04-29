@@ -1,24 +1,29 @@
 #include "CellSlot.h"
 
 // Adding any object to the cellslot
-void CellSlot::addObject(Cell* obj) {
-    objects.push_back(obj);
+void CellSlot::addObject(std::unique_ptr<Cell> obj) {
+    objects.push_back(std::move(obj));
 }
 
 // Removing any object from the cellslot
 void CellSlot::removeObject(Cell* obj) {
-    objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+    auto it = std::remove_if(objects.begin(), objects.end(),
+        [obj](const std::unique_ptr<Cell>& ptr) {
+            return ptr.get() == obj;
+        });
+    objects.erase(it, objects.end());
 }
 
+
 // Returns a vector of all the current objects inside the cellslot
-const std::vector<Cell*>& CellSlot::getAll() const {
+const std::vector<std::unique_ptr<Cell>>& CellSlot::getAll() const {
     return objects;
 }
 
 // Returns the tank that's in the cell slot, or nulll pointer if there isn't one
 Tank* CellSlot::getTank() const {
-    for (Cell* obj : objects) {
-        Tank* tank = dynamic_cast<Tank*>(obj);
+    for (const auto& obj : objects) {
+        Tank* tank = dynamic_cast<Tank*>(obj.get());
         if (tank) return tank;
     }
     return nullptr;
@@ -26,8 +31,8 @@ Tank* CellSlot::getTank() const {
 
 // Returns the walll that's in the cell slot, or null pointer if there isn't one
 Wall* CellSlot::getWall() const {
-    for (Cell* obj : objects) {
-        Wall* wall = dynamic_cast<Wall*>(obj);
+    for (const auto& obj : objects) {
+        Wall* wall = dynamic_cast<Wall*>(obj.get());
         if (wall) return wall;
     }
     return nullptr;
@@ -35,8 +40,8 @@ Wall* CellSlot::getWall() const {
 
 // Returns the mine that's in the cell slot, or null pointer if there isn't one
 Mine* CellSlot::getMine() const {
-    for (Cell* obj : objects) {
-        Mine* mine = dynamic_cast<Mine*>(obj);
+    for (const auto& obj : objects) {
+        Mine* mine = dynamic_cast<Mine*>(obj.get());
         if (mine) return mine;
     }
     return nullptr;
@@ -45,8 +50,8 @@ Mine* CellSlot::getMine() const {
 // Returns a vector of all the shells that inside the cell slot in a given moment, will be useful to check collisions between two or more shells
 std::vector<Shell*> CellSlot::getShells() const {
     std::vector<Shell*> shells;
-    for (Cell* obj : objects) {
-        Shell* shell = dynamic_cast<Shell*>(obj);
+    for (const auto& obj : objects) {
+        Shell* shell = dynamic_cast<Shell*>(obj.get());
         if (shell) shells.push_back(shell);
     }
     return shells;

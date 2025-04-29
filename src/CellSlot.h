@@ -11,12 +11,12 @@
 
 class CellSlot {
 private:
-    std::vector<Cell*> objects;
+    std::vector<std::unique_ptr<Cell>> objects;
 
 public:
-    void addObject(Cell* obj);
+    void addObject(std::unique_ptr<Cell> obj);
     void removeObject(Cell* obj);
-    const std::vector<Cell*>& getAll() const;
+    const std::vector<std::unique_ptr<Cell>>& getAll() const;
 
     Tank* getTank() const;
     Wall* getWall() const;

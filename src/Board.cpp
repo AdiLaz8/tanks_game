@@ -22,18 +22,18 @@ CellSlot& Board::getSlot(int x, int y) const{
 }
 
 // add any object to the grid
-void Board::addObject(Cell* obj, int x, int y) {
-    grid[y][x].addObject(obj);
-    // Check if the object is a shell and add it to the vector of shells
-    Shell* shell = dynamic_cast<Shell*>(obj);
-    if (shell) {
+void Board::addObject(std::unique_ptr<Cell> obj, int x, int y) {
+    Cell* rawPtr = obj.get();
+    grid[y][x].addObject(std::move(obj));
+    if (auto shell = dynamic_cast<Shell*>(rawPtr)) {
         shells.push_back(shell);
     }
-    if (auto tank = dynamic_cast<Tank*>(obj)) {
+    if (auto tank = dynamic_cast<Tank*>(rawPtr)) {
         if (tank->getSymbol() == '1') {
-            tank1 = tank;
-        } else if (tank->getSymbol() == '2') {
-            tank2 = tank;
+            tanks1.push_back(tank);
+            }   
+        else if (tank->getSymbol() == '2') {
+            tanks2.push_back(tank);
         }
     }
 }
@@ -47,6 +47,13 @@ void Board::removeObject(Cell* obj, int x, int y) {
         auto it = std::find(shells.begin(), shells.end(), shell);
         if (it != shells.end()) {
             shells.erase(it);
+        }
+    }
+    if (auto tank = dynamic_cast<Tank*>(obj)) {
+        auto& vec = (tank->getSymbol() == '1') ? tanks1 : tanks2;
+        auto it = std::find(vec.begin(), vec.end(), tank);
+        if (it != vec.end()) {
+            vec.erase(it);
         }
     }
 }
@@ -66,11 +73,6 @@ int Board::getHeight() const {
 }
 
 // returns the tank of the player required
-Tank* Board::getTank(int tankNumber) {
-    if (tankNumber == 1) {
-        return tank1;
-    } else if (tankNumber == 2) {
-        return tank2;
-    }
-    return nullptr; // Return null if no valid tank number
+const std::vector<Tank*>&::Board::getTanks(int playerId) const {
+    return (playerId == 1) ? tanks1 : tanks2;
 }

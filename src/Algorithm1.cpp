@@ -70,7 +70,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
     // if there is no ammo left, he can't be agressive so he does nothing if he is not threteand
     if (self.getAmmo() == 0) {
         Logger::debug("Player 1: No ammo");
-        return Action(ActionType::None);
+        return Action(ActionRequest::None);
     }
     Logger::debug("Player 1: Checking shooting condition - canShoot: " +
               std::string(canShoot(self, enemy, board) ? "true" : "false") +
@@ -79,7 +79,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
     if (canShoot(self, enemy, board) && self.getShootingStatus() == 0) {
         Logger::debug("Player 1: Enemy in direction " + std::to_string(self.getDirection().getDirection()) + ". Shooting now.");
         triedPathWithoutSuccess = false;
-        return Action(ActionType::Shoot);
+        return Action(ActionRequest::Shoot);
     }
     // checks if he can rotate towards a shooting position
     for (int dir = 0; dir < 8; ++dir) {
@@ -113,15 +113,15 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
 
             // if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
             //     Logger::debug("Player 1: Shooting randomly due to stuck state");
-            //     return Action(ActionType::Shoot);
+            //     return Action(ActionRequest::Shoot);
             // }
 
-            return Action(ActionType::RotateRight8);
+            return Action(ActionRequest::RotateRight8);
         }
 
         Logger::debug("Player 1: No path but can shoot directly");
         triedPathWithoutSuccess = false;
-        return Action(ActionType::Shoot);
+        return Action(ActionRequest::Shoot);
     }
     // if the BFS is computed correctly, do the next step in the BFS path
     Direction::Value targetDir = currentPath.front();
@@ -134,22 +134,22 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
             Logger::debug("Player 1: Mine ahead – aborting move and resetting path");
             currentPath.clear();
             triedPathWithoutSuccess = true;
-            return Action(ActionType::None);
+            return Action(ActionRequest::None);
         }
         // if he has a wall in his BFS path, he shoots it in order to take it down
         if (slot.getWall()) {
             if (self.getShootingStatus() == 0 && self.getAmmo() > 0) {
                 Logger::debug("Player 1: Wall ahead – shooting it");
                 triedPathWithoutSuccess = false;
-                return Action(ActionType::Shoot);
+                return Action(ActionRequest::Shoot);
             }
-            return Action(ActionType::None);
+            return Action(ActionRequest::None);
         }
         // after doing the path, remove it from the current path steps and move forward
         currentPath.erase(currentPath.begin());
         Logger::debug("Player 1: Moving forward to (" + std::to_string(nextPos.x) + "," + std::to_string(nextPos.y) + ")");
         triedPathWithoutSuccess = false;
-        return Action(ActionType::MoveForward);
+        return Action(ActionRequest::MoveForward);
     }
     // if he isn't able to do anything, just rotate and maybe it will help in the next steps
     Logger::debug("Player 1: Rotating from " + std::to_string(self.getDirection().getDirection()) + " to " + std::to_string(targetDir));

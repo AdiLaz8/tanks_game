@@ -11,7 +11,7 @@ public:
     virtual ~IAlgorithm() = default;
     // Implemented method
     bool canShoot(const Tank& self, const Tank& enemy, const Board& board);
-    ActionType rotateTowards(Direction::Value current, Direction::Value desired) const;
+    ActionRequest rotateTowards(Direction::Value current, Direction::Value desired) const;
     Action moveIfThreatened(const Board& board, const Tank& self);
     bool isThreatenedByShells(const Board& board, const Position& pos);
     Direction::Value getDirectionTo(const Position& from, const Position& to) const;

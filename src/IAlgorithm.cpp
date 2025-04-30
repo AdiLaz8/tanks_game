@@ -36,18 +36,18 @@ bool IAlgorithm::canShoot(const Tank& self, const Tank& enemy, const Board& boar
 
 // returns the rotation function needed to be in the desired direction from the curren direction
 // will be useful to check if we can rotate towards an enemy 
-ActionType IAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired) const {
+ActionRequest IAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired) const {
     int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
-    if (diff == 0) return ActionType::None;
-    if (diff == 1) return ActionType::RotateRight8;
-    if (diff == 2) return ActionType::RotateRight4;
-    if (diff == 3) return ActionType::RotateRight4;
-    if (diff == 4) return ActionType::RotateRight4;
-    if (diff == 5) return ActionType::RotateLeft4;
-    if (diff == 6) return ActionType::RotateLeft4;
-    if (diff == 7) return ActionType::RotateLeft8;
+    if (diff == 0) return ActionRequest::DoNothing;
+    if (diff == 1) return ActionRequest::RotateRight45;
+    if (diff == 2) return ActionRequest::RotateRight90;
+    if (diff == 3) return ActionRequest::RotateRight90;
+    if (diff == 4) return ActionRequest::RotateRight90;
+    if (diff == 5) return ActionRequest::RotateLeft90;
+    if (diff == 6) return ActionRequest::RotateLeft90;
+    if (diff == 7) return ActionRequest::RotateLeft45;
 
-    return ActionType::None;
+    return ActionRequest::DoNothing;
 }
 
 // in case the tank is threatened by shells, it will try to move to a safe place or rotate towards a safe place
@@ -65,7 +65,7 @@ Action IAlgorithm::moveIfThreatened(const Board& board, const Tank& self) {
     const CellSlot& forwardSlot = board.getSlot(forwardPos.x, forwardPos.y);
     if (!forwardSlot.getWall() && !forwardSlot.getMine() && !forwardSlot.getTank()) {
         if (!isThreatenedByShells(board, forwardPos)) {
-            return Action(ActionType::MoveForward);
+            return Action(ActionRequest::MoveForward);
         }
     }
 
@@ -87,7 +87,7 @@ Action IAlgorithm::moveIfThreatened(const Board& board, const Tank& self) {
     }
 
     // if we have nothing safe to do, just stay in place
-    return Action(ActionType::None);
+    return Action(ActionRequest::DoNothing);
 }
 
 // checks if the tans has one shell or more coming in his direction, and they are a threat because they will hit him if he stays in place

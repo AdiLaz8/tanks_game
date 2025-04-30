@@ -255,13 +255,13 @@ void GameManager::readBoard(const std::string& filename) {
 //     // Logging to console for debugging
 //     Logger::debug(player + " initiates action:");
 //     // if the tank needs to do an action that is not shooting and he is in shooting cooldown, decrese the cooldown by one step
-//     if (action.getType() != ActionType::Shoot && tank->getShootingStatus() > 0){
+//     if (action.getType() != ActionRequest::Shoot && tank->getShootingStatus() > 0){
 //         tank->decreaseShooting();
 //     }
 //     // if it's the first turn after a turn that the tank decided to move backward
 //     if(tank->getBackwardStatus() == 3){
 //         // if the tank decided to move forward then it cancels the backward cooldown and does nothing
-//         if(action.getType()==ActionType::MoveForward){
+//         if(action.getType()==ActionRequest::MoveForward){
 //             tank->setBackward(0);
 //             return;
 //         }
@@ -288,12 +288,12 @@ void GameManager::readBoard(const std::string& filename) {
 //         return;
 //     }
 //     // if the tank did the moving backwards in the last turn and now does something else, decrease it to 0 so it can't do another moving backwards immediately
-//     if(tank->getBackwardStatus() == 1 && action.getType()!=ActionType::MoveBackward){
+//     if(tank->getBackwardStatus() == 1 && action.getType()!=ActionRequest::MoveBackward){
 //         tank->decreaseBackward();
 //     }
 //     // switch cases based on the actions that we got from the algorithm for the tank to execute
 //     switch (action.getType()) {
-//         case ActionType::MoveForward: {
+//         case ActionRequest::MoveForward: {
 //             Position newPosition = initialPosition + direction.toVector();
 //             int xx=(newPosition.x+gameBoard.getWidth())%gameBoard.getWidth();
 //             int yy=(newPosition.y+gameBoard.getHeight())%gameBoard.getHeight();
@@ -314,7 +314,7 @@ void GameManager::readBoard(const std::string& filename) {
 //             break;
 //         }
 
-//         case ActionType::MoveBackward: {
+//         case ActionRequest::MoveBackward: {
 //             // we start initiate the moving backwards but doesn't do it immediately
 //             Position newPosition = initialPosition + direction.getOppositeDirection().toVector();
 //             int xx=(newPosition.x+gameBoard.getWidth())%gameBoard.getWidth();
@@ -352,7 +352,7 @@ void GameManager::readBoard(const std::string& filename) {
 //                 break;
 //             }
 
-//         case ActionType::Shoot: {
+//         case ActionRequest::Shoot: {
 //             // the tank can shoot - it has enough ammo and not in cooldown
 //             if (tank->getShootingStatus() == 0 && tank->getAmmo() > 0) {
 //                 Position shootPosition = initialPosition + direction.toVector();
@@ -378,25 +378,25 @@ void GameManager::readBoard(const std::string& filename) {
 //             break;
 //         }
 //         // rotate actions - can't go wrong
-//         case ActionType::RotateLeft8:
+//         case ActionRequest::RotateLeft8:
 //             tank->rotateLeft8();  // Executes a 45-degree counterclockwise rotation
 //             logFile << player << ": Rotated left by 45 degrees." << std::endl;
 //             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
 //             Logger::debug(player+ " Rotated left by 90 degrees.");
 //             break;
-//         case ActionType::RotateRight8:
+//         case ActionRequest::RotateRight8:
 //             tank->rotateRight8();  // Executes a 90-degree clockwise rotation
 //             logFile << player << ": Rotated right by 45 degrees." << std::endl;
 //             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
 //             Logger::debug(player+ " Rotated right by 90 degrees.");
 //             break;
-//         case ActionType::RotateLeft4:
+//         case ActionRequest::RotateLeft4:
 //             tank->rotateLeft4();  // Executes a 90-degree counterclockwise rotation
 //             logFile << player << ": Rotated left by 90 degrees." << std::endl;
 //             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
 //             Logger::debug(player+ " Rotated left by 45 degrees.");
 //             break;
-//         case ActionType::RotateRight4:
+//         case ActionRequest::RotateRight4:
 //             tank->rotateRight4();  // Executes a 90-degree clockwise rotation
 //             logFile << player << ": Rotated right by 90 degrees." << std::endl;
 //             logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;

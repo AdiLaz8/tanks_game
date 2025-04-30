@@ -70,7 +70,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
     // if there is no ammo left, he can't be agressive so he does nothing if he is not threteand
     if (self.getAmmo() == 0) {
         Logger::debug("Player 1: No ammo");
-        return Action(ActionRequest::None);
+        return Action(ActionRequest::DoNothing);
     }
     Logger::debug("Player 1: Checking shooting condition - canShoot: " +
               std::string(canShoot(self, enemy, board) ? "true" : "false") +
@@ -116,7 +116,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
             //     return Action(ActionRequest::Shoot);
             // }
 
-            return Action(ActionRequest::RotateRight8);
+            return Action(ActionRequest::RotateRight45);
         }
 
         Logger::debug("Player 1: No path but can shoot directly");
@@ -134,7 +134,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
             Logger::debug("Player 1: Mine ahead – aborting move and resetting path");
             currentPath.clear();
             triedPathWithoutSuccess = true;
-            return Action(ActionRequest::None);
+            return Action(ActionRequest::DoNothing);
         }
         // if he has a wall in his BFS path, he shoots it in order to take it down
         if (slot.getWall()) {
@@ -143,7 +143,7 @@ Action Algorithm1::nextAction(const Board& board, const Tank& self, const Tank& 
                 triedPathWithoutSuccess = false;
                 return Action(ActionRequest::Shoot);
             }
-            return Action(ActionRequest::None);
+            return Action(ActionRequest::DoNothing);
         }
         // after doing the path, remove it from the current path steps and move forward
         currentPath.erase(currentPath.begin());

@@ -58,6 +58,7 @@
         "unordered_set": "cpp",
         "__tree": "cpp",
         "iomanip": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "memory": "cpp"
     }
 }

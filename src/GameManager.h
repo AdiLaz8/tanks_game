@@ -10,7 +10,7 @@
 class GameManager {
 private:
     std::ofstream logFile;
-    Board& gameBoard;
+    std::unique_ptr<Board> gameBoard;
     std::unique_ptr<IAlgorithm> algorithm1;
     std::unique_ptr<IAlgorithm> algorithm2;
     std::vector<Tank*> tanks1; // the tanks for player 1
@@ -22,7 +22,7 @@ private:
     int maxSteps;
 
 public:
-    GameManager(Board& board,std::string inputFileName);
+    GameManager(std::string inputFileName);
     ~GameManager();
     void gameLoop();
     void readBoard(const std::string& filename);
@@ -30,6 +30,10 @@ public:
     void executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo);
     void checkCollisions();
     bool checkGameOver();
+    const std::vector<Tank*>& getTanks1() const { return tanks1; }
+    const std::vector<Tank*>& getTanks2() const { return tanks2; }
+    Board& getBoard() const { return *gameBoard; }
+
 };
 
 #endif

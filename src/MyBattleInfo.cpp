@@ -1,35 +1,78 @@
 #include "MyBattleInfo.h"
 
-void MyBattleInfo::setMyPosition(const Position& pos) {
-    myPosition = pos;
+void MyBattleInfo::reset() {
+    fullView.clear();
+    directionalView.clear();
+    shellPositions.clear();
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            localView[i][j] = ' ';
+    selfPositionSet = false;
 }
 
-Position MyBattleInfo::getMyPosition() const {
-    return *myPosition;
+void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols) {
+    if (symbol == '*')
+        shellPositions.push_back(pos);
+
+    if (symbol == '%') {
+        selfPosition = pos;
+        selfPositionSet = true;
+    }
+
+    if (playerId == 1)
+        fullView.emplace_back(pos, symbol);
+
+    if (!selfPositionSet)
+        return;
+
+    // localView
+    for (int dx = -1; dx <= 1; ++dx) {
+        for (int dy = -1; dy <= 1; ++dy) {
+            Position neighbor = {selfPosition.x + dx, selfPosition.y + dy};
+            if (neighbor.x >= 0 && neighbor.x < boardCols &&
+                neighbor.y >= 0 && neighbor.y < boardRows) {
+                if (neighbor == pos) {
+                    localView[dx + 1][dy + 1] = symbol;
+                }
+            }
+        }
+    }
+
+    // directionalView
+    Position delta = selfDirection.toVector();
+    Position current = selfPosition + delta;
+    while (current.x >= 0 && current.x < boardCols &&
+           current.y >= 0 && current.y < boardRows) {
+        if (current == pos)
+            directionalView.emplace_back(current, symbol);
+        current = current + delta;
+    }
 }
 
-bool MyBattleInfo::hasMyPosition() const {
-    return myPosition.has_value();
+const std::vector<std::pair<Position, char>>& MyBattleInfo::getFullView() const {
+    return fullView;
 }
 
-void MyBattleInfo::setShellsLeft(int shells) {
-    shellsLeft = shells;
+const char (&MyBattleInfo::getLocalView() const)[3][3] {
+    return localView;
 }
 
-int MyBattleInfo::getShellsLeft() const {
-    return shellsLeft;
+const std::vector<std::pair<Position, char>>& MyBattleInfo::getDirectionalView() const {
+    return directionalView;
 }
 
-void MyBattleInfo::setEnemyVisible(bool visible) {
-    enemyVisible = visible;
+const std::vector<Position>& MyBattleInfo::getShellPositions() const {
+    return shellPositions;
 }
 
-bool MyBattleInfo::isEnemyVisible() const {
-    return enemyVisible;
+Position MyBattleInfo::getSelfPosition() const {
+    return selfPosition;
 }
 
-void MyBattleInfo::clear() {
-    myPosition.reset();
-    shellsLeft = 0;
-    enemyVisible = false;
+Direction MyBattleInfo::getSelfDirection() const {
+    return selfDirection;
+}
+
+void MyBattleInfo::setSelfDirection(Direction d) {
+    selfDirection = d;
 }

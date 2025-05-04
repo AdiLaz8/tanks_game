@@ -1,29 +1,32 @@
-#pragma once
+#ifndef MY_BATTLE_INFO_H
+#define MY_BATTLE_INFO_H
 
 #include "BattleInfo.h"
-#include "Position.h"  // אם Position ממומש אצלך
-#include <optional>
+#include "Position.h"
+#include "Direction.h"
+#include <vector>
 
 class MyBattleInfo : public BattleInfo {
 public:
-    // מיקום עצמי
-    void setMyPosition(const Position& pos);
-    Position getMyPosition() const;
-    bool hasMyPosition() const;
+    void reset();
+    void addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols);
 
-    // תחמושת
-    void setShellsLeft(int shells);
-    int getShellsLeft() const;
-
-    // האם יש אויב בטווח ראייה (אם החלטת לסמן את זה)
-    void setEnemyVisible(bool visible);
-    bool isEnemyVisible() const;
-
-    // ניקוי מידע לתחילת תור חדש
-    void clear();
+    const std::vector<std::pair<Position, char>>& getFullView() const;
+    const char (&getLocalView() const)[3][3];
+    const std::vector<std::pair<Position, char>>& getDirectionalView() const;
+    const std::vector<Position>& getShellPositions() const;
+    Position getSelfPosition() const;
+    Direction getSelfDirection() const;
+    void setSelfDirection(Direction d);
 
 private:
-    std::optional<Position> myPosition;
-    int shellsLeft = 0;
-    bool enemyVisible = false;
+    std::vector<std::pair<Position, char>> fullView;
+    char localView[3][3];
+    std::vector<std::pair<Position, char>> directionalView;
+    std::vector<Position> shellPositions;
+    Position selfPosition{0, 0};
+    Direction selfDirection = Direction(Direction::U);
+    bool selfPositionSet = false;
 };
+
+#endif

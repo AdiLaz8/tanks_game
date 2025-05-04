@@ -5,7 +5,12 @@
 
 Player2::Player2(int player_index, size_t x, size_t y,
                  size_t max_steps, size_t num_shells)
-    : playerId(player_index), boardRows(y), boardCols(x), max_steps(max_steps), num_shells(num_shells) {}
+    : Player(player_index, x, y, max_steps, num_shells),
+      playerId(player_index),
+      boardRows(y),
+      boardCols(x),
+      max_steps(max_steps),
+      num_shells(num_shells) {}
 
 void Player2::updateTankWithBattleInfo(TankAlgorithm& tank,
                                        SatelliteView& satellite_view) {
@@ -22,11 +27,11 @@ void Player2::updateTankWithBattleInfo(TankAlgorithm& tank,
     // הוספת 3x3 סביבת טנק
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
-            Position neighbor(selfPos.x + dx, selfPos.y + dy);
-            int wrappedX = (neighbor.x + boardCols) % boardCols;
-            int wrappedY = (neighbor.y + boardRows) % boardRows;
+            Position neighbor(selfPos.getx() + dx, selfPos.gety() + dy);
+            int wrappedX = (neighbor.getx() + boardCols) % boardCols;
+            int wrappedY = (neighbor.gety() + boardRows) % boardRows;
             Position wrapped(wrappedX, wrappedY);
-            char symbol = satellite_view.getObjectAt(wrapped.x, wrapped.y);
+            char symbol = satellite_view.getObjectAt(wrapped.getx(), wrapped.gety());
             battleInfo.addObject(wrapped, symbol, playerId, boardRows, boardCols);
         }
     }
@@ -35,14 +40,14 @@ void Player2::updateTankWithBattleInfo(TankAlgorithm& tank,
     Position delta = selfDir.toVector();
     Position current = selfPos + delta;
     for (int steps = 0; steps < std::max(boardCols, boardRows); ++steps) {
-        int wrappedX = (current.x + boardCols) % boardCols;
-        int wrappedY = (current.y + boardRows) % boardRows;
+        int wrappedX = (current.getx() + boardCols) % boardCols;
+        int wrappedY = (current.gety() + boardRows) % boardRows;
         Position wrapped(wrappedX, wrappedY);
 
         if (wrapped == selfPos)
             break;
 
-        char symbol = satellite_view.getObjectAt(wrapped.x, wrapped.y);
+        char symbol = satellite_view.getObjectAt(wrapped.getx(), wrapped.gety());
         battleInfo.addObject(wrapped, symbol, playerId, boardRows, boardCols);
         current = current + delta;
     }

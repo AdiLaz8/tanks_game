@@ -5,7 +5,7 @@
 #include "MyBattleInfo.h"
 #include "MySatelliteView.h"
 
-class Player2 : public Player {
+class Player2: public Player {
 private:
     int playerId;
     size_t boardRows;

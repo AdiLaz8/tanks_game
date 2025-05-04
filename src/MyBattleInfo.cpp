@@ -9,6 +9,10 @@ void MyBattleInfo::reset() {
             localView[i][j] = ' ';
     selfPositionSet = false;
 }
+MyBattleInfo::MyBattleInfo() {
+    reset();
+}
+
 
 void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols) {
     if (symbol == '*')

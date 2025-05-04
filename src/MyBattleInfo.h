@@ -8,6 +8,7 @@
 
 class MyBattleInfo : public BattleInfo {
 public:
+    MyBattleInfo();
     void reset();
     void addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols);
 

@@ -24,7 +24,7 @@ std::string Shell::toString() const {
     std::stringstream ss;
     ss << "Shell(owner=" << ownerId
        << ", dir=" << d.getDirection()
-       << ", pos=(" << p.x << "," << p.y << "))";
+       << ", pos=(" << p.getx() << "," << p.gety() << "))";
     return ss.str();
 }
 

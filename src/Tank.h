@@ -47,7 +47,7 @@ public:
         std::stringstream ss;
         ss << "Tank(owner=" << owner
         << ", ammo=" << ammunation
-        << ", pos=(" << p.x << "," << p.y << ")"
+        << ", pos=(" << p.getx() << "," << p.gety() << ")"
         << ", dir=" << d.getDirection()
         << ", shoot=" << shooting_status
         << ", back=" << backward_status

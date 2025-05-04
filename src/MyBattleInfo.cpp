@@ -32,9 +32,9 @@ void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int
     // localView
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
-            Position neighbor = {selfPosition.x + dx, selfPosition.y + dy};
-            if (neighbor.x >= 0 && neighbor.x < boardCols &&
-                neighbor.y >= 0 && neighbor.y < boardRows) {
+            Position neighbor = {selfPosition.getx() + dx, selfPosition.gety() + dy};
+            if (neighbor.getx() >= 0 && neighbor.getx() < boardCols &&
+                neighbor.gety() >= 0 && neighbor.gety() < boardRows) {
                 if (neighbor == pos) {
                     localView[dx + 1][dy + 1] = symbol;
                 }
@@ -45,8 +45,8 @@ void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int
     // directionalView
     Position delta = selfDirection.toVector();
     Position current = selfPosition + delta;
-    while (current.x >= 0 && current.x < boardCols &&
-           current.y >= 0 && current.y < boardRows) {
+    while (current.getx() >= 0 && current.getx() < boardCols &&
+           current.gety() >= 0 && current.gety() < boardRows) {
         if (current == pos)
             directionalView.emplace_back(current, symbol);
         current = current + delta;
@@ -79,4 +79,8 @@ Direction MyBattleInfo::getSelfDirection() const {
 
 void MyBattleInfo::setSelfDirection(Direction d) {
     selfDirection = d;
+}
+
+void MyBattleInfo::setSelfPosition(Position p) {
+    selfPosition = p;
 }

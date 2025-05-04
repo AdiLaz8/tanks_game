@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ActionRequest.h"
+#include "BattleInfo.h"
 
 class TankAlgorithm {
 public:

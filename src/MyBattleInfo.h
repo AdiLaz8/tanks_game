@@ -19,6 +19,7 @@ public:
     Position getSelfPosition() const;
     Direction getSelfDirection() const;
     void setSelfDirection(Direction d);
+    void setSelfPosition(Position p);
 
 private:
     std::vector<std::pair<Position, char>> fullView;

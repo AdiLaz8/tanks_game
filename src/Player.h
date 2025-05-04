@@ -2,6 +2,7 @@
 #define PLAYER_H
 #include <cstddef>
 #include "TankAlgorithm.h"
+#include "SatelliteView.h"
 // #include "SatelliteView.h"
 
 class Player {

@@ -13,33 +13,12 @@ private:
     size_t height;
 
 public:
-    MySatelliteView(const Board& board)
-        : board(board), width(board.getWidth()), height(board.getHeight()) {}
+    MySatelliteView(const Board& board);
 
-    void setPosition(const Position& pos) {
-        currentTankPosition = pos;
-    }
+    void setPosition(const Position& pos);
+    Position getPosition() const;
 
-    Position getPosition() const {
-        return currentTankPosition;
-    }
-
-    char getObjectAt(size_t x, size_t y) const override {
-        if (x >= width || y >= height)
-            return '&';
-
-        const CellSlot& slot = board.getSlot(x, y);
-        
-        if (!slot.getShells().empty())
-            return '*';
-        if (slot.getTank())
-            return slot.getTank()->getSymbol();
-        if (slot.getMine())
-            return '@';
-        if (slot.getWall())
-            return '#';
-        return ' ';
-    }
+    char getObjectAt(size_t x, size_t y) const override;
 };
 
 #endif // MYSATELLITEVIEW_H

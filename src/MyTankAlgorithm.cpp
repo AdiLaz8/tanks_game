@@ -1,7 +1,9 @@
 #include "MyTankAlgorithm.h"
 
 MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
-    : playerIndex(playerIndex), tankIndex(tankIndex) {}
+    : playerIndex(playerIndex), tankIndex(tankIndex),
+      tankDirection(playerIndex == 1 ? Direction::L : Direction::R) {}
+
 
 int MyTankAlgorithm::getTankIndex() const {
     return tankIndex;

@@ -9,21 +9,22 @@ Player1::Player1(int player_index, size_t x, size_t y, size_t max_steps, size_t 
 
 void Player1::updateTankWithBattleInfo(TankAlgorithm& tank, SatelliteView& satellite_view) {
     auto& myTank = dynamic_cast<MyTankAlgorithm&>(tank);
-    auto& myView = dynamic_cast<MySatelliteView&>(satellite_view);
-
-    Position currentPos = myView.getPosition();
-
+    Position currentPos(-1,-1);
     if (isFirstTurn) {
         for (size_t j = 0; j < boardHeight; ++j) {
             for (size_t i = 0; i < boardWidth; ++i) {
-                char symbol = myView.getObjectAt(i, j);
-                cachedInfo.addObject(Position(i, j), symbol, 1, boardHeight, boardWidth);
+                char symbol = satellite_view.getObjectAt(i, j);
+                Position pos = Position(i,j);
+                if (symbol == '%'){
+                    currentPos = pos;
+                }
+                cachedInfo.addObject(pos, symbol, 1, boardHeight, boardWidth);
             }
         }
         isFirstTurn = false;
     } else {
         Position oldPos = cachedInfo.getSelfPosition();
-        char symbol = myView.getObjectAt(oldPos.getx(), oldPos.gety());
+        char symbol = satellite_view.getObjectAt(oldPos.getx(), oldPos.gety());
         cachedInfo.addObject(oldPos, symbol, 1, boardHeight, boardWidth);
     }
 

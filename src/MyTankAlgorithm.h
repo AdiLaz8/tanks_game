@@ -10,7 +10,7 @@ public:
 
     ActionRequest getAction() override;
     void updateBattleInfo(BattleInfo& info) override;
-
+    Direction getDirection() const { return tankDirection; }
     int getTankIndex() const;
     int getPlayerIndex() const;
 
@@ -19,4 +19,5 @@ private:
     int tankIndex;
     MyBattleInfo lastInfo;
     bool hasInfo = false;
+    Direction tankDirection;
 };

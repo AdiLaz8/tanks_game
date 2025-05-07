@@ -8,22 +8,26 @@
 
 class MyBattleInfo : public BattleInfo {
 public:
-    MyBattleInfo();
+    MyBattleInfo(size_t rows, size_t cols);
     void reset();
     void addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols);
 
     const std::vector<std::pair<Position, char>>& getFullView() const;
-    const char (&getLocalView() const)[3][3];
+    const char (&getLocalView() const)[5][5];
     const std::vector<std::pair<Position, char>>& getDirectionalView() const;
     const std::vector<Position>& getShellPositions() const;
     Position getSelfPosition() const;
     Direction getSelfDirection() const;
     void setSelfDirection(Direction d);
     void setSelfPosition(Position p);
+    size_t getWidth() { return boardCols; }
+    size_t getHeight() { return boardRows; }
 
 private:
+    size_t boardRows;
+    size_t boardCols;
     std::vector<std::pair<Position, char>> fullView;
-    char localView[3][3];
+    char localView[5][5];
     std::vector<std::pair<Position, char>> directionalView;
     std::vector<Position> shellPositions;
     Position selfPosition{0, 0};

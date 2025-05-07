@@ -22,7 +22,6 @@ private:
     size_t maxSteps;
     size_t numShells;
     bool isFirstTurn = true;
-    MyBattleInfo cachedInfo;
 };
 
 #endif // PLAYER1_H

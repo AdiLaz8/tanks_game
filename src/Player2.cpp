@@ -1,6 +1,7 @@
 #include "Player2.h"
 #include "MyTankAlgorithm.h"
 #include <algorithm>
+#include <set>
 
 Player2::Player2(int player_index, size_t x, size_t y,
                  size_t max_steps, size_t num_shells)
@@ -35,7 +36,7 @@ void Player2::updateTankWithBattleInfo(TankAlgorithm& tank,
     auto& myTank = dynamic_cast<MyTankAlgorithm&>(tank);
 
     int tankIndex = myTank.getTankId();
-    MyBattleInfo battleInfo;
+    MyBattleInfo battleInfo(boardCols,boardRows);
 
     // קבלת כיוון מהטנק
     Direction dir = myTank.getTankDirection();
@@ -87,26 +88,42 @@ void Player2::updateTankWithBattleInfo(TankAlgorithm& tank,
     battleInfo.setSelfPosition(currentPos);
     battleInfo.addObject(currentPos, '%', playerId, boardRows, boardCols);
 
-    // סביבת 3x3
-    for (int dx = -1; dx <= 1; ++dx) {
-        for (int dy = -1; dy <= 1; ++dy) {
-            Position neighbor((currentPos.getx() + dx + boardCols) % boardCols, (currentPos.gety() + dy + boardRows) % boardRows);
-            char symbol = satellite_view.getObjectAt(neighbor.getx(), neighbor.gety());
-            battleInfo.addObject(neighbor, symbol, playerId, boardRows, boardCols);
+       // סביבת מורחבת
+    const std::vector<std::pair<int, int>> extendedOffsets = {
+        {1, 1}, {-1, -1}, {1, 0}, {2, 0}, {2, 2}, {-2, -2},
+        {0, -1}, {0, -2}, {-1, 0}, {-2, 0}, {-1, 1}, {-2, 2},
+        {0, 1}, {0, 2}, {1, -1}, {2, -2}
+    };
+
+    std::set<Position> seenPositions;
+    for (const auto& [dx, dy] : extendedOffsets) {
+        int wrappedX = (currentPos.getx() + dx + boardCols) % boardCols;
+        int wrappedY = (currentPos.gety() + dy + boardRows) % boardRows;
+        Position neighbor(wrappedX, wrappedY);
+
+        // וידוא שזה לא המיקום העצמי שלנו ושלא כבר הוספנו את המשבצת הזו
+        if (!(neighbor == currentPos) && seenPositions.count(neighbor) == 0) {
+            seenPositions.insert(neighbor);
+            battleInfo.addObject(neighbor, satellite_view.getObjectAt(wrappedX, wrappedY), playerId, boardRows, boardCols);
         }
     }
 
     // קו ראייה
     Position delta = dir.toVector();
-    Position curr = currentPos + Position(0,0);
-    curr.move(dir, boardCols, boardRows);
-    while (!(curr == currentPos)) {
-        char symbol = satellite_view.getObjectAt(curr.getx(), curr.gety());
-        battleInfo.addObject(curr, symbol, playerId, boardRows, boardCols);
-        curr.move(dir, boardCols, boardRows);
+    Position curr = currentPos;
+    while (true) {
+        // טיפול ב-wraparound
+        curr.setx((curr.getx() + delta.getx() + boardCols) % boardCols);
+        curr.sety((curr.gety() + delta.gety() + boardRows) % boardRows);
+
+        // עצור אם חזרת למיקום ההתחלתי
+        if (curr == currentPos)
+            break;
+
+        // הוסף את המשבצת הנוכחית ל-directionalView
+        battleInfo.addObject(curr, satellite_view.getObjectAt(curr.getx(), curr.gety()), playerId, boardRows, boardCols);
     }
 
     // סיום
     myTank.updateBattleInfo(battleInfo);
-    isFirstTurn = false;
 }

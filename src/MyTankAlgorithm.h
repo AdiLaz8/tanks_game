@@ -10,7 +10,7 @@
 class MyTankAlgorithm : public TankAlgorithm {
 protected:
     MyBattleInfo* currentInfo = nullptr;
-    int turnCounterSinceInfo = 0;
+    int turnCounterSinceInfo = -1;
     int playerId;
     int tankId;
     size_t boardWidth;
@@ -20,7 +20,7 @@ protected:
     
 
 public:
-    MyTankAlgorithm(int playerIndex, int tankIndex, size_t width, size_t height);
+    MyTankAlgorithm(int playerIndex, int tankIndex);
     void updateBattleInfo(BattleInfo& info) override;
     int getTurnsSinceBattleInfo() const;
     void incrementTurnCounter();

@@ -1,11 +1,15 @@
 #include "MyTankAlgorithm.h"
 #include <algorithm>
 
-MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex, size_t width, size_t height)
-    : playerId(playerIndex), tankId(tankIndex), boardWidth(width), boardHeight(height), dir((playerIndex==1)? Direction::L : Direction::R) {}
+MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
+    : playerId(playerIndex), tankId(tankIndex), dir((playerIndex==1)? Direction::L : Direction::R) {}
 
 void MyTankAlgorithm::updateBattleInfo(BattleInfo& info) {
     currentInfo = dynamic_cast<MyBattleInfo*>(&info);
+    if (turnCounterSinceInfo == -1){
+        boardWidth = currentInfo->getWidth();
+        boardHeight = currentInfo->getHeight();
+    }
     turnCounterSinceInfo = 0;
 }
 
@@ -34,8 +38,8 @@ bool MyTankAlgorithm::isThreatenedByShells() const {
     if (!currentInfo) return false;
 
     const auto& local = currentInfo->getLocalView();
-    for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j)
+    for (int i = 0; i < 5; ++i)
+        for (int j = 0; j < 5; ++j)
             if (local[i][j] == '*') return true;
 
     return false;
@@ -52,7 +56,7 @@ Position forward = selfPos + selfDir.toVector();
 forward.setx((forward.getx() + boardWidth) % boardWidth);
 forward.sety((forward.gety() + boardHeight) % boardHeight);
 
-const char (&local)[3][3] = currentInfo->getLocalView();
+const char (&local)[5][5] = currentInfo->getLocalView();
 int dx = forward.getx() - selfPos.getx();
 int dy = forward.gety() - selfPos.gety();
 

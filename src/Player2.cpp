@@ -34,11 +34,11 @@ void Player2::updateTankWithBattleInfo(TankAlgorithm& tank,
                                        SatelliteView& satellite_view) {
     auto& myTank = dynamic_cast<MyTankAlgorithm&>(tank);
 
-    int tankIndex = myTank.getTankIndex();
+    int tankIndex = myTank.getTankId();
     MyBattleInfo battleInfo;
 
     // קבלת כיוון מהטנק
-    Direction dir = myTank.getDirection();
+    Direction dir = myTank.getTankDirection();
 
     // ניהול מיקום
     Position currentPos = Position(-1,-1);

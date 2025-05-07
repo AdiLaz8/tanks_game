@@ -2,7 +2,7 @@
 #include <algorithm>
 
 MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex, size_t width, size_t height)
-    : playerId(playerIndex), tankId(tankIndex), boardWidth(width), boardHeight(height) {}
+    : playerId(playerIndex), tankId(tankIndex), boardWidth(width), boardHeight(height), dir((playerIndex==1)? Direction::L : Direction::R) {}
 
 void MyTankAlgorithm::updateBattleInfo(BattleInfo& info) {
     currentInfo = dynamic_cast<MyBattleInfo*>(&info);
@@ -23,10 +23,9 @@ bool MyTankAlgorithm::canShootInDirection() const {
 
     const auto& dirView = info->getDirectionalView();
     for (const auto& [pos, symbol] : dirView) {
-        if (symbol == '*') continue; // shell
         if (symbol == '%') return false; // don't shoot if we see ourselves
-        if ((playerId == 1 && symbol == '1') || (playerId == 2 && symbol == '2')) return false; // friendly fire
-        if ((playerId == 1 && symbol == '2') || (playerId == 2 && symbol == '1')) return true; // enemy
+        else if ((playerId == 1 && symbol == '1') || (playerId == 2 && symbol == '2')) return false; // friendly fire
+        else if ((playerId == 1 && symbol == '2') || (playerId == 2 && symbol == '1')) return true; // enemy
     }
     return false;
 }
@@ -43,11 +42,11 @@ bool MyTankAlgorithm::isThreatenedByShells() const {
 }
 
 
-Action MyTankAlgorithm::moveIfThreatened() const {
+Action MyTankAlgorithm::moveIfThreatened()  {
 if (!currentInfo) return Action(ActionRequest::GetBattleInfo);
 
 Position selfPos = currentInfo->getSelfPosition();
-Direction selfDir = currentInfo->getSelfDirection();
+Direction selfDir = dir;
 Position forward = selfPos + selfDir.toVector();
 
 forward.setx((forward.getx() + boardWidth) % boardWidth);
@@ -67,9 +66,14 @@ if (std::abs(dx) <= 1 && std::abs(dy) <= 1 && local[dx + 1][dy + 1] == ' ') {
     return Action(ActionRequest::MoveForward);
 }
 
-// חיפוש תא פנוי אחר
-for (int dir = 0; dir < 8; ++dir) {
-    Direction::Value tryDir = static_cast<Direction::Value>(dir);
+// חיפוש תא פנוי בכיוונים שהם ב־45 או 90 מעלות מהכיוון הנוכחי
+Direction::Value currDir = selfDir.getDirection();
+int currIndex = static_cast<int>(currDir);
+std::vector<int> offsets = {1, 2, -1, -2};
+
+for (int offset : offsets) {
+    int tryIndex = (currIndex + offset + 8) % 8;
+    Direction::Value tryDir = static_cast<Direction::Value>(tryIndex);
     Position delta = Direction(tryDir).toVector();
     Position target = selfPos + delta;
     target.setx((target.getx() + boardWidth) % boardWidth);
@@ -84,13 +88,15 @@ for (int dir = 0; dir < 8; ++dir) {
     if (dyTry < -1) dyTry = 1;
 
     if (std::abs(dxTry) <= 1 && std::abs(dyTry) <= 1 && local[dxTry + 1][dyTry + 1] == ' ') {
-        Direction::Value currDir = selfDir.getDirection();
+        moveAfterRotate=true;
         return Action(rotateTowards(currDir, tryDir));
     }
 }
 
+
 return Action(ActionRequest::DoNothing);
 }
+
 ActionRequest MyTankAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired) const {
     int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
     if (diff == 0) return ActionRequest::DoNothing;
@@ -120,4 +126,10 @@ Direction::Value MyTankAlgorithm::getDirectionTo(const Position& from, const Pos
     if (dirX == -1 && dirY == -1) return Direction::UL;
 
     return Direction::U;
+}
+int  MyTankAlgorithm::getTankId()const{
+    return tankId;
+}
+Direction MyTankAlgorithm::getTankDirection()const{
+    return dir;
 }

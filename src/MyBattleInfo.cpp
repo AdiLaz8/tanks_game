@@ -32,25 +32,35 @@ void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int
     // localView
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
-            Position neighbor = {selfPosition.getx() + dx, selfPosition.gety() + dy};
-            if (neighbor.getx() >= 0 && neighbor.getx() < boardCols &&
-                neighbor.gety() >= 0 && neighbor.gety() < boardRows) {
-                if (neighbor == pos) {
-                    localView[dx + 1][dy + 1] = symbol;
-                }
+            int wrappedX = (selfPosition.getx() + dx + boardCols) % boardCols;
+            int wrappedY = (selfPosition.gety() + dy + boardRows) % boardRows;
+            Position neighbor(wrappedX, wrappedY);
+
+            if (neighbor == pos) {
+                localView[dx + 1][dy + 1] = symbol;
             }
         }
     }
 
+
     // directionalView
     Position delta = selfDirection.toVector();
     Position current = selfPosition + delta;
-    while (current.getx() >= 0 && current.getx() < boardCols &&
-           current.gety() >= 0 && current.gety() < boardRows) {
-        if (current == pos)
+
+    for (int step = 0; step < std::max(boardCols, boardRows); ++step) {
+        current.setx((current.getx() + boardCols) % boardCols);
+        current.sety((current.gety() + boardRows) % boardRows);
+
+        if (current == selfPosition)
+            break;
+
+        if (current == pos) {
             directionalView.emplace_back(current, symbol);
+        }
+
         current = current + delta;
     }
+
 }
 
 const std::vector<std::pair<Position, char>>& MyBattleInfo::getFullView() const {

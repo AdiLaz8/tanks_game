@@ -1,0 +1,28 @@
+// Algo1.h
+#ifndef ALGO1_H
+#define ALGO1_H
+
+#include "MyTankAlgorithm.h"
+#include <vector>
+#include <queue>
+#include <unordered_set>
+
+class Algo1 : public MyTankAlgorithm {
+public:
+    using MyTankAlgorithm::MyTankAlgorithm;
+    ActionRequest getAction() override;
+    void updateBattleInfo(BattleInfo& info) override;
+
+private:
+    std::vector<Direction::Value> currentPath;
+    Position targetPos;
+    bool chasing = false;
+
+    bool needsNewBattleInfo() const;
+    void computeShootingPath();
+    std::vector<Direction::Value> computeBFS(const Position& from, const Position& to,
+                                             const std::vector<std::pair<Position, char>>& fullView,
+                                             size_t width, size_t height);
+};
+
+#endif

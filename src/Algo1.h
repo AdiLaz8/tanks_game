@@ -16,6 +16,7 @@ public:
 private:
     std::vector<Direction::Value> currentPath;
     Position targetPos;
+    std::vector<std::pair<Position, char>> fullView;
     bool chasing = false;
     bool needsNewInfo = true;
     bool needsNewBattleInfo() const;

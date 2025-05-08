@@ -6,6 +6,7 @@
 
 void Algo1::updateBattleInfo(BattleInfo& info) {
     currentInfo = dynamic_cast<MyBattleInfo*>(&info);
+    if(!currentInfo) return;
     boardWidth = currentInfo->getWidth();
     boardHeight = currentInfo->getHeight();
     turnCounterSinceInfo = 0;
@@ -54,8 +55,8 @@ ActionRequest Algo1::getAction() {
     }
 
     if (canShootInDirection()){
-        return ActionRequest::Shoot;
         turnCounterSinceInfo++;
+        return ActionRequest::Shoot;
     }
 
     if (needsNewBattleInfo()){
@@ -67,6 +68,24 @@ ActionRequest Algo1::getAction() {
     if (!currentPath.empty()) {
         Direction::Value nextDir = currentPath.front();
         if (nextDir == dir.getDirection()){
+            Position selfPos = currentInfo->getSelfPosition();
+            Position nextPos = selfPos + Direction(nextDir).toVector();
+            nextPos.setx((nextPos.getx() + boardWidth) % boardWidth);
+            nextPos.sety((nextPos.gety() + boardHeight) % boardHeight);
+             // בדיקה אם יש קיר במיקום הבא
+            auto it = std::find_if(fullView.begin(), fullView.end(),
+                           [&](const std::pair<Position, char>& cell) {
+                               return cell.first == nextPos;
+                           });
+            if (it != fullView.end() && it->second == '#') {
+                return ActionRequest::Shoot;
+            }
+            if (it != fullView.end() && it->second == '@') {
+                currentPath.empty();
+                chasing = false;
+                turnCounterSinceInfo = 0;
+                return ActionRequest::GetBattleInfo;
+            }
             currentPath.erase(currentPath.begin());
             turnCounterSinceInfo++;
             return ActionRequest::MoveForward;

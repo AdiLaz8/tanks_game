@@ -17,7 +17,7 @@ private:
     std::vector<Direction::Value> currentPath;
     Position targetPos;
     bool chasing = false;
-
+    bool needsNewInfo = true;
     bool needsNewBattleInfo() const;
     void computeShootingPath();
     std::vector<Direction::Value> computeBFS(const Position& from, const Position& to,

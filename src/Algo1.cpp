@@ -36,40 +36,53 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
 }
 
 ActionRequest Algo1::getAction() {
-    if (!currentInfo)
+    // first turn
+    if (turnCounterSinceInfo == -1)
         return ActionRequest::GetBattleInfo;
 
     if (moveAfterRotate) {
         moveAfterRotate = false;
+        needsNewInfo = true;
+        turnCounterSinceInfo++;
         return ActionRequest::MoveForward;
     }
 
     if (isThreatenedByShells()) {
         currentPath.clear();
+        turnCounterSinceInfo++;
         return moveIfThreatened().getType();
     }
 
-    if (canShootInDirection())
+    if (canShootInDirection()){
         return ActionRequest::Shoot;
+        turnCounterSinceInfo++;
+    }
 
-    if (needsNewBattleInfo())
+    if (needsNewBattleInfo()){
+        chasing = false;
+        turnCounterSinceInfo = 0;
         return ActionRequest::GetBattleInfo;
+    }
 
     if (!currentPath.empty()) {
         Direction::Value nextDir = currentPath.front();
-        currentPath.erase(currentPath.begin());
-
-        if (nextDir == dir.getDirection())
+        if (nextDir == dir.getDirection()){
+            currentPath.erase(currentPath.begin());
+            turnCounterSinceInfo++;
             return ActionRequest::MoveForward;
-        else
+        }
+        else{
+            turnCounterSinceInfo++;
             return rotateTowards(dir.getDirection(), nextDir);
+        }   
     }
-
+    turnCounterSinceInfo = 0;
+    chasing = false;
     return ActionRequest::GetBattleInfo;
 }
 
 bool Algo1::needsNewBattleInfo() const {
-    return turnCounterSinceInfo >= 10 || (chasing && currentPath.empty());
+    return needsNewInfo || turnCounterSinceInfo >= 10 || (chasing && currentPath.empty());
 }
 
 void Algo1::computeShootingPath() {

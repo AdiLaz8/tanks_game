@@ -112,19 +112,19 @@ Direction::Value MyTankAlgorithm::getDirectionTo(const Position& from, const Pos
     return Direction::U;
 }
 
-ActionRequest MyTankAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired) const {
+ActionRequest MyTankAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired){
     int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
     if (diff == 0) return ActionRequest::GetBattleInfo;
     if (diff == 1){
-        direction=direction.rotateClockwise8;
+        direction.rotateClockwise8();
         return ActionRequest::RotateRight45;
     }
     if (diff == 2 || diff == 3 || diff == 4){
-        direction=direction.rotateClockwise4;
+        direction.rotateClockwise4();
         return ActionRequest::RotateRight90;
     }
     if (diff == 5 || diff == 6 || diff == 7){
-        direction=direction.rotateCounterClockwise4;
+        direction.rotateCounterClockwise4();
         return ActionRequest::RotateLeft90;
     }
     return ActionRequest::DoNothing;

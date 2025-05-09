@@ -1,13 +1,14 @@
 #include "Tank.h"
 
-Tank::Tank(char owner, int ammunation, Direction d, Position p, int shooting_status, int backward_status, bool is_alive)
-    : owner(owner), ammunation(ammunation), d(d), p(p), shooting_status(shooting_status), backward_status(backward_status), is_alive(is_alive) {}
+Tank::Tank(char owner, Direction d, Position p)
+    : owner(owner), d(d), p(p) {}
+
+Tank::~Tank() {}
 
 char Tank::getSymbol() const {
     return owner;
 }
-Tank::~Tank() {
-}
+
 const Position& Tank::getPosition() const {
     return p;
 }
@@ -16,77 +17,45 @@ const Direction& Tank::getDirection() const {
     return d;
 }
 
-int Tank::getAmmo() const {
-    return ammunation;
-}
-
-int Tank::getShootingStatus() const {
-    return shooting_status;
-}
-
-int Tank::getBackwardStatus() const {
-    return backward_status;
-}
-
-bool Tank::isAlive() const {
-    return is_alive;
-}
-
-// Moves the tank forward in its direction and returns the new position
 Position Tank::moveForward(int width, int height) {
     p.move(d, width, height);
     return p;
 }
 
-// Moves the tank backwards in its direction and returns the new position
 Position Tank::moveBackward(int width, int height) {
     p.move(d.getOppositeDirection(), width, height);
     return p;
 }
 
-void Tank::decreaseBackward() {
-    backward_status--;
-}
-
-void Tank::setBackward(int status) {
-    backward_status = status;
-}
-
-// shoots a shell in the direction of the tank, reduces one shell from the ammo and set the shooting cooldown to 4 steps
-void Tank::shoot() {
-    ammunation--;
-    shooting_status = 4;
-}
-
-// The tank has one live only so if it got hit by a shell/mine/tank it is no longer alive
-void Tank::hit() {
-    is_alive = false;
-}
-
-void Tank::decreaseShooting() {
-    shooting_status--;
-}
-
-// rotates for the tank's direction
 void Tank::rotateLeft4() {
     d.rotateCounterClockwise4();
-}
-
-void Tank::rotateLeft8() {
-    d.rotateCounterClockwise8();
 }
 
 void Tank::rotateRight4() {
     d.rotateClockwise4();
 }
 
+void Tank::rotateLeft8() {
+    d.rotateCounterClockwise8();
+}
+
 void Tank::rotateRight8() {
     d.rotateClockwise8();
 }
 
-void Tank::setPosition(Position newPos){
+void Tank::setPosition(Position newPos) {
     p = newPos;
 }
-void Tank::setDirection(Direction newDirection){
+
+void Tank::setDirection(Direction newDirection) {
     d = newDirection;
+}
+
+std::string Tank::toString() const {
+    std::stringstream ss;
+    ss << "Tank(owner=" << owner
+       << ", pos=(" << p.getx() << "," << p.gety() << ")"
+       << ", dir=" << d.getDirection()
+       << ")";
+    return ss.str();
 }

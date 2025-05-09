@@ -2,10 +2,8 @@
 #define PLAYER1_H
 
 #include "Player.h"
-#include "MySatelliteView.h"
 #include "MyBattleInfo.h"
-#include <memory>
-#include <optional>
+#include <unordered_map>
 
 class Player1 : public Player {
 public:
@@ -21,7 +19,6 @@ private:
     size_t boardHeight;
     size_t maxSteps;
     size_t numShells;
-    bool isFirstTurn = true;
 };
 
 #endif // PLAYER1_H

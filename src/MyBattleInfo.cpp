@@ -9,7 +9,7 @@ void MyBattleInfo::reset() {
             localView[i][j] = ' ';
     selfPositionSet = false;
 }
-MyBattleInfo::MyBattleInfo(size_t rows, size_t cols) : boardRows(rows), boardCols(cols) {
+MyBattleInfo::MyBattleInfo(size_t rows, size_t cols, int numShells) : boardRows(rows), boardCols(cols), numShells(numShells) {
     reset();
 }
 

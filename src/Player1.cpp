@@ -10,7 +10,7 @@ Player1::Player1(int player_index, size_t x, size_t y, size_t max_steps, size_t 
 void Player1::updateTankWithBattleInfo(TankAlgorithm& tank, SatelliteView& satellite_view) {
     auto& myTank = dynamic_cast<MyTankAlgorithm&>(tank);
     Position currentPos(-1,-1);
-    MyBattleInfo battleInfo(boardWidth,boardHeight);
+    MyBattleInfo battleInfo(boardWidth,boardHeight, numShells);
     if (isFirstTurn) {
         for (size_t j = 0; j < boardHeight; ++j) {
             for (size_t i = 0; i < boardWidth; ++i) {

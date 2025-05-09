@@ -8,7 +8,7 @@
 
 class MyBattleInfo : public BattleInfo {
 public:
-    MyBattleInfo(size_t rows, size_t cols);
+    MyBattleInfo(size_t rows, size_t cols, int numShells);
     void reset();
     void addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols);
 
@@ -26,6 +26,7 @@ public:
 private:
     size_t boardRows;
     size_t boardCols;
+    int numShells;
     std::vector<std::pair<Position, char>> fullView;
     char localView[5][5];
     std::vector<std::pair<Position, char>> directionalView;

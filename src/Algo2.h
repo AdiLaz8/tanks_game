@@ -2,12 +2,15 @@
 #define ALGO2_H
 
 #include "MyTankAlgorithm.h"
+#include <vector>
+#include <queue>
+#include <unordered_set>
 
 class Algo2 : public MyTankAlgorithm {
 public:
-    using MyTankAlgorithm::MyTankAlgorithm; // ירושה של הקונסטרקטור
-    inline virtual Algo2::~Algo2() override {}
+    using MyTankAlgorithm::MyTankAlgorithm;
     ActionRequest getAction() override;
-};
+    void updateBattleInfo(BattleInfo& info) override;
 
-#endif // ALGO2_H
+};
+#endif

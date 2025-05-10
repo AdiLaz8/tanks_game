@@ -32,6 +32,9 @@ private:
     const TankAlgorithmFactory& tankAlgoFactory;
     std::vector<Tank*> tanks1;
     std::vector<Tank*> tanks2;
+    std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage1;
+    std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage2;
+
 
 public:
     GameManager(const PlayerFactory& pf, const TankAlgorithmFactory& tf);

@@ -100,36 +100,36 @@ void GameManager::readBoard(const std::string& filename) {
                 case '@':
                     gameBoard->addObject(std::make_unique<Mine>(), x, y);
                     break;
-                case '1':
+                case '1':{
                     gameBoard->addObject(std::make_unique<Tank>('1', numShells, Direction(Direction::L), Position(x, y)), x, y);
                     hasTank1 = true;
-                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(1,tankIndex1);
-                    MyTankAlgorithm* algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
+                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(1, tankIndex1);
+                    auto algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
                     Tank* t=gameBoard->getSlot(x, y).getTank();
                     if (algoPtr && t) {
                         tankMap1[algoPtr] = t;
-                        algo.release();
+                        algoStorage1.push_back(std::unique_ptr<MyTankAlgorithm>(static_cast<MyTankAlgorithm*>(algo.release())));
                     } else {
                         std::cerr << "Error: Failed to create tank algorithm for Player 1 at index " << tankIndex1 << std::endl;
                         exit(1);
                     }
                     tankIndex1++;
-                    break;
-                case '2':
-                    gameBoard->addObject(std::make_unique<Tank>('2', numShells, Direction(Direction::R), Position(x, y)), x, y);
+                    break;}
+                case '2':{
+                    gameBoard->addObject(std::make_unique<Tank>('2', numShells, Direction(Direction::L), Position(x, y)), x, y);
                     hasTank2 = true;
-                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(2,tankIndex2);
-                    MyTankAlgorithm* algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
+                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(2, tankIndex1);
+                    auto algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
                     Tank* t=gameBoard->getSlot(x, y).getTank();
                     if (algoPtr && t) {
                         tankMap2[algoPtr] = t;
-                        algo.release();
+                        algoStorage2.push_back(std::unique_ptr<MyTankAlgorithm>(static_cast<MyTankAlgorithm*>(algo.release())));
                     } else {
                         std::cerr << "Error: Failed to create tank algorithm for Player 2 at index " << tankIndex2 << std::endl;
                         exit(1);
                     }
-                    tankIndex2++;
-                    break;
+                    tankIndex1++;
+                    break;}
                 default:
                     errorFile << "Warning: Unknown char '" << c << "' at (" << x << "," << y << ")\n";
             }

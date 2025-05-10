@@ -72,6 +72,8 @@ private:
     char owner; // '1' or '2'
     Direction d;
     Position p;
+    bool alive = true;
+
 
 public:
     Tank(char owner, Direction d = Direction(Direction::L), Position p = Position(0, 0));
@@ -83,7 +85,8 @@ public:
 
     Position moveForward(int width, int height);
     Position moveBackward(int width, int height);
-
+    bool isAlive() const;
+    void Hit();
     void rotateLeft4();
     void rotateRight4();
     void rotateLeft8();

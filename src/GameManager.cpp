@@ -107,7 +107,7 @@ void GameManager::readBoard(const std::string& filename) {
                     auto algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
                     Tank* t=gameBoard->getSlot(x, y).getTank();
                     if (algoPtr && t) {
-                        tankMap1[algoPtr] = t;
+                        tankPairs.emplace_back(std::move(algo), t);
                         algoStorage1.push_back(std::unique_ptr<MyTankAlgorithm>(static_cast<MyTankAlgorithm*>(algo.release())));
                     } else {
                         std::cerr << "Error: Failed to create tank algorithm for Player 1 at index " << tankIndex1 << std::endl;
@@ -122,7 +122,7 @@ void GameManager::readBoard(const std::string& filename) {
                     auto algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
                     Tank* t=gameBoard->getSlot(x, y).getTank();
                     if (algoPtr && t) {
-                        tankMap2[algoPtr] = t;
+                        tankPairs.emplace_back(std::move(algo), t);
                         algoStorage2.push_back(std::unique_ptr<MyTankAlgorithm>(static_cast<MyTankAlgorithm*>(algo.release())));
                     } else {
                         std::cerr << "Error: Failed to create tank algorithm for Player 2 at index " << tankIndex2 << std::endl;
@@ -529,55 +529,38 @@ void GameManager::gameLoop() {
             std::string turn = std::to_string(currentStep / 2 + 1);
             Logger::debug("Turn : " + turn);
             logFile << "Turn : " + turn << std::endl;
+
             moveShells();
             checkCollisions();
-            if (checkGameOver())
-            {
-                break;
-            }
+            if (checkGameOver()) break;
 
             auto boardView = buildBoardMatrix();
             MySatelliteView satellite(boardView);
 
-            for (auto it = tankMap1.begin(); it != tankMap1.end(); ) {
-                if (!handleTankAction(*it->first, *player1, it->second, satellite, tankMap1, it)) continue;
-                ++it;
-            }
+            for (auto& [algoPtr, tank] : tankPairs) {
+                if (! tank->isAlive()) continue;
 
-            for (auto it = tankMap2.begin(); it != tankMap2.end(); ) {
-                if (!handleTankAction(*it->first, *player2, it->second, satellite, tankMap2, it)) continue;
-                ++it;
+                ActionRequest request = algoPtr->getAction();
+                if (request == ActionRequest::GetBattleInfo) {
+                    satellite.setPosition(tank->getPosition());
+                    if (tank->getSymbol() == '1') {
+                        player1->updateTankWithBattleInfo(*algoPtr, satellite);
+                    } else {
+                        player2->updateTankWithBattleInfo(*algoPtr, satellite);
+                    }
+                } else {
+                    executeAction(request, *algoPtr, tank);
+                }
             }
 
             checkCollisions();
         }
         currentStep++;
     }
+
     logGameResult();
 }
 
-bool GameManager::handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* tank,
-                                   MySatelliteView& satellite,
-                                   std::unordered_map<MyTankAlgorithm*, Tank*>& tankMap,
-                                   std::unordered_map<MyTankAlgorithm*, Tank*>::iterator& it) {
-    if (!algo.isAlive()) {
-        logFile << "Tank " << tank->getSymbol() << " destroyed." << std::endl;
-        Logger::debug("Tank " + std::to_string(algo.getTankId()) + " destroyed.");
-        tankMap.erase(it++);
-        return false;
-    }
-
-
-    ActionRequest request = algo.getAction();
-    if (request == ActionRequest::GetBattleInfo) {
-        satellite.setPosition(tank->getPosition());
-        player.updateTankWithBattleInfo(algo, satellite);
-        return true;
-    }
-
-    executeAction(request, algo, tank);
-    return true;
-}
 
 void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank) {
     Position pos = tank->getPosition();
@@ -672,23 +655,23 @@ void GameManager::checkCollisions() {
 
     for (Shell* shell : gameBoard->getShells()) {
         Position pos = shell->getPosition();
-        CellSlot& slot = gameBoard->getSlot(pos.x, pos.y);
+        CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
 
         if (Tank* tank = slot.getTank()) {
-            tank->hit();
-            gameBoard->removeObject(tank, pos.x, pos.y);
-            logFile << "Shell: Tank " << tank->getSymbol() << " destroyed at (" << pos.x << "," << pos.y << ")" << std::endl;
-            Logger::debug("Shell destroyed tank at position (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ")");
+            tank->Hit();
+            gameBoard->removeObject(tank, pos.getx(), pos.gety());
+            logFile << "Shell: Tank " << tank->getSymbol() << " destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+            Logger::debug("Shell destroyed tank at position (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
             toRemove.push_back(shell);
             continue;
         }
 
         if (Wall* wall = slot.getWall()) {
             int hp = wall->onHit();
-            logFile << "Shell hit wall at (" << pos.x << "," << pos.y << "). Wall HP: " << hp << std::endl;
+            logFile << "Shell hit wall at (" << pos.getx() << "," << pos.gety() << "). Wall HP: " << hp << std::endl;
             if (hp <= 0) {
-                gameBoard->removeObject(wall, pos.x, pos.y);
-                logFile << "Wall destroyed at (" << pos.x << "," << pos.y << ")" << std::endl;
+                gameBoard->removeObject(wall, pos.getx(), pos.gety());
+                logFile << "Wall destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
             }
             toRemove.push_back(shell);
             continue;
@@ -696,7 +679,7 @@ void GameManager::checkCollisions() {
 
         for (Shell* other : slot.getShells()) {
             if (other != shell && other->getPosition() == pos) {
-                logFile << "Shells collided at (" << pos.x << "," << pos.y << ")" << std::endl;
+                logFile << "Shells collided at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
                 toRemove.push_back(shell);
                 toRemove.push_back(other);
                 break;
@@ -706,19 +689,19 @@ void GameManager::checkCollisions() {
 
     for (Shell* s : toRemove) {
         Position pos = s->getPosition();
-        gameBoard->removeObject(s, pos.x, pos.y);
+        gameBoard->removeObject(s, pos.getx(), pos.gety());
     }
 
     auto handleTankMine = [&](auto& map, const std::string& playerStr) {
         for (auto& [algo, tank] : map) {
             if (!tank->isAlive()) continue;
             Position pos = tank->getPosition();
-            CellSlot& slot = gameBoard->getSlot(pos.x, pos.y);
+            CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
             if (slot.getMine()) {
-                algo.hit();
-                gameBoard->removeObject(tank, pos.x, pos.y);
-                gameBoard->removeObject(slot.getMine(), pos.x, pos.y);
-                logFile << "Mine: " << playerStr << " tank hit a mine at (" << pos.x << "," << pos.y << ")" << std::endl;
+                tank->Hit();
+                gameBoard->removeObject(tank, pos.getx(), pos.gety());
+                gameBoard->removeObject(slot.getMine(), pos.getx(), pos.gety());
+                logFile << "Mine: " << playerStr << " tank hit a mine at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
             }
         }
     };
@@ -726,7 +709,6 @@ void GameManager::checkCollisions() {
     handleTankMine(tankMap1, "Player 1");
     handleTankMine(tankMap2, "Player 2");
 }
-
 bool GameManager::checkGameOver() const {
     return tankMap1.empty() || tankMap2.empty() || currentStep >= maxSteps;
 }

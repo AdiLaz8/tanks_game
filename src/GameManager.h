@@ -34,6 +34,7 @@ private:
     std::vector<Tank*> tanks2;
     std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage1;
     std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage2;
+    std::vector<std::pair<std::unique_ptr<MyTankAlgorithm>, Tank*>> tankPairs;
 
 
 public:

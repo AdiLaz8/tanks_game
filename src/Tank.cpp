@@ -59,3 +59,7 @@ std::string Tank::toString() const {
        << ")";
     return ss.str();
 }
+bool Tank::isAlive() const { return alive; }
+void Tank::Hit(){
+    alive=false;
+}

@@ -17,7 +17,7 @@ int MyTankAlgorithm::getTankId() const { return tankId; }
 Direction MyTankAlgorithm::getTankDirection() const { return direction; }
 Position MyTankAlgorithm::getTankPosition() const { return selfPosition; }
 int MyTankAlgorithm::getAmmo() const { return ammo; }
-bool MyTankAlgorithm::isAlive() const { return alive; }
+
 int MyTankAlgorithm::getShootingStatus() const { return shootingStatus; }
 int MyTankAlgorithm::getBackwardStatus() const { return backwardStatus; }
 

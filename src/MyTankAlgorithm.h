@@ -22,7 +22,6 @@ protected:
     int ammo = 0;
     int shootingStatus = 0;
     int backwardStatus = 0;
-    bool alive = true;
 
     bool moveAfterRotate = false;
 
@@ -37,7 +36,6 @@ public:
     Direction getTankDirection() const;
     Position getTankPosition() const;
     int getAmmo() const;
-    bool isAlive() const;
     int getShootingStatus() const;
     int getBackwardStatus() const;
 

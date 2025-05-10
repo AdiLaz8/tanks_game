@@ -219,7 +219,10 @@ ActionRequest Algo1::getAction() {
         moveAfterRotate = false;
         needsNewInfo = true;
         turnCounterSinceInfo++;
-        
+        Position newPos = selfPosition + direction.toVector();
+        newPos.setx((newPos.getx() + boardWidth) % boardWidth);
+        newPos.sety((newPos.gety() + boardHeight) % boardHeight);
+        selfPosition = newPos;
         return ActionRequest::MoveForward;
     }
 

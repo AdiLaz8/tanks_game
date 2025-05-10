@@ -21,6 +21,10 @@ ActionRequest Algo2::getAction() {
 
     if (moveAfterRotate) {
         moveAfterRotate = false;
+        Position newPos = selfPosition + direction.toVector();
+        newPos.setx((newPos.getx() + boardWidth) % boardWidth);
+        newPos.sety((newPos.gety() + boardHeight) % boardHeight);
+        selfPosition = newPos;
         return ActionRequest::MoveForward;
     }
 

@@ -54,7 +54,10 @@ Action MyTankAlgorithm::moveIfThreatened() {
         return true;
     };
 
-    if (isFree(forward)) return Action(ActionRequest::MoveForward);
+    if (isFree(forward)){
+        selfPosition = forward;
+        return Action(ActionRequest::MoveForward);
+    }
 
     int currIndex = static_cast<int>(direction.getDirection());
     std::vector<int> offsets = {1, 2, -1, -2};
@@ -73,7 +76,7 @@ Action MyTankAlgorithm::moveIfThreatened() {
         }
     }
 
-    return Action(ActionRequest::DoNothing);
+    return Action(ActionRequest::GetBattleInfo);
 }
 
 bool MyTankAlgorithm::canShootInDirection() const {
@@ -123,9 +126,13 @@ ActionRequest MyTankAlgorithm::rotateTowards(Direction::Value current, Direction
         direction.rotateClockwise4();
         return ActionRequest::RotateRight90;
     }
-    if (diff == 5 || diff == 6 || diff == 7){
+    if (diff == 5 || diff == 6){
         direction.rotateCounterClockwise4();
         return ActionRequest::RotateLeft90;
     }
-    return ActionRequest::DoNothing;
+    if (diff == 7){
+        direction.rotateCounterClockwise8();
+        return ActionRequest::RotateLeft45;
+    }
+    return ActionRequest::GetBattleInfo;
 }

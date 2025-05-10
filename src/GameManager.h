@@ -1,39 +1,55 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
-#include "Board.h"
-#include "IAlgorithm.h"
 #include <memory>
+#include <unordered_map>
 #include <fstream>
+#include <vector>
+#include <string>
 
+#include "Board.h"
+#include "Tank.h"
+#include "Player.h"
+#include "MyTankAlgorithm.h"
+#include "SatelliteView.h"
 
 class GameManager {
 private:
     std::ofstream logFile;
     std::unique_ptr<Board> gameBoard;
-    std::unique_ptr<IAlgorithm> algorithm1;
-    std::unique_ptr<IAlgorithm> algorithm2;
-    std::vector<Tank*> tanks1; // the tanks for player 1
-    std::vector<Tank*> tanks2; // the tanks for player 2
-    int currentStep; // a counter for the current step i the game, to know if to only move shells or to get actions for tanks as well
-    int postAmmoSteps; // Steps after both tanks run out of ammo
+    std::unique_ptr<Player> player1;
+    std::unique_ptr<Player> player2;
+    std::unordered_map<MyTankAlgorithm*, Tank*> tankMap1;
+    std::unordered_map<MyTankAlgorithm*, Tank*> tankMap2;
+
     std::string inputFileName;
-    int numShells;
-    int maxSteps;
+    int numShells = 0;
+    int maxSteps = 0;
+    int currentStep = 0;
 
 public:
     GameManager(std::string inputFileName);
-    ~GameManager();
-    void gameLoop();
-    void readBoard(const std::string& filename);
-    void moveShells();
-    void executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo);
-    void checkCollisions();
-    bool checkGameOver();
-    const std::vector<Tank*>& getTanks1() const { return tanks1; }
-    const std::vector<Tank*>& getTanks2() const { return tanks2; }
-    Board& getBoard() const { return *gameBoard; }
 
+    ~GameManager();
+
+    void readBoard(const std::string& filename);
+    void gameLoop();
+
+private:
+    bool handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* tank,
+                          SatelliteView& satellite,
+                          std::unordered_map<MyTankAlgorithm*, Tank*>& tankMap,
+                          std::unordered_map<MyTankAlgorithm*, Tank*>::iterator& it);
+
+    void executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank);
+
+    void moveShells();
+    void checkCollisions();
+
+    bool checkGameOver() const;
+    void logGameResult();
+    void wrapPosition(Position& pos);
+    std::vector<std::vector<char>> buildBoardMatrix();
 };
 
-#endif
+#endif // GAMEMANAGER_H

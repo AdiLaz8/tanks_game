@@ -5,6 +5,8 @@
 #include <iostream>
 #include "Logger.h"
 #include <unordered_set>
+#include "MySatelliteView.h"
+
 
 
 GameManager::GameManager(std::string inputFileName)
@@ -527,3 +529,205 @@ void GameManager::readBoard(const std::string& filename) {
 //         return true;
 //     return false;
 // }
+
+
+
+void GameManager::gameLoop() {
+    while (!checkGameOver()) {
+        if (currentStep % 2 != 0) {
+            moveShells();
+            checkCollisions();
+        } else {
+            std::string turn = std::to_string(currentStep / 2 + 1);
+            Logger::debug("Turn : " + turn);
+            logFile << "Turn : " + turn << std::endl;
+
+            auto boardView = buildBoardMatrix();
+            MySatelliteView satellite(boardView);
+
+            for (auto it = tankMap1.begin(); it != tankMap1.end(); ) {
+                if (!handleTankAction(*it->first, *player1, it->second, satellite, tankMap1, it)) continue;
+                ++it;
+            }
+
+            for (auto it = tankMap2.begin(); it != tankMap2.end(); ) {
+                if (!handleTankAction(*it->first, *player2, it->second, satellite, tankMap2, it)) continue;
+                ++it;
+            }
+
+            checkCollisions();
+        }
+        currentStep++;
+    }
+    logGameResult();
+}
+
+bool GameManager::handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* tank,
+                                   SatelliteView& satellite,
+                                   std::unordered_map<MyTankAlgorithm*, Tank*>& tankMap,
+                                   std::unordered_map<MyTankAlgorithm*, Tank*>::iterator& it) {
+    if (!algo.isAlive()) {
+        logFile << "Tank " << tank->getSymbol() << " destroyed." << std::endl;
+        Logger::debug("Tank " + std::to_string(algo.getTankId()) + " destroyed.");
+        tankMap.erase(it++);
+        return false;
+    }
+
+
+    ActionRequest request = algo.getAction();
+    if (request.getType() == ActionRequest::GetBattleInfo) {
+        satellite.setPosition(algo->getPosition());
+        player.updateTankWithBattleInfo(algo, satellite);
+        return true;
+    }
+
+    executeAction(request, algo, tank);
+    return true;
+}
+
+void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank) {
+    Position pos = algo.getTankPosition();
+    Direction dir = algo->gettTankDirection();
+    std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
+
+    Logger::debug(player + " initiates action:");
+
+    switch (req.getType()) {
+        case ActionRequest::MoveForward: {
+            Position next = pos + dir.toVector();
+            wrapPosition(next);
+            if (gameBoard->isPassable(next.x, next.y)) {
+                tank->moveForward(gameBoard->getWidth(), gameBoard->getHeight());
+                logFile << player << ": MoveForward to (" << next.x << ", " << next.y << ")" << std::endl;
+            } else {
+                logFile << player << ": Bad step - blocked forward." << std::endl;
+            }
+            break;
+        }
+        case ActionRequest::MoveBackward: {
+            Position back = pos + dir.getOppositeDirection().toVector();
+            wrapPosition(back);
+            if (algo.getBackwardStatus() == 0 && gameBoard->isPassable(back.x, back.y)) {
+                algo.setBackward(3);
+                logFile << player << ": Started MoveBackward process." << std::endl;
+            }
+            break;
+        }
+        case ActionRequest::Shoot: {
+            Position shoot = pos + dir.toVector();
+            wrapPosition(shoot);
+            auto shell = std::make_unique<Shell>(shoot, dir, tank->getSymbol());
+            gameBoard->addObject(std::move(shell), shoot.x, shoot.y);
+            logFile << player << ": Shoot from (" << pos.x << ", " << pos.y << ") to (" << shoot.x << ", " << shoot.y << ")" << std::endl;
+            break;
+        }
+        case ActionRequest::RotateLeft45: tank->rotateLeft8(); break;
+        case ActionRequest::RotateRight45: tank->rotateRight8(); break;
+        case ActionRequest::RotateLeft90: tank->rotateLeft4(); break;
+        case ActionRequest::RotateRight90: tank->rotateRight4(); break;
+        default:
+            logFile << player << ": No action taken." << std::endl;
+            break;
+    }
+    logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
+}
+void GameManager::wrapPosition(Position& pos) {
+    pos.setx((pos.getx() + gameBoard->getWidth()) % gameBoard->getWidth());
+    pos.sety((pos.gety() + gameBoard->getHeight()) % gameBoard->getHeight());
+}
+
+std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
+    size_t h = gameBoard->getHeight(), w = gameBoard->getWidth();
+    std::vector<std::vector<char>> board(h, std::vector<char>(w, ' '));
+    for (size_t y = 0; y < h; ++y) {
+        for (size_t x = 0; x < w; ++x) {
+            const CellSlot& slot = gameBoard->getSlot(x, y);
+            if (slot.getTank()) board[y][x] = slot.getTank()->getSymbol();
+            else if (slot.getWall()) board[y][x] = '#';
+            else if (slot.getMine()) {
+                if(!slot.getShells().empty()){
+                    board[y][x] = '*';
+                }
+                else{board[y][x] = '@';}}
+            else if (!slot.getShells().empty()) board[y][x] = '*';
+        }
+    }
+    return board;
+}
+void GameManager::checkCollisions() {
+    std::vector<Shell*> toRemove;
+
+    for (Shell* shell : gameBoard->getShells()) {
+        Position pos = shell->getPosition();
+        CellSlot& slot = gameBoard->getSlot(pos.x, pos.y);
+
+        if (Tank* tank = slot.getTank()) {
+            tank->hit();
+            gameBoard->removeObject(tank, pos.x, pos.y);
+            logFile << "Shell: Tank " << tank->getSymbol() << " destroyed at (" << pos.x << "," << pos.y << ")" << std::endl;
+            Logger::debug("Shell destroyed tank at position (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ")");
+            toRemove.push_back(shell);
+            continue;
+        }
+
+        if (Wall* wall = slot.getWall()) {
+            int hp = wall->onHit();
+            logFile << "Shell hit wall at (" << pos.x << "," << pos.y << "). Wall HP: " << hp << std::endl;
+            if (hp <= 0) {
+                gameBoard->removeObject(wall, pos.x, pos.y);
+                logFile << "Wall destroyed at (" << pos.x << "," << pos.y << ")" << std::endl;
+            }
+            toRemove.push_back(shell);
+            continue;
+        }
+
+        for (Shell* other : slot.getShells()) {
+            if (other != shell && other->getPosition() == pos) {
+                logFile << "Shells collided at (" << pos.x << "," << pos.y << ")" << std::endl;
+                toRemove.push_back(shell);
+                toRemove.push_back(other);
+                break;
+            }
+        }
+    }
+
+    for (Shell* s : toRemove) {
+        Position pos = s->getPosition();
+        gameBoard->removeObject(s, pos.x, pos.y);
+    }
+
+    auto handleTankMine = [&](auto& map, const std::string& playerStr) {
+        for (auto& [algo, tank] : map) {
+            if (!tank->isAlive()) continue;
+            Position pos = tank->getPosition();
+            CellSlot& slot = gameBoard->getSlot(pos.x, pos.y);
+            if (slot.getMine()) {
+                algo.hit();
+                gameBoard->removeObject(tank, pos.x, pos.y);
+                gameBoard->removeObject(slot.getMine(), pos.x, pos.y);
+                logFile << "Mine: " << playerStr << " tank hit a mine at (" << pos.x << "," << pos.y << ")" << std::endl;
+            }
+        }
+    };
+
+    handleTankMine(tankMap1, "Player 1");
+    handleTankMine(tankMap2, "Player 2");
+}
+
+bool GameManager::checkGameOver() const {
+    return tankMap1.empty() || tankMap2.empty() || currentStep >= maxSteps;
+}
+
+void GameManager::logGameResult() {
+    logFile << "Game Over!" << std::endl;
+    Logger::debug("Game Over!");
+
+    if (tankMap1.empty() && tankMap2.empty())
+        logFile << "RESULT: Tie - Both players lost all tanks" << std::endl;
+    else if (tankMap1.empty())
+        logFile << "RESULT: Player 2 wins - Player 1 eliminated" << std::endl;
+    else if (tankMap2.empty())
+        logFile << "RESULT: Player 1 wins - Player 2 eliminated" << std::endl;
+    else
+        logFile << "RESULT: Tie - Reached max steps" << std::endl;
+}

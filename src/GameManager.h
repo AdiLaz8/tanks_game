@@ -12,6 +12,8 @@
 #include "Player.h"
 #include "MyTankAlgorithm.h"
 #include "SatelliteView.h"
+#include "PlayerFactory.h"
+#include "TankAlgorithmFactory.h"
 
 class GameManager {
 private:
@@ -23,12 +25,17 @@ private:
     std::unordered_map<MyTankAlgorithm*, Tank*> tankMap2;
 
     std::string inputFileName;
-    int numShells = 0;
-    int maxSteps = 0;
+    size_t numShells = 0;
+    size_t maxSteps = 0;
     int currentStep = 0;
+    const PlayerFactory& playerFactory;
+    const TankAlgorithmFactory& tankAlgoFactory;
+    std::vector<Tank*> tanks1;
+    std::vector<Tank*> tanks2;
 
 public:
-    GameManager(std::string inputFileName);
+    GameManager(const PlayerFactory& pf, const TankAlgorithmFactory& tf);
+
 
     ~GameManager();
 
@@ -37,7 +44,7 @@ public:
 
 private:
     bool handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* tank,
-                          SatelliteView& satellite,
+                          MySatelliteView& satellite,
                           std::unordered_map<MyTankAlgorithm*, Tank*>& tankMap,
                           std::unordered_map<MyTankAlgorithm*, Tank*>::iterator& it);
 

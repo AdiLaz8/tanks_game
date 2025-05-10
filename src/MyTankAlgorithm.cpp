@@ -136,3 +136,6 @@ ActionRequest MyTankAlgorithm::rotateTowards(Direction::Value current, Direction
     }
     return ActionRequest::GetBattleInfo;
 }
+void MyTankAlgorithm::setBackward(int i){
+    backwardStatus=i;
+}

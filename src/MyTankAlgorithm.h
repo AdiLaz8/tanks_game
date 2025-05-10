@@ -50,6 +50,7 @@ public:
 
     Direction::Value getDirectionTo(const Position& from, const Position& to) const;
     ActionRequest rotateTowards(Direction::Value current, Direction::Value desired);
+    void setBackward(int i);
 };
 
 #endif // MY_TANK_ALGORITHM_H

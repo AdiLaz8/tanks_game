@@ -9,13 +9,8 @@
 
 
 
-GameManager::GameManager(std::string inputFileName)
-    : gameBoard(nullptr), currentStep(0), postAmmoSteps(80), inputFileName(inputFileName) {
-    algorithm1 = std::make_unique<Algorithm1>();
-    algorithm2 = std::make_unique<Algorithm2>();
-    std::string outputFile = "output_" + inputFileName;
-    logFile.open(outputFile);
-}
+GameManager::GameManager(const PlayerFactory& pf, const TankAlgorithmFactory& tf)
+    : playerFactory(pf), tankAlgoFactory(tf), currentStep(0) {}
 GameManager::~GameManager() {
     if (logFile.is_open()) {
         logFile.close();
@@ -32,140 +27,133 @@ void GameManager::readBoard(const std::string& filename) {
 
     std::string line;
 
-    // שורה 1 – תיאור בלבד
-    std::getline(file, line);
+    std::getline(file, line); // Header line
 
-    // שורה 2 – MaxSteps
+    // MaxSteps
     std::getline(file, line);
-    if (line.find("MaxSteps") == std::string::npos || line.find('=') == std::string::npos) {
-        std::cerr << "Invalid MaxSteps line" << std::endl;
+    if (line.find("MaxSteps") == std::string::npos || line.find('=') == std::string::npos)
         exit(1);
-    }
     try {
-        maxSteps = std::stoi(line.substr(line.find('=') + 1));
-    } catch (...) {
-        std::cerr << "Failed to parse MaxSteps" << std::endl;
-        exit(1);
-    }
+        maxSteps = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
+    } catch (...) { exit(1); }
 
-    // שורה 3 – NumShells
+    // NumShells
     std::getline(file, line);
-    if (line.find("NumShells") == std::string::npos || line.find('=') == std::string::npos) {
-        std::cerr << "Invalid NumShells line" << std::endl;
+    if (line.find("NumShells") == std::string::npos || line.find('=') == std::string::npos)
         exit(1);
-    }
     try {
-        numShells = std::stoi(line.substr(line.find('=') + 1));
-    } catch (...) {
-        std::cerr << "Failed to parse NumShells" << std::endl;
-        exit(1);
-    }
+        numShells = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
+    } catch (...) { exit(1); }
 
-    // שורה 4 – Rows
+    // Rows
     std::getline(file, line);
-    int rows;
-    if (line.find("Rows") == std::string::npos || line.find('=') == std::string::npos) {
-        std::cerr << "Invalid Rows line" << std::endl;
+    size_t rows;
+    if (line.find("Rows") == std::string::npos || line.find('=') == std::string::npos)
         exit(1);
-    }
     try {
-        rows = std::stoi(line.substr(line.find('=') + 1));
-    } catch (...) {
-        std::cerr << "Failed to parse Rows" << std::endl;
-        exit(1);
-    }
+        rows = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
+    } catch (...) { exit(1); }
 
-    // שורה 5 – Cols
+    // Cols
     std::getline(file, line);
-    int cols;
-    if (line.find("Cols") == std::string::npos || line.find('=') == std::string::npos) {
-        std::cerr << "Invalid Cols line" << std::endl;
+    size_t cols;
+    if (line.find("Cols") == std::string::npos || line.find('=') == std::string::npos)
         exit(1);
-    }
     try {
-        cols = std::stoi(line.substr(line.find('=') + 1));
-    } catch (...) {
-        std::cerr << "Failed to parse Cols" << std::endl;
-        exit(1);
-    }
+        cols = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
+    } catch (...) { exit(1); }
 
-    // יצירת הלוח מחדש לפי המידות שהתקבלו
     gameBoard = std::make_unique<Board>(cols, rows);
+
+    player1 = playerFactory.create(1, cols, rows, maxSteps, numShells);
+    player2 = playerFactory.create(2, cols, rows, maxSteps, numShells);
 
     std::ofstream errorFile("input_errors.txt");
     bool hasTank1 = false, hasTank2 = false;
 
-    for (int y = 0; y < rows; ++y) {
+    for (size_t y = 0; y < rows; ++y) {
         std::string mapLine;
         if (!std::getline(file, mapLine)) {
             mapLine = std::string(cols, ' ');
             errorFile << "Warning: Missing row " << y << ", filled with spaces.\n";
         }
 
-        if ((int)mapLine.length() > cols) {
+        if ((int)mapLine.length() > static_cast<int>(cols)) {
             mapLine = mapLine.substr(0, cols);
-            errorFile << "Warning: Row " << y << " longer than declared width, extra characters ignored.\n";
+            errorFile << "Warning: Row " << y << " too long.\n";
         }
 
-        while ((int)mapLine.length() < cols) {
+        while (mapLine.length() < cols) {
             mapLine += ' ';
-            errorFile << "Warning: Row " << y << " shorter than declared width, filled with spaces.\n";
+            errorFile << "Warning: Row " << y << " too short, padded with spaces.\n";
         }
-
-        for (int x = 0; x < cols; ++x) {
+        int tankIndex1 = 0;
+        int tankIndex2 = 0;
+        for (size_t x = 0; x < cols; ++x) {
             char c = mapLine[x];
             if (c == ' ') continue;
 
             switch (c) {
                 case '#':
                     gameBoard->addObject(std::make_unique<Wall>(), x, y);
-                    std::cout << "Added object '" << c << "' at (" << x << "," << y << ")" << std::endl;
                     break;
                 case '@':
                     gameBoard->addObject(std::make_unique<Mine>(), x, y);
-                    std::cout << "Added object '" << c << "' at (" << x << "," << y << ")" << std::endl;
-
                     break;
                 case '1':
                     gameBoard->addObject(std::make_unique<Tank>('1', numShells, Direction(Direction::L), Position(x, y)), x, y);
                     hasTank1 = true;
+                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(1,tankIndex1);
+                    MyTankAlgorithm* algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
+                    Tank* t=gameBoard->getSlot(x, y).getTank();
+                    if (algoPtr && t) {
+                        tankMap1[algoPtr] = t;
+                        algo.release();
+                    } else {
+                        std::cerr << "Error: Failed to create tank algorithm for Player 1 at index " << tankIndex1 << std::endl;
+                        exit(1);
+                    }
+                    tankIndex1++;
                     break;
                 case '2':
                     gameBoard->addObject(std::make_unique<Tank>('2', numShells, Direction(Direction::R), Position(x, y)), x, y);
                     hasTank2 = true;
+                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(2,tankIndex2);
+                    MyTankAlgorithm* algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
+                    Tank* t=gameBoard->getSlot(x, y).getTank();
+                    if (algoPtr && t) {
+                        tankMap2[algoPtr] = t;
+                        algo.release();
+                    } else {
+                        std::cerr << "Error: Failed to create tank algorithm for Player 2 at index " << tankIndex2 << std::endl;
+                        exit(1);
+                    }
+                    tankIndex2++;
                     break;
                 default:
-                    errorFile << "Warning: Unrecognized character '" << c << "' at (" << x << "," << y << "), treated as space.\n";
+                    errorFile << "Warning: Unknown char '" << c << "' at (" << x << "," << y << ")\n";
             }
         }
     }
 
-    // שורות מיותרות מעבר לגובה
     std::string extra;
     while (std::getline(file, extra)) {
-        if (!extra.empty()) {
-            errorFile << "Warning: Extra row beyond declared height ignored.\n";
-        }
+        if (!extra.empty()) errorFile << "Warning: Extra row ignored.\n";
     }
-
     errorFile.close();
 
-    // בדיקה אם אין טנקים – סיום מיידי
     if (!hasTank1 && !hasTank2) {
-        std::cerr << "Error: No tanks on map - game ends in tie immediately" << std::endl;
+        std::cerr << "Error: No tanks on map - tie." << std::endl;
         exit(1);
     } else if (!hasTank1) {
-        std::cerr << "Error: Player 1 has no tanks - Player 2 wins" << std::endl;
+        std::cerr << "Error: Player 1 has no tanks - Player 2 wins." << std::endl;
         exit(1);
     } else if (!hasTank2) {
-        std::cerr << "Error: Player 2 has no tanks - Player 1 wins" << std::endl;
+        std::cerr << "Error: Player 2 has no tanks - Player 1 wins." << std::endl;
         exit(1);
     }
-
-    // שליפת רשימות הטנקים לכל שחקן
-    tanks1 = gameBoard->getTanks(1);
-    tanks2 = gameBoard->getTanks(2);
 }
+
 
 
 // // the main loop of the game, as long as the game is not over it is moving the shells and tanks and check for collisions
@@ -541,6 +529,12 @@ void GameManager::gameLoop() {
             std::string turn = std::to_string(currentStep / 2 + 1);
             Logger::debug("Turn : " + turn);
             logFile << "Turn : " + turn << std::endl;
+            moveShells();
+            checkCollisions();
+            if (checkGameOver())
+            {
+                break;
+            }
 
             auto boardView = buildBoardMatrix();
             MySatelliteView satellite(boardView);
@@ -563,7 +557,7 @@ void GameManager::gameLoop() {
 }
 
 bool GameManager::handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* tank,
-                                   SatelliteView& satellite,
+                                   MySatelliteView& satellite,
                                    std::unordered_map<MyTankAlgorithm*, Tank*>& tankMap,
                                    std::unordered_map<MyTankAlgorithm*, Tank*>::iterator& it) {
     if (!algo.isAlive()) {
@@ -575,8 +569,8 @@ bool GameManager::handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* 
 
 
     ActionRequest request = algo.getAction();
-    if (request.getType() == ActionRequest::GetBattleInfo) {
-        satellite.setPosition(algo->getPosition());
+    if (request == ActionRequest::GetBattleInfo) {
+        satellite.setPosition(tank->getPosition());
         player.updateTankWithBattleInfo(algo, satellite);
         return true;
     }
@@ -586,19 +580,38 @@ bool GameManager::handleTankAction(MyTankAlgorithm& algo, Player& player, Tank* 
 }
 
 void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank) {
-    Position pos = algo.getTankPosition();
-    Direction dir = algo->gettTankDirection();
+    Position pos = tank->getPosition();
+    Direction dir = tank->getDirection();
     std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
 
     Logger::debug(player + " initiates action:");
-
-    switch (req.getType()) {
+    if (algo.getBackwardStatus() == 3 && req != ActionRequest::MoveForward) {
+        algo.decreaseBackward();
+        return;
+    }
+    if (algo.getBackwardStatus() == 3 && req == ActionRequest::MoveForward) {
+        algo.setBackward(0);
+        return;
+    }
+    if (algo.getBackwardStatus() == 2) {
+        Position back = pos + dir.getOppositeDirection().toVector();
+        wrapPosition(back);
+        tank->moveBackward(gameBoard->getWidth(), gameBoard->getHeight());
+        logFile << player << ": Moving backward now." << std::endl;
+        Logger::debug(player + " moved backward.");
+        algo.decreaseBackward();
+        return;
+    }
+    if (algo.getBackwardStatus() == 1 && req != ActionRequest::MoveBackward) {
+        algo.decreaseBackward();
+    }
+    switch (req) {
         case ActionRequest::MoveForward: {
             Position next = pos + dir.toVector();
             wrapPosition(next);
-            if (gameBoard->isPassable(next.x, next.y)) {
+            if (gameBoard->isPassable(next.getx(), next.gety())) {
                 tank->moveForward(gameBoard->getWidth(), gameBoard->getHeight());
-                logFile << player << ": MoveForward to (" << next.x << ", " << next.y << ")" << std::endl;
+                logFile << player << ": MoveForward to (" << next.getx() << ", " << next.gety() << ")" << std::endl;
             } else {
                 logFile << player << ": Bad step - blocked forward." << std::endl;
             }
@@ -607,7 +620,7 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
         case ActionRequest::MoveBackward: {
             Position back = pos + dir.getOppositeDirection().toVector();
             wrapPosition(back);
-            if (algo.getBackwardStatus() == 0 && gameBoard->isPassable(back.x, back.y)) {
+            if (algo.getBackwardStatus() == 0 && gameBoard->isPassable(back.getx(), back.gety())) {
                 algo.setBackward(3);
                 logFile << player << ": Started MoveBackward process." << std::endl;
             }
@@ -617,8 +630,8 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
             Position shoot = pos + dir.toVector();
             wrapPosition(shoot);
             auto shell = std::make_unique<Shell>(shoot, dir, tank->getSymbol());
-            gameBoard->addObject(std::move(shell), shoot.x, shoot.y);
-            logFile << player << ": Shoot from (" << pos.x << ", " << pos.y << ") to (" << shoot.x << ", " << shoot.y << ")" << std::endl;
+            gameBoard->addObject(std::move(shell), shoot.getx(), shoot.gety());
+            logFile << player << ": Shoot from (" << pos.getx() << ", " << pos.gety() << ") to (" << shoot.getx() << ", " << shoot.gety() << ")" << std::endl;
             break;
         }
         case ActionRequest::RotateLeft45: tank->rotateLeft8(); break;

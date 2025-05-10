@@ -7,13 +7,13 @@
 
 class MySatelliteView : public SatelliteView {
 private:
-    const Board& board;
+    std::vector<std::vector<char>> boardMatrix;
     Position currentTankPosition;
     size_t width;
     size_t height;
 
 public:
-    MySatelliteView(const Board& board);
+    MySatelliteView(const std::vector<std::vector<char>>& boardMatrix);
 
     void setPosition(const Position& pos);
     Position getPosition() const;

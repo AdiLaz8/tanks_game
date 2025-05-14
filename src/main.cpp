@@ -147,6 +147,11 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+
+    // הוספה של כל הפגזים שלא נמחקו
+    for (Shell* shell : board.getShells()) {
+        uniqueObjects.insert(shell);
+    }
     // GameManager itself deletes the shells, so we delete only objects that are not shells
     for (Cell* obj : uniqueObjects) {
         if (dynamic_cast<Shell*>(obj) == nullptr) {

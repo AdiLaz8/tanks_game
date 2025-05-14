@@ -380,9 +380,22 @@ void GameManager::checkCollisions() {
 
 // checks if the game is over if we finished the number of turns after both tanks lost all ammo, or if one of the tanks is dead
 bool GameManager::checkGameOver() {
-    if (tank1->getAmmo() == 0 && tank2->getAmmo() == 0 && postAmmoSteps-- <= 0)
+    if (tank1->getAmmo() == 0 && tank2->getAmmo() == 0 && postAmmoSteps-- <= 0){
+        for (Shell* shell : gameBoard.getShells()) {
+            Position pos = shell->getPosition();
+            gameBoard.removeObject(shell, pos.x, pos.y);
+            delete shell;
+        }
         return true;
-    if (!tank1->isAlive() || !tank2->isAlive())
+    }
+        
+    if (!tank1->isAlive() || !tank2->isAlive()){
+        for (Shell* shell : gameBoard.getShells()) {
+            Position pos = shell->getPosition();
+            gameBoard.removeObject(shell, pos.x, pos.y);
+            delete shell;
+        }
         return true;
+    }
     return false;
 }

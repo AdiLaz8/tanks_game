@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
     bool tank1=false;
     bool tank2=false;
     int y = 0;
+
     for (; y < height; ++y) {
         std::string line;
         if (!std::getline(file, line)) {
@@ -68,7 +69,8 @@ int main(int argc, char* argv[]) {
             }
             else if (c == '1') {
                 if(tank1==false){
-                    board.addObject(new Tank('1', 16, Direction(Direction::L), Position(x, y)), x, y);
+                    Tank* t1 = new Tank('1', 16, Direction(Direction::L), Position(x, y));
+                    board.addObject(t1, x, y);
                     tank1=true;
                 } else {
                         if (!inputErrorsFile.is_open()) {
@@ -79,7 +81,8 @@ int main(int argc, char* argv[]) {
             }
             else if (c == '2') {
                 if(tank2==false){
-                    board.addObject(new Tank('2', 16, Direction(Direction::R), Position(x, y)), x, y);
+                    Tank* t2 = new Tank('2', 16, Direction(Direction::R), Position(x, y));
+                    board.addObject(t2, x, y);
                     tank2=true;
                 }else {
                     if (!inputErrorsFile.is_open()) {

@@ -321,12 +321,14 @@ void GameManager::checkCollisions() {
             // Only Tank1 is hit
             tank1->hit();
             gameBoard.removeObject(tank1, posTank1.x, posTank1.y);
+            // delete tank1;
             logFile << "Shell: Player 1 was hit by shell and destroyed." << std::endl;
             Logger::debug("Shell: Player 1 was hit by shell and destroyed.");
         } else if (hitTank2) {
             // Only Tank2 is hit
             tank2->hit();
             gameBoard.removeObject(tank2, posTank2.x, posTank2.y);
+            delete tank2;
             logFile << "Shell: Player 2 was hit by shell and destroyed." << std::endl;
             Logger::debug("Shell: Player 2 was hit by shell and destroyed.");
         }
@@ -347,7 +349,9 @@ void GameManager::checkCollisions() {
             delete shell;
             // if the wall is destroyed, remove the wall
             if (hp <= 0) {
-                gameBoard.removeObject(slot.getWall(), shellPos.x, shellPos.y);
+                Wall* wall = slot.getWall();
+                gameBoard.removeObject(wall, shellPos.x, shellPos.y);
+                delete wall;
                 logFile << "Wall destroyed." << std::endl;
                 Logger::debug("Wall destroyed.");
             }

@@ -22,11 +22,14 @@ private:
 public:
     GameManager(Board& board,std::string inputFileName);
     ~GameManager();
+    GameManager(const GameManager&) = delete;
+    GameManager& operator=(const GameManager&) = delete;
     void gameLoop();
-    void moveShells();
-    void executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo);
-    void checkCollisions();
-    bool checkGameOver();
+    private:
+        void moveShells();
+        void executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo);
+        void checkCollisions();
+        bool checkGameOver();
 };
 
 #endif

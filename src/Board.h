@@ -16,7 +16,8 @@ private:
 public:
     Board(int w, int h);
     ~Board();
-
+    Board(const Board&) = delete;
+    Board& operator=(const Board&) = delete;
     CellSlot& getSlot(int x, int y) const;
     void addObject(Cell* obj, int x, int y);
     void removeObject(Cell* obj, int x, int y);

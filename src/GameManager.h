@@ -14,6 +14,7 @@
 #include "SatelliteView.h"
 #include "PlayerFactory.h"
 #include "TankAlgorithmFactory.h"
+#include "MySatelliteView.h"
 
 class GameManager {
 private:
@@ -27,13 +28,13 @@ private:
     std::string inputFileName;
     size_t numShells = 0;
     size_t maxSteps = 0;
-    int currentStep = 0;
     const PlayerFactory& playerFactory;
     const TankAlgorithmFactory& tankAlgoFactory;
+    size_t currentStep = 0;
     std::vector<Tank*> tanks1;
     std::vector<Tank*> tanks2;
-    std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage1;
-    std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage2;
+    // std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage1;
+    // std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage2;
     std::vector<std::pair<std::unique_ptr<MyTankAlgorithm>, Tank*>> tankPairs;
 
 

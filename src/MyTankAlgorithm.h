@@ -7,6 +7,8 @@
 #include "Direction.h"
 #include "Position.h"
 #include <cstddef>
+#include <vector>
+#include <utility>
 
 class MyTankAlgorithm : public TankAlgorithm {
 protected:
@@ -16,9 +18,8 @@ protected:
     size_t boardWidth;
     size_t boardHeight;
     std::vector<std::pair<Position, char>> fullView;
-
-    Position selfPosition;
     Direction direction;
+    Position selfPosition;
     int ammo = 0;
     int shootingStatus = 0;
     int backwardStatus = 0;
@@ -30,7 +31,7 @@ public:
 
     void updateBattleInfo(BattleInfo& info) override;
 
-    virtual ActionRequest getAction() = 0;
+    virtual ActionRequest getAction() override = 0;
 
     int getTankId() const;
     Direction getTankDirection() const;

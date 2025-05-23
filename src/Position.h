@@ -16,6 +16,9 @@ struct Position
         Position operator+(const Position delta) const {
             return {x + delta.x, y + delta.y};
         }
+        bool operator<(const Position& other) const {
+        return (x < other.x) || (x == other.x && y < other.y);
+    }
         void setx(int xx);
         void sety(int yy);
         void move(Direction dir,int width, int height);

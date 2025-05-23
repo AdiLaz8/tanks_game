@@ -302,6 +302,7 @@ void Algo1::computeShootingPath() {
 std::vector<Direction::Value> Algo1::computeBFS(const Position& from, const Position& to,
                                                 const std::vector<std::pair<Position, char>>& fullView,
                                                 size_t width, size_t height) {
+    (void)to; // Unused parameter
     std::set<Position> blocked;
     char friendSymbol = (playerId == 1 ? '1' : '2');
     char enemySymbol = (playerId == 1 ? '2' : '1');

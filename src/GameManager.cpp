@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Logger.h"
 #include <unordered_set>
-#include "MySatelliteView.h"
+
 
 
 
@@ -101,30 +101,32 @@ void GameManager::readBoard(const std::string& filename) {
                     gameBoard->addObject(std::make_unique<Mine>(), x, y);
                     break;
                 case '1':{
-                    gameBoard->addObject(std::make_unique<Tank>('1', numShells, Direction(Direction::L), Position(x, y)), x, y);
+                    gameBoard->addObject(std::make_unique<Tank>('1', Direction(Direction::L), Position(x, y)), x, y);
                     hasTank1 = true;
-                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(1, tankIndex1);
-                    auto algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
-                    Tank* t=gameBoard->getSlot(x, y).getTank();
-                    if (algoPtr && t) {
-                        tankPairs.emplace_back(std::move(algo), t);
-                        algoStorage1.push_back(std::unique_ptr<MyTankAlgorithm>(static_cast<MyTankAlgorithm*>(algo.release())));
-                    } else {
+                    std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(1, tankIndex1);
+                    auto raw = dynamic_cast<MyTankAlgorithm*>(base.get());
+                    Tank* t = gameBoard->getSlot(x, y).getTank();
+                    if (raw && t) {
+                        std::unique_ptr<MyTankAlgorithm> casted(static_cast<MyTankAlgorithm*>(base.release()));
+                        tankPairs.emplace_back(std::move(casted), t); // casted now owns the algo
+                    }
+                    else {
                         std::cerr << "Error: Failed to create tank algorithm for Player 1 at index " << tankIndex1 << std::endl;
                         exit(1);
                     }
                     tankIndex1++;
                     break;}
                 case '2':{
-                    gameBoard->addObject(std::make_unique<Tank>('2', numShells, Direction(Direction::L), Position(x, y)), x, y);
+                    gameBoard->addObject(std::make_unique<Tank>('2', Direction(Direction::L), Position(x, y)), x, y);
                     hasTank2 = true;
-                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(2, tankIndex1);
-                    auto algoPtr = dynamic_cast<MyTankAlgorithm*>(algo.get());
-                    Tank* t=gameBoard->getSlot(x, y).getTank();
-                    if (algoPtr && t) {
-                        tankPairs.emplace_back(std::move(algo), t);
-                        algoStorage2.push_back(std::unique_ptr<MyTankAlgorithm>(static_cast<MyTankAlgorithm*>(algo.release())));
-                    } else {
+                    std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(2, tankIndex1);
+                    auto raw = dynamic_cast<MyTankAlgorithm*>(base.get());
+                    Tank* t = gameBoard->getSlot(x, y).getTank();
+                    if (raw && t) {
+                        std::unique_ptr<MyTankAlgorithm> casted(static_cast<MyTankAlgorithm*>(base.release()));
+                        tankPairs.emplace_back(std::move(casted), t); // casted now owns the algo
+                    }
+                    else {
                         std::cerr << "Error: Failed to create tank algorithm for Player 2 at index " << tankIndex2 << std::endl;
                         exit(1);
                     }
@@ -154,6 +156,234 @@ void GameManager::readBoard(const std::string& filename) {
     }
 }
 
+
+void GameManager::moveShells() {
+    auto& shells = gameBoard->getShells();
+    
+    // go over all of the shells in order to move them
+    for (size_t i = 0; i < shells.size(); ++i) {
+        Shell* shell = shells[i];
+        if (!shell) continue; 
+
+        Position oldPos = shell->getPosition();
+        gameBoard->removeObject(shell, oldPos.getx(), oldPos.gety());
+
+        shell->move(gameBoard->getWidth(), gameBoard->getHeight());
+
+        Position newPos = shell->getPosition();
+        //logFile << "Shell number " << shell->getId() << " fired at position (" << newPos.x << ", " << newPos.y << ")" << std::endl;
+        Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(newPos.getx()) + ", " + std::to_string(newPos.gety()) + ")");
+        gameBoard->addObject(std::unique_ptr<Cell>(shell), newPos.getx(), newPos.gety());
+    }
+}
+
+
+void GameManager::gameLoop() {
+    while (!checkGameOver()) {
+        if (currentStep % 2 != 0) {
+            moveShells();
+            checkCollisions();
+        } else {
+            std::string turn = std::to_string(currentStep / 2 + 1);
+            Logger::debug("Turn : " + turn);
+            logFile << "Turn : " + turn << std::endl;
+
+            moveShells();
+            checkCollisions();
+            if (checkGameOver()) break;
+
+            auto boardView = buildBoardMatrix();
+            MySatelliteView satellite(boardView);
+
+            for (auto& [algoPtr, tank] : tankPairs) {
+                if (! tank->isAlive()) continue;
+
+                ActionRequest request = algoPtr->getAction();
+                if (request == ActionRequest::GetBattleInfo) {
+                    satellite.setPosition(tank->getPosition());
+                    if (tank->getSymbol() == '1') {
+                        player1->updateTankWithBattleInfo(*algoPtr, satellite);
+                    } else {
+                        player2->updateTankWithBattleInfo(*algoPtr, satellite);
+                    }
+                } else {
+                    executeAction(request, *algoPtr, tank);
+                }
+            }
+
+            checkCollisions();
+        }
+        currentStep++;
+    }
+
+    logGameResult();
+}
+
+
+void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank) {
+    Position pos = tank->getPosition();
+    Direction dir = tank->getDirection();
+    std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
+
+    Logger::debug(player + " initiates action:");
+    if (algo.getBackwardStatus() == 3 && req != ActionRequest::MoveForward) {
+        algo.decreaseBackward();
+        return;
+    }
+    if (algo.getBackwardStatus() == 3 && req == ActionRequest::MoveForward) {
+        algo.setBackward(0);
+        return;
+    }
+    if (algo.getBackwardStatus() == 2) {
+        Position back = pos + dir.getOppositeDirection().toVector();
+        wrapPosition(back);
+        tank->moveBackward(gameBoard->getWidth(), gameBoard->getHeight());
+        logFile << player << ": Moving backward now." << std::endl;
+        Logger::debug(player + " moved backward.");
+        algo.decreaseBackward();
+        return;
+    }
+    if (algo.getBackwardStatus() == 1 && req != ActionRequest::MoveBackward) {
+        algo.decreaseBackward();
+    }
+    switch (req) {
+        case ActionRequest::MoveForward: {
+            Position next = pos + dir.toVector();
+            wrapPosition(next);
+            if (gameBoard->isPassable(next.getx(), next.gety())) {
+                tank->moveForward(gameBoard->getWidth(), gameBoard->getHeight());
+                logFile << player << ": MoveForward to (" << next.getx() << ", " << next.gety() << ")" << std::endl;
+            } else {
+                logFile << player << ": Bad step - blocked forward." << std::endl;
+            }
+            break;
+        }
+        case ActionRequest::MoveBackward: {
+            Position back = pos + dir.getOppositeDirection().toVector();
+            wrapPosition(back);
+            if (algo.getBackwardStatus() == 0 && gameBoard->isPassable(back.getx(), back.gety())) {
+                algo.setBackward(3);
+                logFile << player << ": Started MoveBackward process." << std::endl;
+            }
+            break;
+        }
+        case ActionRequest::Shoot: {
+            Position shoot = pos + dir.toVector();
+            wrapPosition(shoot);
+            auto shell = std::make_unique<Shell>(shoot, dir, tank->getSymbol());
+            gameBoard->addObject(std::move(shell), shoot.getx(), shoot.gety());
+            logFile << player << ": Shoot from (" << pos.getx() << ", " << pos.gety() << ") to (" << shoot.getx() << ", " << shoot.gety() << ")" << std::endl;
+            break;
+        }
+        case ActionRequest::RotateLeft45: tank->rotateLeft8(); break;
+        case ActionRequest::RotateRight45: tank->rotateRight8(); break;
+        case ActionRequest::RotateLeft90: tank->rotateLeft4(); break;
+        case ActionRequest::RotateRight90: tank->rotateRight4(); break;
+        default:
+            logFile << player << ": No action taken." << std::endl;
+            break;
+    }
+    logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
+}
+void GameManager::wrapPosition(Position& pos) {
+    pos.setx((pos.getx() + gameBoard->getWidth()) % gameBoard->getWidth());
+    pos.sety((pos.gety() + gameBoard->getHeight()) % gameBoard->getHeight());
+}
+
+std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
+    size_t h = gameBoard->getHeight(), w = gameBoard->getWidth();
+    std::vector<std::vector<char>> board(h, std::vector<char>(w, ' '));
+    for (size_t y = 0; y < h; ++y) {
+        for (size_t x = 0; x < w; ++x) {
+            const CellSlot& slot = gameBoard->getSlot(x, y);
+            if (slot.getTank()) board[y][x] = slot.getTank()->getSymbol();
+            else if (slot.getWall()) board[y][x] = '#';
+            else if (slot.getMine()) {
+                if(!slot.getShells().empty()){
+                    board[y][x] = '*';
+                }
+                else{board[y][x] = '@';}}
+            else if (!slot.getShells().empty()) board[y][x] = '*';
+        }
+    }
+    return board;
+}
+void GameManager::checkCollisions() {
+    std::vector<Shell*> toRemove;
+
+    for (Shell* shell : gameBoard->getShells()) {
+        Position pos = shell->getPosition();
+        CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
+
+        if (Tank* tank = slot.getTank()) {
+            tank->Hit();
+            gameBoard->removeObject(tank, pos.getx(), pos.gety());
+            logFile << "Shell: Tank " << tank->getSymbol() << " destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+            Logger::debug("Shell destroyed tank at position (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
+            toRemove.push_back(shell);
+            continue;
+        }
+
+        if (Wall* wall = slot.getWall()) {
+            int hp = wall->onHit();
+            logFile << "Shell hit wall at (" << pos.getx() << "," << pos.gety() << "). Wall HP: " << hp << std::endl;
+            if (hp <= 0) {
+                gameBoard->removeObject(wall, pos.getx(), pos.gety());
+                logFile << "Wall destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+            }
+            toRemove.push_back(shell);
+            continue;
+        }
+
+        for (Shell* other : slot.getShells()) {
+            if (other != shell && other->getPosition() == pos) {
+                logFile << "Shells collided at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+                toRemove.push_back(shell);
+                toRemove.push_back(other);
+                break;
+            }
+        }
+    }
+
+    for (Shell* s : toRemove) {
+        Position pos = s->getPosition();
+        gameBoard->removeObject(s, pos.getx(), pos.gety());
+    }
+
+    auto handleTankMine = [&](auto& map, const std::string& playerStr) {
+        for (auto& [algo, tank] : map) {
+            if (!tank->isAlive()) continue;
+            Position pos = tank->getPosition();
+            CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
+            if (slot.getMine()) {
+                tank->Hit();
+                gameBoard->removeObject(tank, pos.getx(), pos.gety());
+                gameBoard->removeObject(slot.getMine(), pos.getx(), pos.gety());
+                logFile << "Mine: " << playerStr << " tank hit a mine at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+            }
+        }
+    };
+
+    handleTankMine(tankMap1, "Player 1");
+    handleTankMine(tankMap2, "Player 2");
+}
+bool GameManager::checkGameOver() const {
+    return tankMap1.empty() || tankMap2.empty() || currentStep >= maxSteps;
+}
+
+void GameManager::logGameResult() {
+    logFile << "Game Over!" << std::endl;
+    Logger::debug("Game Over!");
+
+    if (tankMap1.empty() && tankMap2.empty())
+        logFile << "RESULT: Tie - Both players lost all tanks" << std::endl;
+    else if (tankMap1.empty())
+        logFile << "RESULT: Player 2 wins - Player 1 eliminated" << std::endl;
+    else if (tankMap2.empty())
+        logFile << "RESULT: Player 1 wins - Player 2 eliminated" << std::endl;
+    else
+        logFile << "RESULT: Tie - Reached max steps" << std::endl;
+}
 
 
 // // the main loop of the game, as long as the game is not over it is moving the shells and tanks and check for collisions
@@ -212,27 +442,6 @@ void GameManager::readBoard(const std::string& filename) {
 
 
 // }
-
-// void GameManager::moveShells() {
-//     auto& shells = gameBoard.getShells();
-    
-//     // go over all of the shells in order to move them
-//     for (size_t i = 0; i < shells.size(); ++i) {
-//         Shell* shell = shells[i];
-//         if (!shell) continue; 
-
-//         Position oldPos = shell->getPosition();
-//         gameBoard.removeObject(shell, oldPos.x, oldPos.y);
-
-//         shell->move(gameBoard.getWidth(), gameBoard.getHeight());
-
-//         Position newPos = shell->getPosition();
-//         //logFile << "Shell number " << shell->getId() << " fired at position (" << newPos.x << ", " << newPos.y << ")" << std::endl;
-//         Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(newPos.x) + ", " + std::to_string(newPos.y) + ")");
-//         gameBoard.addObject(shell, newPos.x, newPos.y);
-//     }
-// }
-
 
 // // gets the tank, the enemy tank and the algorithm for the tank and does what the algorithm gave us if possible
 // void GameManager::executeTankAction(Tank* tank, Tank* enemyTank, IAlgorithm& algo) {
@@ -517,212 +726,3 @@ void GameManager::readBoard(const std::string& filename) {
 //         return true;
 //     return false;
 // }
-
-
-
-void GameManager::gameLoop() {
-    while (!checkGameOver()) {
-        if (currentStep % 2 != 0) {
-            moveShells();
-            checkCollisions();
-        } else {
-            std::string turn = std::to_string(currentStep / 2 + 1);
-            Logger::debug("Turn : " + turn);
-            logFile << "Turn : " + turn << std::endl;
-
-            moveShells();
-            checkCollisions();
-            if (checkGameOver()) break;
-
-            auto boardView = buildBoardMatrix();
-            MySatelliteView satellite(boardView);
-
-            for (auto& [algoPtr, tank] : tankPairs) {
-                if (! tank->isAlive()) continue;
-
-                ActionRequest request = algoPtr->getAction();
-                if (request == ActionRequest::GetBattleInfo) {
-                    satellite.setPosition(tank->getPosition());
-                    if (tank->getSymbol() == '1') {
-                        player1->updateTankWithBattleInfo(*algoPtr, satellite);
-                    } else {
-                        player2->updateTankWithBattleInfo(*algoPtr, satellite);
-                    }
-                } else {
-                    executeAction(request, *algoPtr, tank);
-                }
-            }
-
-            checkCollisions();
-        }
-        currentStep++;
-    }
-
-    logGameResult();
-}
-
-
-void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank) {
-    Position pos = tank->getPosition();
-    Direction dir = tank->getDirection();
-    std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
-
-    Logger::debug(player + " initiates action:");
-    if (algo.getBackwardStatus() == 3 && req != ActionRequest::MoveForward) {
-        algo.decreaseBackward();
-        return;
-    }
-    if (algo.getBackwardStatus() == 3 && req == ActionRequest::MoveForward) {
-        algo.setBackward(0);
-        return;
-    }
-    if (algo.getBackwardStatus() == 2) {
-        Position back = pos + dir.getOppositeDirection().toVector();
-        wrapPosition(back);
-        tank->moveBackward(gameBoard->getWidth(), gameBoard->getHeight());
-        logFile << player << ": Moving backward now." << std::endl;
-        Logger::debug(player + " moved backward.");
-        algo.decreaseBackward();
-        return;
-    }
-    if (algo.getBackwardStatus() == 1 && req != ActionRequest::MoveBackward) {
-        algo.decreaseBackward();
-    }
-    switch (req) {
-        case ActionRequest::MoveForward: {
-            Position next = pos + dir.toVector();
-            wrapPosition(next);
-            if (gameBoard->isPassable(next.getx(), next.gety())) {
-                tank->moveForward(gameBoard->getWidth(), gameBoard->getHeight());
-                logFile << player << ": MoveForward to (" << next.getx() << ", " << next.gety() << ")" << std::endl;
-            } else {
-                logFile << player << ": Bad step - blocked forward." << std::endl;
-            }
-            break;
-        }
-        case ActionRequest::MoveBackward: {
-            Position back = pos + dir.getOppositeDirection().toVector();
-            wrapPosition(back);
-            if (algo.getBackwardStatus() == 0 && gameBoard->isPassable(back.getx(), back.gety())) {
-                algo.setBackward(3);
-                logFile << player << ": Started MoveBackward process." << std::endl;
-            }
-            break;
-        }
-        case ActionRequest::Shoot: {
-            Position shoot = pos + dir.toVector();
-            wrapPosition(shoot);
-            auto shell = std::make_unique<Shell>(shoot, dir, tank->getSymbol());
-            gameBoard->addObject(std::move(shell), shoot.getx(), shoot.gety());
-            logFile << player << ": Shoot from (" << pos.getx() << ", " << pos.gety() << ") to (" << shoot.getx() << ", " << shoot.gety() << ")" << std::endl;
-            break;
-        }
-        case ActionRequest::RotateLeft45: tank->rotateLeft8(); break;
-        case ActionRequest::RotateRight45: tank->rotateRight8(); break;
-        case ActionRequest::RotateLeft90: tank->rotateLeft4(); break;
-        case ActionRequest::RotateRight90: tank->rotateRight4(); break;
-        default:
-            logFile << player << ": No action taken." << std::endl;
-            break;
-    }
-    logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
-}
-void GameManager::wrapPosition(Position& pos) {
-    pos.setx((pos.getx() + gameBoard->getWidth()) % gameBoard->getWidth());
-    pos.sety((pos.gety() + gameBoard->getHeight()) % gameBoard->getHeight());
-}
-
-std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
-    size_t h = gameBoard->getHeight(), w = gameBoard->getWidth();
-    std::vector<std::vector<char>> board(h, std::vector<char>(w, ' '));
-    for (size_t y = 0; y < h; ++y) {
-        for (size_t x = 0; x < w; ++x) {
-            const CellSlot& slot = gameBoard->getSlot(x, y);
-            if (slot.getTank()) board[y][x] = slot.getTank()->getSymbol();
-            else if (slot.getWall()) board[y][x] = '#';
-            else if (slot.getMine()) {
-                if(!slot.getShells().empty()){
-                    board[y][x] = '*';
-                }
-                else{board[y][x] = '@';}}
-            else if (!slot.getShells().empty()) board[y][x] = '*';
-        }
-    }
-    return board;
-}
-void GameManager::checkCollisions() {
-    std::vector<Shell*> toRemove;
-
-    for (Shell* shell : gameBoard->getShells()) {
-        Position pos = shell->getPosition();
-        CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
-
-        if (Tank* tank = slot.getTank()) {
-            tank->Hit();
-            gameBoard->removeObject(tank, pos.getx(), pos.gety());
-            logFile << "Shell: Tank " << tank->getSymbol() << " destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
-            Logger::debug("Shell destroyed tank at position (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
-            toRemove.push_back(shell);
-            continue;
-        }
-
-        if (Wall* wall = slot.getWall()) {
-            int hp = wall->onHit();
-            logFile << "Shell hit wall at (" << pos.getx() << "," << pos.gety() << "). Wall HP: " << hp << std::endl;
-            if (hp <= 0) {
-                gameBoard->removeObject(wall, pos.getx(), pos.gety());
-                logFile << "Wall destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
-            }
-            toRemove.push_back(shell);
-            continue;
-        }
-
-        for (Shell* other : slot.getShells()) {
-            if (other != shell && other->getPosition() == pos) {
-                logFile << "Shells collided at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
-                toRemove.push_back(shell);
-                toRemove.push_back(other);
-                break;
-            }
-        }
-    }
-
-    for (Shell* s : toRemove) {
-        Position pos = s->getPosition();
-        gameBoard->removeObject(s, pos.getx(), pos.gety());
-    }
-
-    auto handleTankMine = [&](auto& map, const std::string& playerStr) {
-        for (auto& [algo, tank] : map) {
-            if (!tank->isAlive()) continue;
-            Position pos = tank->getPosition();
-            CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
-            if (slot.getMine()) {
-                tank->Hit();
-                gameBoard->removeObject(tank, pos.getx(), pos.gety());
-                gameBoard->removeObject(slot.getMine(), pos.getx(), pos.gety());
-                logFile << "Mine: " << playerStr << " tank hit a mine at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
-            }
-        }
-    };
-
-    handleTankMine(tankMap1, "Player 1");
-    handleTankMine(tankMap2, "Player 2");
-}
-bool GameManager::checkGameOver() const {
-    return tankMap1.empty() || tankMap2.empty() || currentStep >= maxSteps;
-}
-
-void GameManager::logGameResult() {
-    logFile << "Game Over!" << std::endl;
-    Logger::debug("Game Over!");
-
-    if (tankMap1.empty() && tankMap2.empty())
-        logFile << "RESULT: Tie - Both players lost all tanks" << std::endl;
-    else if (tankMap1.empty())
-        logFile << "RESULT: Player 2 wins - Player 1 eliminated" << std::endl;
-    else if (tankMap2.empty())
-        logFile << "RESULT: Player 1 wins - Player 2 eliminated" << std::endl;
-    else
-        logFile << "RESULT: Tie - Reached max steps" << std::endl;
-}

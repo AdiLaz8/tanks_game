@@ -29,6 +29,11 @@ void MyTankAlgorithm::decreaseBackward() {
     if (backwardStatus > 0) backwardStatus--;
 }
 
+void MyTankAlgorithm::updateBattleInfo(BattleInfo&) {
+    // או ריק, או שגיאה אם באמת לא אמור להיקרא
+    throw std::runtime_error("updateBattleInfo must be overridden.");
+}
+
 bool MyTankAlgorithm::isThreatenedByShells() const {
     for (const auto& [pos, symbol] : fullView) {
         if (symbol == '*') {
@@ -82,7 +87,7 @@ Action MyTankAlgorithm::moveIfThreatened() {
 bool MyTankAlgorithm::canShootInDirection() const {
     char enemySymbol = (playerId == 1 ? '2' : '1');
     Position ray = selfPosition;
-    for (int i = 0; i < std::max(boardWidth, boardHeight); ++i) {
+    for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
         ray = ray + direction.toVector();
         ray.setx((ray.getx() + boardWidth) % boardWidth);
         ray.sety((ray.gety() + boardHeight) % boardHeight);

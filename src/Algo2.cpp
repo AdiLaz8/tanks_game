@@ -9,7 +9,7 @@ void Algo2::updateBattleInfo(BattleInfo& info) {
     }
     turnCounterSinceInfo = 1;
     fullView = myInfo.getFullView();
-    Position self = myInfo.getSelfPosition();
+    selfPosition = myInfo.getSelfPosition();
 }
 ActionRequest Algo2::getAction() {
     if (turnCounterSinceInfo == -1) {

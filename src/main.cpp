@@ -7,6 +7,8 @@
 #include "Mine.h"
 #include "GameManager.h"
 #include "Logger.h"
+#include "MyPlayerFactory.h"
+#include "MyTankAlgorithmFactory.h"
 #include <set> 
 
 
@@ -17,44 +19,45 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     std::string inputFileName = argv[1];
-    GameManager manager(inputFileName);
+    GameManager manager(MyPlayerFactory{}, MyTankAlgorithmFactory{});
     manager.readBoard(inputFileName);
-    Board& board = manager.getBoard();
-
-    std::cout << "=== Board Info ===" << std::endl;
-    std::cout << "Size: " << board.getWidth() << " x " << board.getHeight() << std::endl;
-
-    std::cout << "\n=== Player 1 Tanks ===" << std::endl;
-    for (Tank* tank : manager.getTanks1()) {
-        std::cout << tank->toString() << std::endl;
-    }
-
-    std::cout << "\n=== Player 2 Tanks ===" << std::endl;
-    for (Tank* tank : manager.getTanks2()) {
-        std::cout << tank->toString() << std::endl;
-    }
-
-    std::cout << "\n=== Mines ===" << std::endl;
-    for (int y = 0; y < board.getHeight(); ++y) {
-        for (int x = 0; x < board.getWidth(); ++x) {
-            if (board.getSlot(x, y).getMine()) {
-                std::cout << "Mine at (" << x << "," << y << ")" << std::endl;
-            }
-        }
-    }
-
-    std::cout << "\n=== Walls ===" << std::endl;
-    for (int y = 0; y < board.getHeight(); ++y) {
-        for (int x = 0; x < board.getWidth(); ++x) {
-            if (board.getSlot(x, y).getWall()) {
-                std::cout << "Wall at (" << x << "," << y << ")" << std::endl;
-            }
-        }
-    }
-
-    std::cout << "\n=== Done ===" << std::endl;
-
+    manager.gameLoop();
     return 0;
+
+    // std::cout << "=== Board Info ===" << std::endl;
+    // std::cout << "Size: " << board.getWidth() << " x " << board.getHeight() << std::endl;
+
+    // std::cout << "\n=== Player 1 Tanks ===" << std::endl;
+    // for (Tank* tank : manager.getTanks1()) {
+    //     std::cout << tank->toString() << std::endl;
+    // }
+
+    // std::cout << "\n=== Player 2 Tanks ===" << std::endl;
+    // for (Tank* tank : manager.getTanks2()) {
+    //     std::cout << tank->toString() << std::endl;
+    // }
+
+    // std::cout << "\n=== Mines ===" << std::endl;
+    // for (int y = 0; y < board.getHeight(); ++y) {
+    //     for (int x = 0; x < board.getWidth(); ++x) {
+    //         if (board.getSlot(x, y).getMine()) {
+    //             std::cout << "Mine at (" << x << "," << y << ")" << std::endl;
+    //         }
+    //     }
+    // }
+
+    // std::cout << "\n=== Walls ===" << std::endl;
+    // for (int y = 0; y < board.getHeight(); ++y) {
+    //     for (int x = 0; x < board.getWidth(); ++x) {
+    //         if (board.getSlot(x, y).getWall()) {
+    //             std::cout << "Wall at (" << x << "," << y << ")" << std::endl;
+    //         }
+    //     }
+    // }
+
+    // std::cout << "\n=== Done ===" << std::endl;
+
+    // return 0;
     // if (argc < 2) {
     //     std::cerr << "Usage: tanks_game <input_file>" << std::endl;
     //     return 1;

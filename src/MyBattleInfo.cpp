@@ -13,6 +13,9 @@ void MyBattleInfo::reset() {
 }
 
 void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols) {
+    (void)playerId;
+    (void)boardRows;
+    (void)boardCols;
     if (symbol == '*')
         shellPositions.push_back(pos);
 

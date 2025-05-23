@@ -44,7 +44,7 @@ public:
 
 private:
     std::vector<Direction::Value> currentPath;
-    Position targetPos;
+    Position targetPos{0,0};
     bool chasing = false;
     bool needsNewInfo = true;
     bool needsNewBattleInfo() const;

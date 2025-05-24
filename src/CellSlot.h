@@ -23,7 +23,7 @@ public:
     void removeWall();
     void removeMine();
     void removeShell(Shell* shell);
-    // void removeObject(Cell* obj);
+
     const std::vector<std::unique_ptr<Cell>>& getAll() const;
     void removeShellPointerOnly(Shell* shell);
     void addShellPointerOnly(Shell* shell);

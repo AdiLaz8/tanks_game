@@ -1,105 +1,104 @@
 Header: Simple Test Map
-Player 1 tank placed at (3,0)
+Player 2 tank placed at (2,0)
+Player 1 tank placed at (4,0)
 Player 2 tank placed at (3,2)
+Player 1 tank placed at (5,2)
 Turn : 1
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
 Player 1: Requested action - 7
 Player 1: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
 Turn : 2
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
+Player 2: Requested action - 6
+Player 2: Shoot from (2, 0) to (3, 0)
+Player 2: Direction is now 2
+Player 2: doing action - 6
+Player 1: Requested action - 6
+Player 1: Shoot from (4, 0) to (3, 0)
+Player 1: Direction is now 6
+Player 1: doing action - 6
+Player 2: Requested action - 6
+Player 2: Shoot from (3, 2) to (4, 2)
+Player 2: Direction is now 2
+Player 2: doing action - 6
+Player 1: Requested action - 6
+Player 1: Shoot from (5, 2) to (4, 2)
+Player 1: Direction is now 6
+Player 1: doing action - 6
+Shell hit wall at (3,0). Wall HP: 1
+Shell hit wall at (3,0). Wall HP: 0
+Wall destroyed at (3,0)
+Shell hit wall at (4,2). Wall HP: 1
+Shell hit wall at (4,2). Wall HP: 0
+Wall destroyed at (4,2)
 Turn : 3
-Player 1: Requested action - 0
-Player 1: Bad step - blocked forward.
-Player 1: Direction is now 6
-Player 1: doing action - 0
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
+Player 1: Requested action - 4
+Player 1: Direction is now 5
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Player 1: Requested action - 4
+Player 1: Direction is now 5
+Player 1: doing action - 4
 Turn : 4
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
+Player 1: Requested action - 5
+Player 1: Direction is now 6
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Player 1: Requested action - 5
+Player 1: Direction is now 6
+Player 1: doing action - 5
 Turn : 5
-Player 1: Requested action - 6
-Player 1: Shoot from (3, 0) to (2, 0)
-Player 1: Direction is now 6
-Player 1: doing action - 6
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Shell hit wall at (2,0). Wall HP: 1
+Player 1: Requested action - 4
+Player 1: Direction is now 5
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Player 1: Requested action - 4
+Player 1: Direction is now 5
+Player 1: doing action - 4
 Turn : 6
-Player 1: Requested action - 0
-Player 1: Bad step - blocked forward.
-Player 1: Direction is now 6
-Player 1: doing action - 0
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
+Player 1: Requested action - 5
+Player 1: Direction is now 6
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Player 1: Requested action - 5
+Player 1: Direction is now 6
+Player 1: doing action - 5
 Turn : 7
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 8
-Player 1: Requested action - 0
-Player 1: Bad step - blocked forward.
-Player 1: Direction is now 6
-Player 1: doing action - 0
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 9
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 10
+Player 2: Requested action - 6
+Player 2: Shoot from (2, 0) to (3, 0)
+Player 2: Direction is now 2
+Player 2: doing action - 6
 Player 1: Requested action - 6
-Player 1: Shoot from (3, 0) to (2, 0)
+Player 1: Shoot from (4, 0) to (3, 0)
 Player 1: Direction is now 6
 Player 1: doing action - 6
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Shell hit wall at (2,0). Wall HP: 0
-Wall destroyed at (2,0)
-Turn : 11
-Player 1: Requested action - 0
-Player 1: MoveForward to (2, 0)
-Player 1: Direction is now 6
-Player 1: doing action - 0
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 12
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 13
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 14
-Player 1: Requested action - 0
-Player 1: MoveForward to (1, 0)
-Player 1: Direction is now 6
-Player 1: doing action - 0
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 15
+Player 2: Requested action - 6
+Player 2: Shoot from (3, 2) to (4, 2)
+Player 2: Direction is now 2
+Player 2: doing action - 6
 Player 1: Requested action - 6
-Player 1: Shoot from (1, 0) to (0, 0)
+Player 1: Shoot from (5, 2) to (4, 2)
 Player 1: Direction is now 6
 Player 1: doing action - 6
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 16
-Player 1: Requested action - 7
-Player 1: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Shell: Tank 1 destroyed at (3,0)
+Shell: Tank 1 destroyed at (4,0)
+Shell: Tank 2 destroyed at (2,0)
+Shell: Tank 1 destroyed at (5,2)
+Shell: Tank 2 destroyed at (3,2)
 Game Over!
-RESULT: Player 2 wins - Player 1 eliminated
+RESULT: Tie - Both players lost all tanks

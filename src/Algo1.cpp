@@ -177,24 +177,25 @@
 
 void Algo1::updateBattleInfo(BattleInfo& info) {
     auto& myInfo = dynamic_cast<MyBattleInfo&>(info);
-    if(turnCounterSinceInfo==-1){
+    if (turnCounterSinceInfo == -1) {
         boardWidth = myInfo.getWidth();
         boardHeight = myInfo.getHeight();
         ammo = myInfo.getInitialShells();
     }
-     needsNewInfo = false;
+
+    needsNewInfo = false;
     turnCounterSinceInfo = 0;
     fullView = myInfo.getFullView();
-    Position self = myInfo.getSelfPosition();
+    selfPosition = myInfo.getSelfPosition(); // ✅ זה השורה החשובה
     char enemySymbol = (playerId == 1 ? '2' : '1');
 
     int minDist = boardWidth * boardHeight;
     for (const auto& [pos, symbol] : fullView) {
         if (symbol == enemySymbol) {
-            int dx = std::min((self.getx() - pos.getx() + boardWidth) % boardWidth,
-                              (pos.getx() - self.getx() + boardWidth) % boardWidth);
-            int dy = std::min((self.gety() - pos.gety() + boardHeight) % boardHeight,
-                              (pos.gety() - self.gety() + boardHeight) % boardHeight);
+            int dx = std::min((selfPosition.getx() - pos.getx() + boardWidth) % boardWidth,
+                              (pos.getx() - selfPosition.getx() + boardWidth) % boardWidth);
+            int dy = std::min((selfPosition.gety() - pos.gety() + boardHeight) % boardHeight,
+                              (pos.gety() - selfPosition.gety() + boardHeight) % boardHeight);
             int dist = dx + dy;
             if (dist < minDist) {
                 minDist = dist;
@@ -205,6 +206,7 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
 
     computeShootingPath();
 }
+
 
 ActionRequest Algo1::getAction() {
     if (turnCounterSinceInfo == -1){
@@ -242,6 +244,21 @@ ActionRequest Algo1::getAction() {
             return ActionRequest::Shoot;
         }
     }
+    for (int i = 0; i < 8; ++i) {
+        if (i == static_cast<int>(direction.getDirection())) continue;
+
+        Direction tryDir(static_cast<Direction::Value>(i));
+        Direction originalDir = direction;
+        direction = tryDir;
+
+        if (canShootInDirection()) {
+            direction = originalDir; // מחזירים את הכיוון המקורי כדי לא לשבש את הלוגיקה
+            return rotateTowards(originalDir.getDirection(), tryDir.getDirection());
+        }
+
+        direction = originalDir; // גם אם לא הצליח, להחזיר את הכיוון המקורי
+    }
+
 
     if (needsNewBattleInfo()) {
         chasing = false;
@@ -260,21 +277,24 @@ ActionRequest Algo1::getAction() {
                                        return cell.first == nextPos;
                                    });
 
-            if (it != fullView.end()) {
-                if (it->second == '#') {
-                    if (ammo > 0 && getShootingStatus()==0) {
-                        shootingStatus=4;
-                        ammo--;
-                        return ActionRequest::Shoot;
-                    }
-                }
-                if (it->second == '@') {
-                    currentPath.clear();
-                    chasing = false;
-                    turnCounterSinceInfo = 0;
-                    return ActionRequest::GetBattleInfo;
+        if (it != fullView.end()) {
+            // ❌ אם הצעד הבא הוא מוקש או טנק (שלך או של האויב) — נחשב מסלול חדש
+            if (it->second == '@' || it->second == '1' || it->second == '2') {
+                currentPath.clear();
+                needsNewInfo = true;
+                return ActionRequest::GetBattleInfo;
+            }
+
+            // אם יש קיר – יורה
+            if (it->second == '#') {
+                if (ammo > 0 && getShootingStatus() == 0) {
+                    shootingStatus = 4;
+                    ammo--;
+                    needsNewInfo = true;
+                    return ActionRequest::Shoot;
                 }
             }
+        }
 
             currentPath.erase(currentPath.begin());
             selfPosition = nextPos;

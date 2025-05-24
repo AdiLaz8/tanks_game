@@ -146,7 +146,7 @@ void GameManager::readBoard(const std::string& filename) {
                     break;
                 }
                 case '2': {
-                    gameBoard->addObject(std::make_unique<Tank>('2', Direction(Direction::L), Position(x, y)), x, y);
+                    gameBoard->addObject(std::make_unique<Tank>('2', Direction(Direction::R), Position(x, y)), x, y);
                     hasTank2 = true;
                     std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(2, tankIndex2);
                     Tank* t = gameBoard->getSlot(x, y).getTank();

@@ -59,6 +59,7 @@
         "__tree": "cpp",
         "iomanip": "cpp",
         "set": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "deque": "cpp"
     }
 }

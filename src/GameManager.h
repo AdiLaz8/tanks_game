@@ -24,8 +24,6 @@ private:
     std::unique_ptr<Player> player2;
     std::unordered_map<MyTankAlgorithm*, Tank*> tankMap1;
     std::unordered_map<MyTankAlgorithm*, Tank*> tankMap2;
-
-    std::string inputFileName;
     size_t numShells = 0;
     size_t maxSteps = 0;
     const PlayerFactory& playerFactory;

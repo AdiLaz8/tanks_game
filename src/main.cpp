@@ -19,10 +19,18 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     std::string inputFileName = argv[1];
-    GameManager manager(MyPlayerFactory{}, MyTankAlgorithmFactory{});
+
+    // 🔧 העבר לפקטורים משתנים מקומיים עם שם – כדי שיחיו לאורך כל הזמן
+    MyPlayerFactory playerFactory;
+    MyTankAlgorithmFactory tankFactory;
+
+    GameManager manager(playerFactory, tankFactory); // ✅ עכשיו שומר רפרנס חוקי
     manager.readBoard(inputFileName);
     manager.gameLoop();
+
     return 0;
+}
+
 
     // std::cout << "=== Board Info ===" << std::endl;
     // std::cout << "Size: " << board.getWidth() << " x " << board.getHeight() << std::endl;
@@ -198,4 +206,4 @@ int main(int argc, char* argv[]) {
     // }
     // Logger::shutdown(); // closing the logger
     // return 0;
-}
+

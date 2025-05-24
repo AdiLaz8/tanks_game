@@ -13,7 +13,7 @@ Player1::Player1(int player_index, size_t x, size_t y, size_t max_steps, size_t 
 void Player1::updateTankWithBattleInfo(
     TankAlgorithm& tank,
     SatelliteView& satellite_view) {
-
+    (void)maxSteps;
     //auto& myTank = dynamic_cast<MyTankAlgorithm&>(tank);
     Position currentPos(-1, -1);
     MyBattleInfo battleInfo(boardHeight, boardWidth, numShells);

@@ -28,10 +28,11 @@ CellSlot& Board::getSlot(int x, int y) const{
 void Board::addShell(std::unique_ptr<Shell> shell) {
     Shell* raw = shell.get();
     shells.push_back(raw);
+    ownedShells.push_back(std::move(shell)); // נשמרת בעלות אמיתית
     Position pos = raw->getPosition();
     grid[pos.gety()][pos.getx()].addShellPointerOnly(raw);
-    shell.release(); // שחרור הבעלות – אנחנו שומרים את המצביע הגולמי
 }
+
 
 void Board::moveShellTo(Shell* shell, int oldX, int oldY, int newX, int newY) {
     grid[oldY][oldX].removeShellPointerOnly(shell);
@@ -66,10 +67,13 @@ void Board::removeShellPointerOnly(Shell* shell, const Position& pos) {
 void Board::removeTankAt(int x, int y) {
     Tank* tank = grid[y][x].getTank();
     if (!tank) return;
+
     auto& vec = (tank->getSymbol() == '1') ? tanks1 : tanks2;
     vec.erase(std::remove(vec.begin(), vec.end(), tank), vec.end());
-    grid[y][x].removeTank();
+
+    grid[y][x].removeTank(); // ימחק גם את unique_ptr
 }
+
 
 void Board::removeWallAt(int x, int y) {
     grid[y][x].removeWall();
@@ -80,12 +84,14 @@ void Board::removeMineAt(int x, int y) {
 }
 
 void Board::removeShell(Shell* shell, int x, int y) {
-    grid[y][x].removeShellPointerOnly(shell); // רק pointer
+    grid[y][x].removeShellPointerOnly(shell);
     shells.erase(std::remove(shells.begin(), shells.end(), shell), shells.end());
-    ownedShells.erase(std::remove_if(ownedShells.begin(), ownedShells.end(),
-        [shell](const std::unique_ptr<Shell>& ptr) { return ptr.get() == shell; }),
-        ownedShells.end()); // זה באמת משמיד את האובייקט
+
+    auto it = std::remove_if(ownedShells.begin(), ownedShells.end(),
+        [shell](const std::unique_ptr<Shell>& ptr) { return ptr.get() == shell; });
+    ownedShells.erase(it, ownedShells.end()); // זה משמיד את הפגז בזיכרון
 }
+
 
 
 

@@ -16,47 +16,100 @@ Board::~Board() {
     delete[] grid;
 }
 
+
+
 // returns the cellslot in this position
 CellSlot& Board::getSlot(int x, int y) const{
     return grid[(y + height) % height][(x + width) % width];
 }
 
-// add any object to the grid
+// Board.cpp
+
+void Board::addShell(std::unique_ptr<Shell> shell) {
+    Shell* raw = shell.get();
+    shells.push_back(raw);
+    Position pos = raw->getPosition();
+    grid[pos.gety()][pos.getx()].addShellPointerOnly(raw);
+    shell.release(); // שחרור הבעלות – אנחנו שומרים את המצביע הגולמי
+}
+
+void Board::moveShellTo(Shell* shell, int oldX, int oldY, int newX, int newY) {
+    grid[oldY][oldX].removeShellPointerOnly(shell);
+    grid[newY][newX].addShellPointerOnly(shell);
+}
+
+
 void Board::addObject(std::unique_ptr<Cell> obj, int x, int y) {
-    Cell* rawPtr = obj.get();
-    grid[y][x].addObject(std::move(obj));
-    if (auto shell = dynamic_cast<Shell*>(rawPtr)) {
-        shells.push_back(shell);
+    Cell* raw = obj.get();
+    
+    if (auto* shell = dynamic_cast<Shell*>(raw)) {
+        shells.push_back(shell);                 // שמירה בגישה מהירה
+        ownedShells.push_back(std::unique_ptr<Shell>(shell)); // בעלות
+        obj.release();                           // מניעת double delete
+        grid[y][x].addShellPointerOnly(shell);   // נרשום רק את המצביע
+        return;
     }
-    if (auto tank = dynamic_cast<Tank*>(rawPtr)) {
-        if (tank->getSymbol() == '1') {
-            tanks1.push_back(tank);
-            }   
-        else if (tank->getSymbol() == '2') {
-            tanks2.push_back(tank);
-        }
+
+    // Wall / Tank / Mine:
+    grid[y][x].addObject(std::move(obj));
+
+    if (auto* tank = dynamic_cast<Tank*>(raw)) {
+        if (tank->getSymbol() == '1') tanks1.push_back(tank);
+        else if (tank->getSymbol() == '2') tanks2.push_back(tank);
     }
 }
 
-// remove any object from the grid
-void Board::removeObject(Cell* obj, int x, int y) {
-    grid[y][x].removeObject(obj);
-    // Check if the object is a shell and remove it from the vector of shells
-    Shell* shell = dynamic_cast<Shell*>(obj);
-    if (shell) {
-        auto it = std::find(shells.begin(), shells.end(), shell);
-        if (it != shells.end()) {
-            shells.erase(it);
-        }
-    }
-    if (auto tank = dynamic_cast<Tank*>(obj)) {
-        auto& vec = (tank->getSymbol() == '1') ? tanks1 : tanks2;
-        auto it = std::find(vec.begin(), vec.end(), tank);
-        if (it != vec.end()) {
-            vec.erase(it);
-        }
-    }
+void Board::removeShellPointerOnly(Shell* shell, const Position& pos) {
+    grid[pos.gety()][pos.getx()].removeShellPointerOnly(shell);
 }
+
+void Board::removeTankAt(int x, int y) {
+    Tank* tank = grid[y][x].getTank();
+    if (!tank) return;
+    auto& vec = (tank->getSymbol() == '1') ? tanks1 : tanks2;
+    vec.erase(std::remove(vec.begin(), vec.end(), tank), vec.end());
+    grid[y][x].removeTank();
+}
+
+void Board::removeWallAt(int x, int y) {
+    grid[y][x].removeWall();
+}
+
+void Board::removeMineAt(int x, int y) {
+    grid[y][x].removeMine();
+}
+
+void Board::removeShell(Shell* shell, int x, int y) {
+    grid[y][x].removeShellPointerOnly(shell); // רק pointer
+    shells.erase(std::remove(shells.begin(), shells.end(), shell), shells.end());
+    ownedShells.erase(std::remove_if(ownedShells.begin(), ownedShells.end(),
+        [shell](const std::unique_ptr<Shell>& ptr) { return ptr.get() == shell; }),
+        ownedShells.end()); // זה באמת משמיד את האובייקט
+}
+
+
+
+
+
+// // remove any object from the grid
+// void Board::removeObject(Cell* obj, int x, int y) {
+//     grid[y][x].removeObject(obj);
+//     // Check if the object is a shell and remove it from the vector of shells
+//     Shell* shell = dynamic_cast<Shell*>(obj);
+//     if (shell) {
+//         auto it = std::find(shells.begin(), shells.end(), shell);
+//         if (it != shells.end()) {
+//             shells.erase(it);
+//         }
+//     }
+//     if (auto tank = dynamic_cast<Tank*>(obj)) {
+//         auto& vec = (tank->getSymbol() == '1') ? tanks1 : tanks2;
+//         auto it = std::find(vec.begin(), vec.end(), tank);
+//         if (it != vec.end()) {
+//             vec.erase(it);
+//         }
+//     }
+// }
 
 // checks and returns if the cellslot in this position has a mine or a wall
 bool Board::isPassable(int x, int y) const {

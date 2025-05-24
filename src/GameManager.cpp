@@ -191,24 +191,24 @@ void GameManager::readBoard(const std::string& filename) {
 
 
 void GameManager::moveShells() {
-    auto& shells = gameBoard->getShells();
-    
-    // go over all of the shells in order to move them
-    for (size_t i = 0; i < shells.size(); ++i) {
-        Shell* shell = shells[i];
-        if (!shell) continue; 
+    std::vector<Shell*> copy = gameBoard->getShells(); // לא נוגעים ב־ownedShells
 
+    for (Shell* shell : copy) {
         Position oldPos = shell->getPosition();
-        gameBoard->removeObject(shell, oldPos.getx(), oldPos.gety());
+        Position newPos = oldPos + shell->getDirection().toVector();
+        wrapPosition(newPos);
 
-        shell->move(gameBoard->getWidth(), gameBoard->getHeight());
-
-        Position newPos = shell->getPosition();
-        //logFile << "Shell number " << shell->getId() << " fired at position (" << newPos.x << ", " << newPos.y << ")" << std::endl;
-        Logger::debug("Shell number " + std::to_string(shell->getId()) + " fired at position (" + std::to_string(newPos.getx()) + ", " + std::to_string(newPos.gety()) + ")");
-        gameBoard->addObject(std::unique_ptr<Cell>(shell), newPos.getx(), newPos.gety());
+        gameBoard->moveShellTo(shell, oldPos.getx(), oldPos.gety(), newPos.getx(), newPos.gety());
+        shell->setPosition(newPos);
     }
 }
+
+
+
+
+
+
+
 
 
 void GameManager::gameLoop() {
@@ -307,8 +307,7 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
         case ActionRequest::Shoot: {
             Position shoot = pos + dir.toVector();
             wrapPosition(shoot);
-            auto shell = std::make_unique<Shell>(shoot, dir, tank->getSymbol());
-            gameBoard->addObject(std::move(shell), shoot.getx(), shoot.gety());
+            gameBoard->addShell(std::make_unique<Shell>(shoot, dir, player[0]));
             logFile << player << ": Shoot from (" << pos.getx() << ", " << pos.gety() << ") to (" << shoot.getx() << ", " << shoot.gety() << ")" << std::endl;
             break;
         }
@@ -346,22 +345,26 @@ std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
     return board;
 }
 void GameManager::checkCollisions() {
-    std::vector<Shell*> toRemove;
+    std::vector<std::pair<Shell*, Position>> toRemove;
 
+    // מעבר על כל הפגזים ובדיקת התנגשויות
     for (Shell* shell : gameBoard->getShells()) {
         Position pos = shell->getPosition();
         CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
 
         if (Tank* tank = slot.getTank()) {
+            char symbol = tank->getSymbol();  // שמור מראש לפני מחיקה
             tank->Hit();
-            if (tank->getSymbol() == '1') tankMap1--;
-            else if (tank->getSymbol() == '2') tankMap2--;
+            if (symbol == '1') tankMap1--;
+            else if (symbol == '2') tankMap2--;
+
             tankPairs.erase(std::remove_if(tankPairs.begin(), tankPairs.end(),
                 [tank](const auto& pair) { return pair.second == tank; }), tankPairs.end());
-            gameBoard->removeObject(tank, pos.getx(), pos.gety());
-            logFile << "Shell: Tank " << tank->getSymbol() << " destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+
+            gameBoard->removeTankAt(pos.getx(), pos.gety());
+            logFile << "Shell: Tank " << symbol << " destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
             Logger::debug("Shell destroyed tank at position (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
-            toRemove.push_back(shell);
+            toRemove.emplace_back(shell, pos);
             continue;
         }
 
@@ -369,50 +372,58 @@ void GameManager::checkCollisions() {
             int hp = wall->onHit();
             logFile << "Shell hit wall at (" << pos.getx() << "," << pos.gety() << "). Wall HP: " << hp << std::endl;
             if (hp <= 0) {
-                gameBoard->removeObject(wall, pos.getx(), pos.gety());
+                gameBoard->removeWallAt(pos.getx(), pos.gety());
                 logFile << "Wall destroyed at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
             }
-            toRemove.push_back(shell);
+            toRemove.emplace_back(shell, pos);
             continue;
         }
 
         for (Shell* other : slot.getShells()) {
             if (other != shell && other->getPosition() == pos) {
+                toRemove.emplace_back(shell, pos);
+                toRemove.emplace_back(other, pos);
                 logFile << "Shells collided at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
-                toRemove.push_back(shell);
-                toRemove.push_back(other);
                 break;
             }
         }
     }
 
-    for (Shell* s : toRemove) {
-        Position pos = s->getPosition();
-        gameBoard->removeObject(s, pos.getx(), pos.gety());
+    // מחיקת הפגזים שנפגעו
+    for (const auto& [s, pos] : toRemove) {
+        gameBoard->removeShell(s, pos.getx(), pos.gety());
     }
 
+    // מעבר על הטנקים ובדיקת מוקשים
     for (auto it = tankPairs.begin(); it != tankPairs.end(); ) {
         Tank* tank = it->second;
         if (!tank->isAlive()) {
             ++it;
             continue;
         }
+
         Position pos = tank->getPosition();
         CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
+
         if (slot.getMine()) {
+            char symbol = tank->getSymbol();  // שמור מראש
             tank->Hit();
-            if (tank->getSymbol() == '1') tankMap1--;
-            else if (tank->getSymbol() == '2') tankMap2--;
-            gameBoard->removeObject(tank, pos.getx(), pos.gety());
-            gameBoard->removeObject(slot.getMine(), pos.getx(), pos.gety());
-            logFile << "Mine: Player " << tank->getSymbol() << " tank hit a mine at (" << pos.getx() << "," << pos.gety() << ")" << std::endl;
+            if (symbol == '1') tankMap1--;
+            else if (symbol == '2') tankMap2--;
+
+            gameBoard->removeTankAt(pos.getx(), pos.gety());
+            gameBoard->removeMineAt(pos.getx(), pos.gety());
+
+            logFile << "Mine: Player " << symbol << " tank hit a mine at ("
+                    << pos.getx() << "," << pos.gety() << ")" << std::endl;
             it = tankPairs.erase(it);
         } else {
             ++it;
         }
     }
-
 }
+
+
 bool GameManager::checkGameOver() const {
     return tankMap1==0 || tankMap2==0|| currentStep >= maxSteps;
 }

@@ -30,6 +30,7 @@ public:
     char getOwnerId() const;
     std::string toString() const override;
     int getId() const { return id; }
+    void setPosition(const Position& newPos) { p = newPos; }
 
 
 };

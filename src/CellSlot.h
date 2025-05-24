@@ -12,12 +12,19 @@
 class CellSlot {
 private:
     std::vector<std::unique_ptr<Cell>> objects;
+    std::vector<Shell*> shellPointers;
+
 
 public:
     void addObject(std::unique_ptr<Cell> obj);
-    void removeObject(Cell* obj);
+    void removeTank();
+    void removeWall();
+    void removeMine();
+    void removeShell(Shell* shell);
+    // void removeObject(Cell* obj);
     const std::vector<std::unique_ptr<Cell>>& getAll() const;
-
+    void removeShellPointerOnly(Shell* shell);
+    void addShellPointerOnly(Shell* shell);
     Tank* getTank() const;
     Wall* getWall() const;
     Mine* getMine() const;

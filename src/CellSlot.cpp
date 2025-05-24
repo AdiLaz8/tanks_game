@@ -2,15 +2,54 @@
 
 // Adding any object to the cellslot
 void CellSlot::addObject(std::unique_ptr<Cell> obj) {
+    if (dynamic_cast<Shell*>(obj.get()))
+        return; // לא שומרים shell כאן
     objects.push_back(std::move(obj));
 }
 
+
 // Removing any object from the cellslot
-void CellSlot::removeObject(Cell* obj) {
-    auto it = std::remove_if(objects.begin(), objects.end(),
-        [obj](const std::unique_ptr<Cell>& ptr) {
-            return ptr.get() == obj;
-        });
+// void CellSlot::removeObject(Cell* obj) {
+//     auto it = std::remove_if(objects.begin(), objects.end(),
+//         [obj](const std::unique_ptr<Cell>& ptr) {
+//             return ptr.get() == obj;
+//         });
+//     objects.erase(it, objects.end());
+// }
+
+void CellSlot::addShellPointerOnly(Shell* shell) {
+    shellPointers.push_back(shell); // שדה חדש מסוג vector<Shell*>
+}
+
+
+
+void CellSlot::removeShellPointerOnly(Shell* shell) {
+    shellPointers.erase(std::remove(shellPointers.begin(), shellPointers.end(), shell), shellPointers.end());
+}
+
+
+
+
+
+
+void CellSlot::removeTank() {
+    auto it = std::remove_if(objects.begin(), objects.end(), [](const std::unique_ptr<Cell>& obj) {
+        return dynamic_cast<Tank*>(obj.get()) != nullptr;
+    });
+    objects.erase(it, objects.end());
+}
+
+void CellSlot::removeWall() {
+    auto it = std::remove_if(objects.begin(), objects.end(), [](const std::unique_ptr<Cell>& obj) {
+        return dynamic_cast<Wall*>(obj.get()) != nullptr;
+    });
+    objects.erase(it, objects.end());
+}
+
+void CellSlot::removeMine() {
+    auto it = std::remove_if(objects.begin(), objects.end(), [](const std::unique_ptr<Cell>& obj) {
+        return dynamic_cast<Mine*>(obj.get()) != nullptr;
+    });
     objects.erase(it, objects.end());
 }
 

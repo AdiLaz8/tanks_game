@@ -241,6 +241,7 @@ ActionRequest Algo1::getAction() {
             shootingStatus=5;
             ammo--;
             turnCounterSinceInfo++;
+            needsNewInfo = true;
             return ActionRequest::Shoot;
         }
     }

@@ -8,6 +8,8 @@
 #include "Wall.h"
 #include "Mine.h"
 #include "Shell.h"
+#include <memory>
+
 
 class CellSlot {
 private:

@@ -4,6 +4,8 @@
 #include "CellSlot.h"
 #include "Shell.h"
 #include <vector>
+#include <memory>
+
 
 class Board {
 private:

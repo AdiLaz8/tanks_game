@@ -5,6 +5,7 @@
 #include "MyBattleInfo.h"
 #include <vector>
 #include <utility>
+#include <stdexcept>
 
 
 MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)

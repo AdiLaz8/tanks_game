@@ -25,51 +25,79 @@ void GameManager::readBoard(const std::string& filename) {
         exit(1);
     }
 
-    std::string line;
+    std::string outputFile = "output_" + filename.substr(filename.find_last_of("/\\") + 1);
+    logFile.open(outputFile);
+    if (!logFile.is_open()) {
+        std::cerr << "Error: Cannot open output file: " << outputFile << std::endl;
+        exit(1);
+    }
 
+    std::string line;
     std::getline(file, line); // Header line
+    logFile << "Header: " << line << std::endl;
 
     // MaxSteps
     std::getline(file, line);
-    if (line.find("MaxSteps") == std::string::npos || line.find('=') == std::string::npos)
+    if (line.find("MaxSteps") == std::string::npos || line.find('=') == std::string::npos) {
+        logFile << "Error: MaxSteps line invalid" << std::endl;
         exit(1);
+    }
     try {
         maxSteps = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
-    } catch (...) { exit(1); }
+    } catch (...) {
+        logFile << "Error: Failed to parse MaxSteps" << std::endl;
+        exit(1);
+    }
 
     // NumShells
     std::getline(file, line);
-    if (line.find("NumShells") == std::string::npos || line.find('=') == std::string::npos)
+    if (line.find("NumShells") == std::string::npos || line.find('=') == std::string::npos) {
+        logFile << "Error: NumShells line invalid" << std::endl;
         exit(1);
+    }
     try {
         numShells = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
-    } catch (...) { exit(1); }
+    } catch (...) {
+        logFile << "Error: Failed to parse NumShells" << std::endl;
+        exit(1);
+    }
 
     // Rows
     std::getline(file, line);
     size_t rows;
-    if (line.find("Rows") == std::string::npos || line.find('=') == std::string::npos)
+    if (line.find("Rows") == std::string::npos || line.find('=') == std::string::npos) {
+        logFile << "Error: Rows line invalid" << std::endl;
         exit(1);
+    }
     try {
         rows = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
-    } catch (...) { exit(1); }
+    } catch (...) {
+        logFile << "Error: Failed to parse Rows" << std::endl;
+        exit(1);
+    }
 
     // Cols
     std::getline(file, line);
     size_t cols;
-    if (line.find("Cols") == std::string::npos || line.find('=') == std::string::npos)
+    if (line.find("Cols") == std::string::npos || line.find('=') == std::string::npos) {
+        logFile << "Error: Cols line invalid" << std::endl;
         exit(1);
+    }
     try {
         cols = static_cast<size_t>(std::stoi(line.substr(line.find('=') + 1)));
-    } catch (...) { exit(1); }
+    } catch (...) {
+        logFile << "Error: Failed to parse Cols" << std::endl;
+        exit(1);
+    }
 
     gameBoard = std::make_unique<Board>(cols, rows);
-
     player1 = playerFactory.create(1, cols, rows, maxSteps, numShells);
     player2 = playerFactory.create(2, cols, rows, maxSteps, numShells);
 
     std::ofstream errorFile("input_errors.txt");
     bool hasTank1 = false, hasTank2 = false;
+    int tankIndex1 = 0;
+    int tankIndex2 = 0;
 
     for (size_t y = 0; y < rows; ++y) {
         std::string mapLine;
@@ -87,8 +115,7 @@ void GameManager::readBoard(const std::string& filename) {
             mapLine += ' ';
             errorFile << "Warning: Row " << y << " too short, padded with spaces.\n";
         }
-        int tankIndex1 = 0;
-        int tankIndex2 = 0;
+
         for (size_t x = 0; x < cols; ++x) {
             char c = mapLine[x];
             if (c == ' ') continue;
@@ -105,13 +132,13 @@ void GameManager::readBoard(const std::string& filename) {
                     hasTank1 = true;
                     std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(1, tankIndex1);
                     Tank* t = gameBoard->getSlot(x, y).getTank();
-                    TankAlgorithm* baseRaw = base.get();
-                    MyTankAlgorithm* raw = dynamic_cast<MyTankAlgorithm*>(baseRaw);
+                    auto raw = dynamic_cast<MyTankAlgorithm*>(base.get());
                     if (t && raw) {
                         std::unique_ptr<MyTankAlgorithm> algo(static_cast<MyTankAlgorithm*>(base.release()));
                         tankPairs.emplace_back(std::move(algo), t);
+                        logFile << "Player 1 tank placed at (" << x << "," << y << ")" << std::endl;
                     } else {
-                        std::cerr << "Error: Failed to create tank algorithm for Player 1 at index " << tankIndex1 << std::endl;
+                        logFile << "Error: Failed to create tank algorithm for Player 1 at index " << tankIndex1 << std::endl;
                         exit(1);
                     }
                     tankIndex1++;
@@ -122,13 +149,13 @@ void GameManager::readBoard(const std::string& filename) {
                     hasTank2 = true;
                     std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(2, tankIndex2);
                     Tank* t = gameBoard->getSlot(x, y).getTank();
-                    TankAlgorithm* baseRaw = base.get();
-                    MyTankAlgorithm* raw = dynamic_cast<MyTankAlgorithm*>(baseRaw);
+                    auto raw = dynamic_cast<MyTankAlgorithm*>(base.get());
                     if (t && raw) {
                         std::unique_ptr<MyTankAlgorithm> algo(static_cast<MyTankAlgorithm*>(base.release()));
                         tankPairs.emplace_back(std::move(algo), t);
+                        logFile << "Player 2 tank placed at (" << x << "," << y << ")" << std::endl;
                     } else {
-                        std::cerr << "Error: Failed to create tank algorithm for Player 2 at index " << tankIndex2 << std::endl;
+                        logFile << "Error: Failed to create tank algorithm for Player 2 at index " << tankIndex2 << std::endl;
                         exit(1);
                     }
                     tankIndex2++;
@@ -147,16 +174,17 @@ void GameManager::readBoard(const std::string& filename) {
     errorFile.close();
 
     if (!hasTank1 && !hasTank2) {
-        std::cerr << "Error: No tanks on map - tie." << std::endl;
+        logFile << "Error: No tanks on map - tie." << std::endl;
         exit(1);
     } else if (!hasTank1) {
-        std::cerr << "Error: Player 1 has no tanks - Player 2 wins." << std::endl;
+        logFile << "Error: Player 1 has no tanks - Player 2 wins." << std::endl;
         exit(1);
     } else if (!hasTank2) {
-        std::cerr << "Error: Player 2 has no tanks - Player 1 wins." << std::endl;
+        logFile << "Error: Player 2 has no tanks - Player 1 wins." << std::endl;
         exit(1);
     }
 }
+
 
 
 void GameManager::moveShells() {

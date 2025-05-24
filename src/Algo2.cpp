@@ -7,7 +7,7 @@ void Algo2::updateBattleInfo(BattleInfo& info) {
         boardHeight = myInfo.getHeight();
         ammo = myInfo.getInitialShells();
     }
-    turnCounterSinceInfo = 1;
+    turnCounterSinceInfo = 0;
     fullView = myInfo.getFullView();
     selfPosition = myInfo.getSelfPosition();
 }
@@ -15,6 +15,10 @@ ActionRequest Algo2::getAction() {
     if (turnCounterSinceInfo == -1) {
         return ActionRequest::GetBattleInfo;
     }
+
+
+    turnCounterSinceInfo++;
+
     if(getShootingStatus()>0){
         shootingStatus--;
     }

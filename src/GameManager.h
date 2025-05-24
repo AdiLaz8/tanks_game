@@ -22,8 +22,8 @@ private:
     std::unique_ptr<Board> gameBoard;
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
-    std::unordered_map<MyTankAlgorithm*, Tank*> tankMap1;
-    std::unordered_map<MyTankAlgorithm*, Tank*> tankMap2;
+    int tankMap1=0;
+    int tankMap2=0;
     size_t numShells = 0;
     size_t maxSteps = 0;
     const PlayerFactory& playerFactory;

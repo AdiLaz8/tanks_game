@@ -182,8 +182,8 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
         boardHeight = myInfo.getHeight();
         ammo = myInfo.getInitialShells();
     }
- 
-    turnCounterSinceInfo = 1;
+     needsNewInfo = false;
+    turnCounterSinceInfo = 0;
     fullView = myInfo.getFullView();
     Position self = myInfo.getSelfPosition();
     char enemySymbol = (playerId == 1 ? '2' : '1');
@@ -207,8 +207,10 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
 }
 
 ActionRequest Algo1::getAction() {
-    if (turnCounterSinceInfo == -1)
-        return ActionRequest::GetBattleInfo;
+    if (turnCounterSinceInfo == -1){
+        return ActionRequest::GetBattleInfo;}
+    turnCounterSinceInfo++;
+
 
     if(getShootingStatus()>0){
         shootingStatus--;

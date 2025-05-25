@@ -1,0 +1,16 @@
+Large Threat Test
+MaxSteps = 100
+NumShells = 5
+Rows = 12
+Cols = 12
+1          1
+            
+     #      
+            
+       @    
+            
+     #      
+     2       
+   2    *    
+            
+          

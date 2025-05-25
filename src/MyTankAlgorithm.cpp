@@ -6,6 +6,8 @@
 #include <vector>
 #include <utility>
 #include <stdexcept>
+#include <iostream>
+
 
 
 MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
@@ -37,12 +39,17 @@ void MyTankAlgorithm::updateBattleInfo(BattleInfo&) {
 
 bool MyTankAlgorithm::isThreatenedByShells() const {
     for (const auto& [pos, symbol] : fullView) {
+
         if (symbol == '*') {
+            std::cout << "Seeing symbol '" << symbol << std::endl;
             int dx = std::min((int)(pos.getx() - selfPosition.getx() + boardWidth) % (int)boardWidth,
                               (int)(selfPosition.getx() - pos.getx() + boardWidth) % (int)boardWidth);
             int dy = std::min((int)(pos.gety() - selfPosition.gety() + boardHeight) % (int)boardHeight,
                               (int)(selfPosition.gety() - pos.gety() + boardHeight) % (int)boardHeight);
-            if (dx <= 2 && dy <= 2) return true;
+            if (dx <= 2 && dy <= 2){
+                std::cout << "Threat detected " << std::endl;
+                 return true;
+            }
         }
     }
     return false;
@@ -87,6 +94,7 @@ Action MyTankAlgorithm::moveIfThreatened() {
 
 bool MyTankAlgorithm::canShootInDirection() const {
     char enemySymbol = (playerId == 1 ? '2' : '1');
+    char selfSymbol = (playerId == 1 ? '1' : '2');
     Position ray = selfPosition;
     for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
         ray = ray + direction.toVector();
@@ -96,7 +104,7 @@ bool MyTankAlgorithm::canShootInDirection() const {
         for (const auto& [pos, symbol] : fullView) {
             if (pos == ray) {
                 if (symbol == enemySymbol) return true;
-                else if (symbol==!enemySymbol) return false;
+                else if (symbol==selfSymbol) return false;
             }
         }
     }

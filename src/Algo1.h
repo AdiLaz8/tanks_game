@@ -49,6 +49,7 @@ private:
     bool needsNewInfo = true;
     bool needsNewBattleInfo() const;
     void computeShootingPath();
+    int check=0;
     std::vector<Direction::Value> computeBFS(const Position& from, const Position& to,
                                              const std::vector<std::pair<Position, char>>& fullView,
                                              size_t width, size_t height);

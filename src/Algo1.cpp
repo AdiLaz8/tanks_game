@@ -173,6 +173,7 @@
 #include <set>
 #include <algorithm>
 #include "MyBattleInfo.h"
+#include <iostream>
 
 
 void Algo1::updateBattleInfo(BattleInfo& info) {
@@ -235,13 +236,18 @@ ActionRequest Algo1::getAction() {
         turnCounterSinceInfo++;
         return moveIfThreatened().getType();
     }
+    bool canShootNow = canShootInDirection();
+    std::cout << "can shoot?'" << canShootNow<<std::endl;
+    std::cout << "check is" << check<< std::endl;
 
-    if (canShootInDirection()) {
+    if (canShootNow) {
         if (ammo > 0 && getShootingStatus()==0) {
             shootingStatus=5;
             ammo--;
             turnCounterSinceInfo++;
             needsNewInfo = true;
+            check++;
+            std::cout << "check is" << check<< std::endl;
             return ActionRequest::Shoot;
         }
     }
@@ -292,6 +298,7 @@ ActionRequest Algo1::getAction() {
                     shootingStatus = 4;
                     ammo--;
                     needsNewInfo = true;
+                    std::cout << "tries to shoot test'" << std::endl;
                     return ActionRequest::Shoot;
                 }
             }

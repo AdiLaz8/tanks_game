@@ -101,10 +101,29 @@ bool MyTankAlgorithm::canShootInDirection() const {
         ray.setx((ray.getx() + boardWidth) % boardWidth);
         ray.sety((ray.gety() + boardHeight) % boardHeight);
         if (ray == selfPosition) break;
-        for (const auto& [pos, symbol] : fullView) {
-            if (pos == ray) {
-                if (symbol == enemySymbol) return true;
-                else if (symbol==selfSymbol) return false;
+        for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
+            ray = ray + direction.toVector();
+            ray.setx((ray.getx() + boardWidth) % boardWidth);
+            ray.sety((ray.gety() + boardHeight) % boardHeight);
+
+            if (ray == selfPosition) break;
+
+
+            // בדוק אם יש משהו במשבצת הזו
+            for (const auto& [pos, symbol] : fullView) {
+                if (pos == ray) {
+                    //std::cout << "Seeing symbol '" << symbol << std::endl;
+
+                    if (symbol == selfSymbol){
+                        std::cout << "i am '" << selfSymbol << std::endl;
+                        std::cout << "no shoot '" << symbol << std::endl;
+                        std::cout << "my friend in position '" << ray.getx() <<ray.gety()<< std::endl;
+                        std::cout << "im in position '" << selfPosition.getx() <<selfPosition.gety()<< std::endl;
+
+                        return false;   // טנק שלי בדרך
+                    } 
+                    if (symbol == enemySymbol) return true;   // טנק אויב בדרך
+                }
             }
         }
     }

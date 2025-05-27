@@ -1,5 +1,5 @@
 #include "CellSlot.h"
-
+#include <iostream>
 // Adding any object to the cellslot
 void CellSlot::addObject(std::unique_ptr<Cell> obj) {
     if (dynamic_cast<Shell*>(obj.get()))
@@ -8,17 +8,10 @@ void CellSlot::addObject(std::unique_ptr<Cell> obj) {
 }
 
 
-// Removing any object from the cellslot
-// void CellSlot::removeObject(Cell* obj) {
-//     auto it = std::remove_if(objects.begin(), objects.end(),
-//         [obj](const std::unique_ptr<Cell>& ptr) {
-//             return ptr.get() == obj;
-//         });
-//     objects.erase(it, objects.end());
-// }
-
 void CellSlot::addShellPointerOnly(Shell* shell) {
     shellPointers.push_back(shell); // שדה חדש מסוג vector<Shell*>
+    // std::cout << "[CellSlot] addShellPointerOnly at (" << shell->getPosition().getx() << "," << shell->getPosition().gety() << ")\n";
+
 }
 
 
@@ -88,12 +81,7 @@ Mine* CellSlot::getMine() const {
 
 // Returns a vector of all the shells that inside the cell slot in a given moment, will be useful to check collisions between two or more shells
 std::vector<Shell*> CellSlot::getShells() const {
-    std::vector<Shell*> shells;
-    for (const auto& obj : objects) {
-        Shell* shell = dynamic_cast<Shell*>(obj.get());
-        if (shell) shells.push_back(shell);
-    }
-    return shells;
+    return shellPointers;
 }
 
 // for now the next functions aren't useful, but we keep this in comment in case we'll need them in the next assignment
@@ -111,4 +99,13 @@ std::vector<Shell*> CellSlot::getShells() const {
 //         if (dynamic_cast<Shell*>(obj)) count++;
 //     }
 //     return count;
+// }
+
+// Removing any object from the cellslot
+// void CellSlot::removeObject(Cell* obj) {
+//     auto it = std::remove_if(objects.begin(), objects.end(),
+//         [obj](const std::unique_ptr<Cell>& ptr) {
+//             return ptr.get() == obj;
+//         });
+//     objects.erase(it, objects.end());
 // }

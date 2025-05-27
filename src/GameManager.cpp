@@ -228,6 +228,15 @@ void GameManager::gameLoop() {
             auto boardView = buildBoardMatrix();
             MySatelliteView satellite(boardView);
 
+            logFile << "Board after Turn " << (currentStep / 2 + 1) << ":\n";
+            for (const auto& row : boardView) {
+                for (char cell : row) {
+                    logFile << cell;
+                }
+                logFile << '\n';
+}
+
+
             for (auto& [algoPtr, tank] : tankPairs) {
                 if (! tank->isAlive()) continue;
 
@@ -337,9 +346,15 @@ std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
             else if (slot.getMine()) {
                 if(!slot.getShells().empty()){
                     board[y][x] = '*';
+                    logFile << "Shell detected at (" << x << "," << y << ")" << std::endl;
                 }
                 else{board[y][x] = '@';}}
-            else if (!slot.getShells().empty()) board[y][x] = '*';
+            else if (!slot.getShells().empty()){
+                if (!slot.getShells().empty()) {
+                    logFile << "Shell detected at (" << x << "," << y << ")" << std::endl;
+                    board[y][x] = '*';
+            }
+        }
         }
     }
     return board;

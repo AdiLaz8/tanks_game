@@ -1,6 +1,6 @@
 #include "Board.h"
 #include <typeinfo>
-
+#include <iostream>
 Board::Board(int w, int h) : width(w), height(h) {
     grid = new CellSlot*[height];
     for (int i = 0; i < height; ++i) {
@@ -31,6 +31,7 @@ void Board::addShell(std::unique_ptr<Shell> shell) {
     ownedShells.push_back(std::move(shell)); // נשמרת בעלות אמיתית
     Position pos = raw->getPosition();
     grid[pos.gety()][pos.getx()].addShellPointerOnly(raw);
+
 }
 
 
@@ -93,9 +94,24 @@ void Board::removeShell(Shell* shell, int x, int y) {
 }
 
 
+// checks and returns if the cellslot in this position has a mine or a wall
+bool Board::isPassable(int x, int y) const {
+    const CellSlot& slot = grid[(y + height) % height][(x + width) % width];
+    return !slot.getWall() && !slot.getTank();
+}
 
+int Board::getWidth() const {
+    return width;
+}
 
+int Board::getHeight() const {
+    return height;
+}
 
+// returns the tank of the player required
+const std::vector<Tank*>&::Board::getTanks(int playerId) const {
+    return (playerId == 1) ? tanks1 : tanks2;
+}
 
 // // remove any object from the grid
 // void Board::removeObject(Cell* obj, int x, int y) {
@@ -116,22 +132,3 @@ void Board::removeShell(Shell* shell, int x, int y) {
 //         }
 //     }
 // }
-
-// checks and returns if the cellslot in this position has a mine or a wall
-bool Board::isPassable(int x, int y) const {
-    const CellSlot& slot = grid[(y + height) % height][(x + width) % width];
-    return !slot.getWall() && !slot.getTank();
-}
-
-int Board::getWidth() const {
-    return width;
-}
-
-int Board::getHeight() const {
-    return height;
-}
-
-// returns the tank of the player required
-const std::vector<Tank*>&::Board::getTanks(int playerId) const {
-    return (playerId == 1) ? tanks1 : tanks2;
-}

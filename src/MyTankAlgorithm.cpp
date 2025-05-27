@@ -41,13 +41,13 @@ bool MyTankAlgorithm::isThreatenedByShells() const {
     for (const auto& [pos, symbol] : fullView) {
 
         if (symbol == '*') {
-            std::cout << "Seeing symbol '" << symbol << std::endl;
+            //std::cout << "Seeing symbol '" << symbol << std::endl;
             int dx = std::min((int)(pos.getx() - selfPosition.getx() + boardWidth) % (int)boardWidth,
                               (int)(selfPosition.getx() - pos.getx() + boardWidth) % (int)boardWidth);
             int dy = std::min((int)(pos.gety() - selfPosition.gety() + boardHeight) % (int)boardHeight,
                               (int)(selfPosition.gety() - pos.gety() + boardHeight) % (int)boardHeight);
             if (dx <= 2 && dy <= 2){
-                std::cout << "Threat detected " << std::endl;
+                //std::cout << "Threat detected " << std::endl;
                  return true;
             }
         }

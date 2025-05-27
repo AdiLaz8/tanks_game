@@ -121,7 +121,7 @@ bool MyTankAlgorithm::canShootInDirection() const {
                         std::cout << "im in position '" << selfPosition.getx() <<selfPosition.gety()<< std::endl;
 
                         return false;   // טנק שלי בדרך
-                    } 
+                    }
                     if (symbol == enemySymbol) return true;   // טנק אויב בדרך
                 }
             }

@@ -1,0 +1,19 @@
+DoNothing, DoNothing, DoNothing, DoNothing, DoNothing, DoNothing, DoNothing
+Shoot, RotateLeft45, Shoot, Shoot, Shoot, Shoot, Shoot
+Shoot, RotateLeft45, RotateLeft90, RotateLeft90, Shoot, Shoot, RotateLeft45
+Shoot, RotateLeft45, RotateRight90, RotateRight45, Shoot, Shoot, RotateRight45
+Shoot, RotateLeft45, RotateLeft90, RotateLeft45, Shoot, Shoot, RotateLeft45
+Shoot, RotateLeft45, RotateRight90, RotateRight45, Shoot, Shoot, RotateRight45
+Shoot, RotateLeft45, Shoot, Shoot, Shoot, Shoot, Shoot
+Shoot, RotateLeft45, RotateLeft90, Shoot, Shoot, Shoot, RotateLeft45
+Shoot, RotateLeft45, RotateRight90, Shoot, Shoot, RotateRight45, RotateRight45
+Shoot, RotateLeft45, RotateLeft90, Shoot, Shoot, MoveForward, RotateLeft45
+Shoot, RotateLeft45, RotateRight90, Shoot, Shoot, MoveForward, RotateRight45
+Shoot, RotateLeft45, Shoot, Shoot, Shoot, MoveForward, Shoot
+Shoot, RotateLeft45, RotateLeft90, Shoot, Shoot, MoveForward, RotateLeft45
+Shoot, RotateLeft45, RotateRight90, Shoot, Shoot, MoveForward, RotateRight45
+Shoot, RotateLeft45, RotateRight90, Shoot, RotateLeft90, MoveForward, RotateLeft45
+Shoot, RotateLeft45, RotateRight90, Shoot, MoveForward, MoveForward, RotateRight45
+Shoot, RotateLeft45, RotateRight90, Shoot, RotateLeft90, MoveForward, Shoot
+Shoot, RotateLeft45, RotateRight90, Shoot, MoveForward, MoveForward, RotateLeft45
+Player 1 won with 4 tanks still alive

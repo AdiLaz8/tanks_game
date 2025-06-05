@@ -75,10 +75,14 @@ private:
     bool alive = true;
 
 
+
+
 public:
     Tank(char owner, Direction d = Direction(Direction::L), Position p = Position(0, 0));
     virtual ~Tank();
-
+    int birthIndex = -1;
+    bool killedThisTurn = false;
+    bool isKilled = false;
     char getSymbol() const override;
     const Position& getPosition() const;
     const Direction& getDirection() const;

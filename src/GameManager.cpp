@@ -169,6 +169,31 @@ void GameManager::readBoard(const std::string& filename) {
             }
         }
     }
+    // יצירת רשימה לפי סדר הולדת טנקים
+    int birthIdx = 0;
+    for (size_t y = 0; y < rows; ++y) {
+        for (size_t x = 0; x < cols; ++x) {
+            Tank* t = gameBoard->getSlot(x, y).getTank();
+            if (t) {
+                t->birthIndex = birthIdx++;
+                tanksOrderedByBirth.push_back(t);
+            }
+        }
+    }
+    for (Tank* t : tanksOrderedByBirth) {
+        TankLogInfo info;
+        info.symbol = t->getSymbol();
+        tankLog.push_back(info);
+    }
+
+
+    // פתיחת קובץ הפלט הפשוט
+    simpleOutput.open("output.txt");
+    if (!simpleOutput.is_open()) {
+        std::cerr << "Error: Cannot open simple output file!" << std::endl;
+        exit(1);
+    }
+
 
     std::string extra;
     while (std::getline(file, extra)) {
@@ -220,6 +245,7 @@ void GameManager::gameLoop() {
             std::string turn = std::to_string(currentStep / 2 + 1);
             Logger::debug("Turn : " + turn);
             logFile << "Turn : " + turn << std::endl;
+            // אפס את currentActions לכל הטנקים לפי birthIndex
 
             moveShells();
             checkCollisions();
@@ -238,10 +264,13 @@ void GameManager::gameLoop() {
 
 
             for (auto& [algoPtr, tank] : tankPairs) {
+                int birthIdx = tank->birthIndex;
                 if (! tank->isAlive()) continue;
 
                 ActionRequest request = algoPtr->getAction();
                 logFile << "Player " << tank->getSymbol() << ": Requested action - " << static_cast<int>(request) << std::endl;
+                std::string actionStr = actionToString(request);
+
                 if (request == ActionRequest::GetBattleInfo) {
                     logFile << "Player " << tank->getSymbol() << ": GetBattleInfo triggered\n";
                     satellite.setPosition(tank->getPosition());
@@ -252,17 +281,71 @@ void GameManager::gameLoop() {
                     }
                 } else {
                     executeAction(request, *algoPtr, tank);
+                    // תעד פעולה
+                    if (!tank->isAlive()) {
+                        actionStr += " (killed)";
+                        tankLog[birthIdx].isAlive = false;
+                        tankLog[birthIdx].wasKilledThisTurn = true;
+                    }
+                    tankLog[birthIdx].lastAction = actionStr;
                     logFile << "Player " << tank->getSymbol() << ": doing action - " << static_cast<int>(request) << std::endl;
 
                 }
             }
 
             checkCollisions();
+            for (size_t i = 0; i < tankLog.size(); ++i) {
+                std::string action;
+                if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) {
+                    action = tankLog[i].lastAction + " (killed)";
+                } else if (!tankLog[i].isAlive) {
+                    action = "killed";
+                } else {
+                    action = tankLog[i].lastAction;
+                }
+
+                simpleOutput << action;
+                if (i + 1 < tankLog.size()) simpleOutput << ", ";
+            }
+            simpleOutput << std::endl;
+
+            for (auto& info : tankLog) {
+                info.wasKilledThisTurn = false;
+            }
+
+
+
+
         }
         currentStep++;
     }
 
     logGameResult();
+    int alive1 = 0, alive2 = 0;
+    for (const auto& t : tankLog) {
+        if (t.isAlive) {
+            if (t.symbol == '1') ++alive1;
+            else if (t.symbol == '2') ++alive2;
+        }
+    }
+
+
+    if (alive1 == 0 && alive2 == 0) {
+        simpleOutput << "Tie, both players have zero tanks" << std::endl;
+    } else if (currentStep >= maxSteps) {
+        simpleOutput << "Tie, reached max steps = " << maxSteps << ", player 1 has " << alive1 << " tanks, player 2 has " << alive2 << " tanks" << std::endl;
+    } else if (/* אתה עוקב אחרי 40 צעדים בלי תחמושת? */ false) {
+        const int NO_SHELL_LIMIT = 40;
+        simpleOutput << "Tie, both players have zero shells for " << NO_SHELL_LIMIT << " steps" << std::endl;
+    } else if (alive1 > 0) {
+        simpleOutput << "Player 1 won with " << alive1 << " tanks still alive" << std::endl;
+    } else {
+        simpleOutput << "Player 2 won with " << alive2 << " tanks still alive" << std::endl;
+    }
+    simpleOutput.close();
+
+
+
 }
 
 

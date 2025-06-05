@@ -34,6 +34,19 @@ private:
     // std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage1;
     // std::vector<std::unique_ptr<MyTankAlgorithm>> algoStorage2;
     std::vector<std::pair<std::unique_ptr<MyTankAlgorithm>, Tank*>> tankPairs;
+    std::ofstream simpleOutput;
+    std::vector<Tank*> tanksOrderedByBirth;
+    std::vector<std::string> currentActions;
+    struct TankLogInfo {
+        char symbol; // '1' או '2'
+        bool isAlive = true;
+        bool wasKilledThisTurn = false;
+        std::string lastAction = "DoNothing";
+    };
+    std::vector<TankLogInfo> tankLog;
+
+
+
 
 
 public:

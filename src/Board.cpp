@@ -97,7 +97,7 @@ void Board::removeShell(Shell* shell, int x, int y) {
 // checks and returns if the cellslot in this position has a mine or a wall
 bool Board::isPassable(int x, int y) const {
     const CellSlot& slot = grid[(y + height) % height][(x + width) % width];
-    return !slot.getWall() && !slot.getTank();
+    return !slot.getWall();
 }
 
 int Board::getWidth() const {

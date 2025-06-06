@@ -241,6 +241,24 @@ void GameManager::gameLoop() {
         if (currentStep % 2 != 0) {
             moveShells();
             checkCollisions();
+            for (size_t i = 0; i < tankLog.size(); ++i) {
+                std::string action;
+                if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) {
+                    action = tankLog[i].lastAction + " (killed)";
+                } else if (!tankLog[i].isAlive) {
+                    action = "killed";
+                } else {
+                    action = tankLog[i].lastAction;
+                }
+
+                simpleOutput << action;
+                if (i + 1 < tankLog.size()) simpleOutput << ", ";
+            }
+            simpleOutput << std::endl;
+
+            for (auto& info : tankLog) {
+                info.wasKilledThisTurn = false;
+            }
         } else {
             std::string turn = std::to_string(currentStep / 2 + 1);
             Logger::debug("Turn : " + turn);
@@ -272,6 +290,7 @@ void GameManager::gameLoop() {
                 std::string actionStr = actionToString(request);
 
                 if (request == ActionRequest::GetBattleInfo) {
+                    tankLog[birthIdx].lastAction = "GetBattleInfo";
                     logFile << "Player " << tank->getSymbol() << ": GetBattleInfo triggered\n";
                     satellite.setPosition(tank->getPosition());
                     if (tank->getSymbol() == '1') {
@@ -294,7 +313,14 @@ void GameManager::gameLoop() {
             }
 
             checkCollisions();
-            for (size_t i = 0; i < tankLog.size(); ++i) {
+
+
+
+
+        }
+        currentStep++;
+    }
+                for (size_t i = 0; i < tankLog.size(); ++i) {
                 std::string action;
                 if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) {
                     action = tankLog[i].lastAction + " (killed)";
@@ -312,13 +338,6 @@ void GameManager::gameLoop() {
             for (auto& info : tankLog) {
                 info.wasKilledThisTurn = false;
             }
-
-
-
-
-        }
-        currentStep++;
-    }
 
     logGameResult();
     int alive1 = 0, alive2 = 0;
@@ -384,6 +403,10 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
                 logFile << player << ": MoveForward to (" << next.getx() << ", " << next.gety() << ")" << std::endl;
             } else {
                 logFile << player << ": Bad step - blocked forward." << std::endl;
+                int birthIdx = tank->birthIndex;
+                tankLog[birthIdx].lastAction += "(ignored)";
+
+
             }
             break;
         }
@@ -456,6 +479,11 @@ void GameManager::checkCollisions() {
             if (symbol == '1') tankMap1--;
             else if (symbol == '2') tankMap2--;
 
+                        // ✅ הוספת עדכון ל־tankLog
+            int birthIdx = tank->birthIndex;
+            tankLog[birthIdx].isAlive = false;
+            tankLog[birthIdx].wasKilledThisTurn = true;
+
             tankPairs.erase(std::remove_if(tankPairs.begin(), tankPairs.end(),
                 [tank](const auto& pair) { return pair.second == tank; }), tankPairs.end());
 
@@ -508,7 +536,9 @@ void GameManager::checkCollisions() {
             tank->Hit();
             if (symbol == '1') tankMap1--;
             else if (symbol == '2') tankMap2--;
-
+            int birthIdx = tank->birthIndex;
+            tankLog[birthIdx].isAlive = false;
+            tankLog[birthIdx].wasKilledThisTurn = true;
             gameBoard->removeTankAt(pos.getx(), pos.gety());
             gameBoard->removeMineAt(pos.getx(), pos.gety());
 

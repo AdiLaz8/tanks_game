@@ -15,6 +15,9 @@ MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
       direction((playerIndex == 1) ? Direction::R : Direction::L),selfPosition(-1,-1) {}
 
 
+bool MyTankAlgorithm::isMine(const Position& pos) const {
+    return std::find(minePositions.begin(), minePositions.end(), pos) != minePositions.end();
+}
 
 int MyTankAlgorithm::getTankId() const { return tankId; }
 Direction MyTankAlgorithm::getTankDirection() const { return direction; }
@@ -62,7 +65,7 @@ Action MyTankAlgorithm::moveIfThreatened() {
 
     auto isFree = [&](const Position& pos) {
         for (const auto& [p, sym] : fullView) {
-            if (p == pos && sym != ' ') return false;
+            if ((p == pos && sym != ' ') || !isMine(pos)) return false;
         }
         return true;
     };

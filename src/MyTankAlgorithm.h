@@ -23,9 +23,10 @@ protected:
     int ammo = 0;
     int shootingStatus = 0;
     int backwardStatus = 0;
-
+    std::vector<Position> minePositions;
+    bool minesInitialized = false;
     bool moveAfterRotate = false;
-
+    bool isMine(const Position& pos) const;
 public:
     MyTankAlgorithm(int playerIndex, int tankIndex);
 

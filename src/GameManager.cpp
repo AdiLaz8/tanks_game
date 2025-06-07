@@ -261,6 +261,7 @@ void GameManager::gameLoop() {
             }
         } else {
             std::string turn = std::to_string(currentStep / 2 + 1);
+            std::cout << "[DEBUG] Turn is " << turn << std::endl;
             Logger::debug("Turn : " + turn);
             logFile << "Turn : " + turn << std::endl;
             // אפס את currentActions לכל הטנקים לפי birthIndex
@@ -474,6 +475,10 @@ void GameManager::checkCollisions() {
         CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
 
         if (Tank* tank = slot.getTank()) {
+            std::cout << "[COLLISION] Shell at (" << pos.getx() << "," << pos.gety()
+              << ") hit TANK of player " << tank->getSymbol()
+              << " at (" << tank->getPosition().getx() << "," << tank->getPosition().gety() << ")"
+              << ", shell owner: player " << shell->getOwnerId() << std::endl;
             char symbol = tank->getSymbol();  // שמור מראש לפני מחיקה
             tank->Hit();
             if (symbol == '1') tankMap1--;

@@ -39,12 +39,12 @@ Board after Turn 2:
             
             
             
-Player 1: Requested action - 4
-Player 1: Direction is now 5
-Player 1: doing action - 4
-Player 1: Requested action - 4
-Player 1: Direction is now 5
-Player 1: doing action - 4
+Player 1: Requested action - 3
+Player 1: Direction is now 0
+Player 1: doing action - 3
+Player 1: Requested action - 3
+Player 1: Direction is now 0
+Player 1: doing action - 3
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Player 2: Requested action - 7
@@ -63,26 +63,22 @@ Board after Turn 3:
             
             
             
-Player 1: Requested action - 6
-Player 1: Shoot from (0, 0) to (11, 1)
-Player 1: Direction is now 5
-Player 1: doing action - 6
-Player 1: Requested action - 6
-Player 1: Shoot from (11, 0) to (10, 1)
-Player 1: Direction is now 5
-Player 1: doing action - 6
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Turn : 4
-Shell detected at (8,3)
-Shell detected at (9,3)
 Board after Turn 4:
 1          1
             
      #      
-        **  
+            
        @    
             
      #      
@@ -91,299 +87,46 @@ Board after Turn 4:
             
             
             
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
+Player 1: Requested action - 6
+Player 1: Shoot from (0, 0) to (1, 11)
+Player 1: Direction is now 1
+Player 1: doing action - 6
+Player 1: Requested action - 6
+Player 1: Shoot from (11, 0) to (0, 11)
+Player 1: Direction is now 1
+Player 1: doing action - 6
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Turn : 5
-Shell detected at (6,5)
-Shell detected at (7,5)
+Shell detected at (2,9)
+Shell detected at (3,9)
 Board after Turn 5:
 1          1
             
      #      
             
        @    
-      **    
+            
      #      
      2      
    2        
-            
-            
-            
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Shell hit wall at (5,6). Wall HP: 1
-Turn : 6
-Shell: Tank 2 destroyed at (5,7)
-Board after Turn 6:
-1          1
-            
-     #      
-            
-       @    
-            
-     #      
-            
-   2        
-            
+  **        
             
             
 Player 1: Requested action - 3
-Player 1: Direction is now 7
+Player 1: Direction is now 3
 Player 1: doing action - 3
 Player 1: Requested action - 3
-Player 1: Direction is now 7
+Player 1: Direction is now 3
 Player 1: doing action - 3
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Turn : 7
-Board after Turn 7:
-1          1
-            
-     #      
-            
-       @    
-            
-     #      
-            
-   2        
-            
-            
-            
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 8
-Board after Turn 8:
-1          1
-            
-     #      
-            
-       @    
-            
-     #      
-            
-   2        
-            
-            
-            
-Player 1: Requested action - 6
-Player 1: Shoot from (0, 0) to (11, 1)
-Player 1: Direction is now 5
-Player 1: doing action - 6
-Player 1: Requested action - 6
-Player 1: Shoot from (11, 0) to (10, 1)
-Player 1: Direction is now 5
-Player 1: doing action - 6
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 9
-Shell detected at (8,3)
-Shell detected at (9,3)
-Board after Turn 9:
-1          1
-            
-     #      
-        **  
-       @    
-            
-     #      
-            
-   2        
-            
-            
-            
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 10
-Shell detected at (6,5)
-Shell detected at (7,5)
-Board after Turn 10:
-1          1
-            
-     #      
-            
-       @    
-      **    
-     #      
-            
-   2        
-            
-            
-            
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Shell hit wall at (5,6). Wall HP: 0
-Wall destroyed at (5,6)
-Turn : 11
-Shell detected at (5,7)
-Board after Turn 11:
-1          1
-            
-     #      
-            
-       @    
-            
-            
-     *      
-   2        
-            
-            
-            
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 12
-Shell detected at (3,9)
-Board after Turn 12:
-1          1
-            
-     #      
-            
-       @    
-            
-            
-            
-   2        
-   *        
-            
-            
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 2: Requested action - 0
-Player 2: MoveForward to (4, 8)
-Player 2: Direction is now 2
-Player 2: doing action - 0
-Turn : 13
-Shell detected at (1,11)
-Board after Turn 13:
-1          1
-            
-     #      
-            
-       @    
-            
-            
-            
-   2        
-            
-            
- *          
-Player 1: Requested action - 6
-Player 1: Shoot from (0, 0) to (11, 1)
-Player 1: Direction is now 5
-Player 1: doing action - 6
-Player 1: Requested action - 6
-Player 1: Shoot from (11, 0) to (10, 1)
-Player 1: Direction is now 5
-Player 1: doing action - 6
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Shell: Tank 1 destroyed at (0,0)
-Turn : 14
-Shell detected at (8,3)
-Shell detected at (9,3)
-Board after Turn 14:
-           1
-            
-     #      
-        **  
-       @    
-            
-            
-            
-   2        
-            
-            
-            
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 15
-Shell detected at (6,5)
-Shell detected at (7,5)
-Board after Turn 15:
-           1
-            
-     #      
-            
-       @    
-      **    
-            
-            
-   2        
-            
-            
-            
-Player 1: Requested action - 2
-Player 1: Direction is now 5
-Player 1: doing action - 2
-Player 2: Requested action - 7
-Player 2: GetBattleInfo triggered
-Turn : 16
-Shell detected at (4,7)
-Shell detected at (5,7)
-Board after Turn 16:
-           1
-            
-     #      
-            
-       @    
-            
-            
-    **      
-   2        
-            
-            
-            
-Player 1: Requested action - 3
-Player 1: Direction is now 7
-Player 1: doing action - 3
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Shell: Tank 2 destroyed at (3,8)
+Turn : 6
+Shell: Tank 2 destroyed at (5,7)
 Game Over!
 RESULT: Player 1 wins - Player 2 eliminated

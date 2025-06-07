@@ -47,6 +47,10 @@ public:
     bool isThreatenedByShells() const;
     Action moveIfThreatened();
     bool canShootInDirection() const;
+    bool canShootInDirection(Direction dir) const;
+    char selfSymbol() const { return playerId == 1 ? '1' : '2'; }
+    char enemySymbol() const { return playerId == 1 ? '2' : '1'; }
+
 
     Direction::Value getDirectionTo(const Position& from, const Position& to) const;
     ActionRequest rotateTowards(Direction::Value current, Direction::Value desired);

@@ -12,7 +12,7 @@
 
 MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
     : playerId(playerIndex), tankId(tankIndex),
-      direction((playerIndex == 1) ? Direction::R : Direction::L),selfPosition(-1,-1) {}
+      direction((playerIndex == 1) ? Direction::L : Direction::R),selfPosition(-1,-1) {}
 
 
 bool MyTankAlgorithm::isMine(const Position& pos) const {
@@ -99,39 +99,63 @@ bool MyTankAlgorithm::canShootInDirection() const {
     char enemySymbol = (playerId == 1 ? '2' : '1');
     char selfSymbol = (playerId == 1 ? '1' : '2');
     Position ray = selfPosition;
+    std::cout << "[DEBUG] Player ID: " << playerId
+          << ", selfSymbol: '" << selfSymbol
+          << "', enemySymbol: '" << enemySymbol << "'" << std::endl;
+
+
     for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
+        std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
         ray = ray + direction.toVector();
+        std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
+
         ray.setx((ray.getx() + boardWidth) % boardWidth);
         ray.sety((ray.gety() + boardHeight) % boardHeight);
+
         if (ray == selfPosition) break;
-        for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
-            ray = ray + direction.toVector();
-            ray.setx((ray.getx() + boardWidth) % boardWidth);
-            ray.sety((ray.gety() + boardHeight) % boardHeight);
 
-            if (ray == selfPosition) break;
-
-
-            // בדוק אם יש משהו במשבצת הזו
-            for (const auto& [pos, symbol] : fullView) {
-                if (pos == ray) {
-                    //std::cout << "Seeing symbol '" << symbol << std::endl;
-
-                    if (symbol == selfSymbol){
-                        std::cout << "i am '" << selfSymbol << std::endl;
-                        std::cout << "no shoot '" << symbol << std::endl;
-                        std::cout << "my friend in position '" << ray.getx() <<ray.gety()<< std::endl;
-                        std::cout << "im in position '" << selfPosition.getx() <<selfPosition.gety()<< std::endl;
-
-                        return false;   // טנק שלי בדרך
-                    }
-                    if (symbol == enemySymbol) return true;   // טנק אויב בדרך
+        for (const auto& [pos, symbol] : fullView) {
+            if (pos == ray) {
+                std::cout << "[RAY] checking (" << ray.getx() << "," << ray.gety() << ") -> symbol: " << symbol << std::endl;
+                if (symbol == selfSymbol) {
+                    std::cout << "[BLOCKED] Friend at (" << ray.getx() << "," << ray.gety() << ")" << std::endl;
+                    return false;
+                }
+                if (symbol == enemySymbol) {
+                    std::cout << "[TARGET] Enemy at (" << ray.getx() << "," << ray.gety() << ")" << std::endl;
+                    return true;
                 }
             }
         }
     }
+
     return false;
 }
+bool MyTankAlgorithm::canShootInDirection(Direction dir) const {
+    Position pos = selfPosition;
+
+    for (int i = 0; i < 4; ++i) {
+        pos.move(dir, boardWidth, boardHeight);
+
+        // חפש את התו של התא הזה ב־fullView
+        char symbol = ' ';
+        for (const auto& [p, c] : fullView) {
+            if (p == pos) {
+                symbol = c;
+                break;
+            }
+        }
+
+        if (symbol == ' ') continue;                 // תא ריק
+        if (symbol == '#') return false;             // קיר – עצירה
+        if (symbol == selfSymbol()) return false;    // חבר – חסום
+        if (symbol == enemySymbol()) return true;    // אויב – יש על מה לירות
+    }
+
+    return false; // לא נמצא אויב בקו ירי
+}
+
+
 
 Direction::Value MyTankAlgorithm::getDirectionTo(const Position& from, const Position& to) const {
     int dx = ((to.getx() - from.getx() + boardWidth) % boardWidth + boardWidth / 2) % boardWidth - boardWidth / 2;

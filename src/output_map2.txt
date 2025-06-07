@@ -2,17 +2,32 @@ Header: Simple Test Map
 Player 1 tank placed at (3,0)
 Player 2 tank placed at (3,2)
 Turn : 1
+Board after Turn 1:
+  #1  
+  @   
+   2# 
+######
 Player 1: Requested action - 7
 Player 1: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Turn : 2
+Board after Turn 2:
+  #1  
+  @   
+   2# 
+######
 Player 1: Requested action - 2
 Player 1: Direction is now 4
 Player 1: doing action - 2
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Turn : 3
+Board after Turn 3:
+  #1  
+  @   
+   2# 
+######
 Player 1: Requested action - 6
 Player 1: Shoot from (3, 0) to (3, 1)
 Player 1: Direction is now 4

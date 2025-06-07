@@ -60,6 +60,9 @@
         "iomanip": "cpp",
         "set": "cpp",
         "memory": "cpp",
-        "deque": "cpp"
+        "deque": "cpp",
+        "execution": "cpp",
+        "print": "cpp",
+        "stack": "cpp"
     }
 }

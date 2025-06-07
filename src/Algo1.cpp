@@ -192,6 +192,11 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
 
     int minDist = boardWidth * boardHeight;
     for (const auto& [pos, symbol] : fullView) {
+        if (!minesInitialized){
+            if (symbol == '@') {
+                minePositions.push_back(pos);
+            }
+        }
         if (symbol == enemySymbol) {
             int dx = std::min((selfPosition.getx() - pos.getx() + boardWidth) % boardWidth,
                               (pos.getx() - selfPosition.getx() + boardWidth) % boardWidth);
@@ -204,6 +209,7 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
             }
         }
     }
+    minesInitialized = true; // ✅ מסמן שהמוקשים כבר נאספו
 
     computeShootingPath();
 }

@@ -23,7 +23,6 @@ void Player1::updateTankWithBattleInfo(
         for (size_t i = 0; i < boardWidth; ++i) {
             char symbol = satellite_view.getObjectAt(i, j);
             Position pos(i, j);
-
             battleInfo.addObject(pos, symbol, playerIndex, boardHeight, boardWidth);
         }
     }

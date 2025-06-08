@@ -1,4 +1,3 @@
-// MyTankAlgorithm.cpp
 #include "MyTankAlgorithm.h"
 #include <cmath>
 #include <algorithm>
@@ -8,73 +7,58 @@
 #include <stdexcept>
 #include <iostream>
 
-
-
 MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
     : playerId(playerIndex), tankId(tankIndex),
       direction((playerIndex == 1) ? Direction::L : Direction::R),selfPosition(-1,-1) {}
 
-
 bool MyTankAlgorithm::isMine(const Position& pos) const {
     return std::find(minePositions.begin(), minePositions.end(), pos) != minePositions.end();
 }
-
 int MyTankAlgorithm::getTankId() const { return tankId; }
 Direction MyTankAlgorithm::getTankDirection() const { return direction; }
 Position MyTankAlgorithm::getTankPosition() const { return selfPosition; }
 int MyTankAlgorithm::getAmmo() const { return ammo; }
-
 int MyTankAlgorithm::getShootingStatus() const { return shootingStatus; }
 int MyTankAlgorithm::getBackwardStatus() const { return backwardStatus; }
-
 void MyTankAlgorithm::decreaseShooting() {
     if (shootingStatus > 0) shootingStatus--;
 }
-
 void MyTankAlgorithm::decreaseBackward() {
     if (backwardStatus > 0) backwardStatus--;
 }
-
 void MyTankAlgorithm::updateBattleInfo(BattleInfo&) {
-    // או ריק, או שגיאה אם באמת לא אמור להיקרא
     throw std::runtime_error("updateBattleInfo must be overridden.");
 }
-
+//searching for shells in the 2X2 slots around our tank, if so we are threatened
 bool MyTankAlgorithm::isThreatenedByShells() const {
     for (const auto& [pos, symbol] : fullView) {
-
         if (symbol == '*') {
-            //std::cout << "Seeing symbol '" << symbol << std::endl;
             int dx = std::min((int)(pos.getx() - selfPosition.getx() + boardWidth) % (int)boardWidth,
                               (int)(selfPosition.getx() - pos.getx() + boardWidth) % (int)boardWidth);
             int dy = std::min((int)(pos.gety() - selfPosition.gety() + boardHeight) % (int)boardHeight,
                               (int)(selfPosition.gety() - pos.gety() + boardHeight) % (int)boardHeight);
             if (dx <= 2 && dy <= 2){
-                //std::cout << "Threat detected " << std::endl;
                  return true;
             }
         }
     }
     return false;
 }
-
+//if possible to move forward-->move , if not then rotating towards a direction its possible to move forword there
 Action MyTankAlgorithm::moveIfThreatened() {
     Position forward = selfPosition + direction.toVector();
     forward.setx((forward.getx() + boardWidth) % boardWidth);
     forward.sety((forward.gety() + boardHeight) % boardHeight);
-
     auto isFree = [&](const Position& pos) {
         for (const auto& [p, sym] : fullView) {
             if ((p == pos && sym != ' ') || !isMine(pos)) return false;
         }
         return true;
     };
-
     if (isFree(forward)){
         selfPosition = forward;
         return Action(ActionRequest::MoveForward);
     }
-
     int currIndex = static_cast<int>(direction.getDirection());
     std::vector<int> offsets = {1, 2, -1, -2};
 
@@ -85,16 +69,14 @@ Action MyTankAlgorithm::moveIfThreatened() {
         Position candidate = selfPosition + delta;
         candidate.setx((candidate.getx() + boardWidth) % boardWidth);
         candidate.sety((candidate.gety() + boardHeight) % boardHeight);
-
         if (isFree(candidate)) {
             moveAfterRotate = true;
             return Action(rotateTowards(direction.getDirection(), tryDir));
         }
     }
-
     return Action(ActionRequest::GetBattleInfo);
 }
-
+//if an enemy is in sight, and no friendly tank in the way
 bool MyTankAlgorithm::canShootInDirection() const {
     char enemySymbol = (playerId == 1 ? '2' : '1');
     char selfSymbol = (playerId == 1 ? '1' : '2');
@@ -102,18 +84,13 @@ bool MyTankAlgorithm::canShootInDirection() const {
     std::cout << "[DEBUG] Player ID: " << playerId
           << ", selfSymbol: '" << selfSymbol
           << "', enemySymbol: '" << enemySymbol << "'" << std::endl;
-
-
     for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
         std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
         ray = ray + direction.toVector();
         std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
-
         ray.setx((ray.getx() + boardWidth) % boardWidth);
         ray.sety((ray.gety() + boardHeight) % boardHeight);
-
         if (ray == selfPosition) break;
-
         for (const auto& [pos, symbol] : fullView) {
             if (pos == ray) {
                 std::cout << "[RAY] checking (" << ray.getx() << "," << ray.gety() << ") -> symbol: " << symbol << std::endl;
@@ -128,16 +105,13 @@ bool MyTankAlgorithm::canShootInDirection() const {
             }
         }
     }
-
     return false;
 }
+// same function but for different directions (we use that in the for loop with all directions)
 bool MyTankAlgorithm::canShootInDirection(Direction dir) const {
     Position pos = selfPosition;
-
     for (int i = 0; i < 4; ++i) {
         pos.move(dir, boardWidth, boardHeight);
-
-        // חפש את התו של התא הזה ב־fullView
         char symbol = ' ';
         for (const auto& [p, c] : fullView) {
             if (p == pos) {
@@ -145,24 +119,18 @@ bool MyTankAlgorithm::canShootInDirection(Direction dir) const {
                 break;
             }
         }
-
-        if (symbol == ' ') continue;                 // תא ריק
-        if (symbol == '#') return false;             // קיר – עצירה
-        if (symbol == selfSymbol()) return false;    // חבר – חסום
-        if (symbol == enemySymbol()) return true;    // אויב – יש על מה לירות
+        if (symbol == ' ') continue;                
+        if (symbol == '#') return false;       
+        if (symbol == selfSymbol()) return false;  
+        if (symbol == enemySymbol()) return true; 
     }
-
-    return false; // לא נמצא אויב בקו ירי
+    return false; 
 }
-
-
-
 Direction::Value MyTankAlgorithm::getDirectionTo(const Position& from, const Position& to) const {
     int dx = ((to.getx() - from.getx() + boardWidth) % boardWidth + boardWidth / 2) % boardWidth - boardWidth / 2;
     int dy = ((to.gety() - from.gety() + boardHeight) % boardHeight + boardHeight / 2) % boardHeight - boardHeight / 2;
     int dirX = (dx > 0) ? 1 : (dx < 0 ? -1 : 0);
     int dirY = (dy > 0) ? 1 : (dy < 0 ? -1 : 0);
-
     if (dirX == 0 && dirY == -1) return Direction::U;
     if (dirX == 1 && dirY == -1) return Direction::UR;
     if (dirX == 1 && dirY == 0) return Direction::R;
@@ -171,10 +139,8 @@ Direction::Value MyTankAlgorithm::getDirectionTo(const Position& from, const Pos
     if (dirX == -1 && dirY == 1) return Direction::DL;
     if (dirX == -1 && dirY == 0) return Direction::L;
     if (dirX == -1 && dirY == -1) return Direction::UL;
-
     return Direction::U;
 }
-
 ActionRequest MyTankAlgorithm::rotateTowards(Direction::Value current, Direction::Value desired){
     int diff = (static_cast<int>(desired) - static_cast<int>(current) + 8) % 8;
     if (diff == 0) return ActionRequest::GetBattleInfo;

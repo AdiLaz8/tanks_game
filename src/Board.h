@@ -11,7 +11,7 @@ class Board {
 private:
     int width, height;
     CellSlot** grid;
-    std::vector<Shell*> shells;  // Maintaining a list of shells
+    std::vector<Shell*> shells;  
     std::vector<Tank*> tanks1;
     std::vector<Tank*> tanks2;
     std::vector<std::unique_ptr<Shell>> ownedShells;
@@ -28,7 +28,6 @@ public:
     void removeShell(Shell* shell, int x, int y);
     void addShell(std::unique_ptr<Shell> shell);
     void removeShellPointerOnly(Shell* shell, const Position& pos);
-    // void removeObject(Cell* obj, int x, int y);
     bool isPassable(int x, int y) const;
     const std::vector<Shell*>& getShells() const { return shells; }
     void moveShellTo(Shell* shell, int oldX, int oldY, int newX, int newY);

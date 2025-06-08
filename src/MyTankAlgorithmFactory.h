@@ -1,8 +1,7 @@
 #pragma once
-
 #include "TankAlgorithmFactory.h"
 #include "MyTankAlgorithm.h"
-#include <memory> // ← חשוב!
+#include <memory> 
 
 class MyTankAlgorithmFactory : public TankAlgorithmFactory {
 public:

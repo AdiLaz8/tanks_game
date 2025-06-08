@@ -3,7 +3,6 @@
 #include <cstddef>
 #include "TankAlgorithm.h"
 #include "SatelliteView.h"
-// #include "SatelliteView.h"
 
 class Player {
 public:
@@ -16,12 +15,9 @@ public:
             (void)max_steps;
             (void)num_shells;
            }
-
     virtual ~Player() {}
-
     virtual void updateTankWithBattleInfo(
         TankAlgorithm& tank,
         SatelliteView& satellite_view) = 0;
 };
-
-#endif // PLAYER_H
+#endif 

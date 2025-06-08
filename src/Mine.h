@@ -15,6 +15,5 @@ public:
     std::string toString() const override {
         return "Mine";
 }
-
 };
 #endif

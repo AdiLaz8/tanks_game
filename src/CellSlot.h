@@ -10,12 +10,10 @@
 #include "Shell.h"
 #include <memory>
 
-
 class CellSlot {
 private:
     std::vector<std::unique_ptr<Cell>> objects;
     std::vector<Shell*> shellPointers;
-
 
 public:
     void addObject(std::unique_ptr<Cell> obj);
@@ -23,7 +21,6 @@ public:
     void removeWall();
     void removeMine();
     void removeShell(Shell* shell);
-
     const std::vector<std::unique_ptr<Cell>>& getAll() const;
     void removeShellPointerOnly(Shell* shell);
     void addShellPointerOnly(Shell* shell);
@@ -31,9 +28,6 @@ public:
     Wall* getWall() const;
     Mine* getMine() const;
     std::vector<Shell*> getShells() const;
-    // for now the next functions aren't useful, but we keep this in comment in case we'll need them in the next assignment
-    // int countTanks() const;
-    // int countShells() const;
 };
 
 #endif

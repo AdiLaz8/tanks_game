@@ -1,7 +1,7 @@
 #ifndef ACTION_REQUEST_H
 #define ACTION_REQUEST_H
 
-#include <string>  // חשוב: נדרש בשביל std::string
+#include <string>  
 
 enum class ActionRequest {
     MoveForward,
@@ -12,10 +12,9 @@ enum class ActionRequest {
     RotateRight45,
     Shoot,
     GetBattleInfo,
-    DoNothing  // This can be used to represent no action or an invalid action
+    DoNothing  
 };
-
-// פונקציה שממירה enum למחרוזת
+//function for the output print
 inline std::string actionToString(ActionRequest req) {
     switch (req) {
         case ActionRequest::MoveForward: return "MoveForward";

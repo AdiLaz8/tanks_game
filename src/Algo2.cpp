@@ -15,14 +15,12 @@ ActionRequest Algo2::getAction() {
     if (turnCounterSinceInfo == -1) {
         return ActionRequest::GetBattleInfo;
     }
-
-
     turnCounterSinceInfo++;
 
     if(getShootingStatus()>0){
         shootingStatus--;
     }
-
+    //if the tank is threatened and rotated last turn so now it needs to move forward
     if (moveAfterRotate) {
         moveAfterRotate = false;
         Position newPos = selfPosition + direction.toVector();
@@ -35,11 +33,11 @@ ActionRequest Algo2::getAction() {
     if (isThreatenedByShells()) {
         return moveIfThreatened().getType();
     }
+    //if enemy in sight --> shoot
     if (canShootInDirection()&& ammo>0 &&shootingStatus==0) {
         shootingStatus=5;
         ammo--;
         return ActionRequest::Shoot;
     }
-
     return ActionRequest::GetBattleInfo;
 }

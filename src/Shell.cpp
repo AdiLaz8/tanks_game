@@ -1,21 +1,17 @@
 #include "Shell.h"
 
 int Shell::globalIdCounter = 1;
-
 Shell::Shell(Position p, Direction d, char ownerId)
     : p(p), d(d), ownerId(ownerId), id(globalIdCounter++) {}
 
 char Shell::getSymbol() const {
     return '*';
 }
-
 const Position& Shell::getPosition() const {
     return p;
 }
 Shell::~Shell() {
 }
-
-// moves the shell in it's direction
 void Shell::move(int width, int height) {
     p.move(d, width, height);
 }

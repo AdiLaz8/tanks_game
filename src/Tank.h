@@ -10,12 +10,12 @@ private:
     Direction d;
     Position p;
     bool alive = true;
+    void setPosition(Position newPos);
+    void setDirection(Direction newDirection);
 public:
     Tank(char owner, Direction d = Direction(Direction::L), Position p = Position(0, 0));
     virtual ~Tank();
     int birthIndex = -1;
-    bool killedThisTurn = false;
-    bool isKilled = false;
     char getSymbol() const override;
     const Position& getPosition() const;
     const Direction& getDirection() const;
@@ -27,8 +27,6 @@ public:
     void rotateRight4();
     void rotateLeft8();
     void rotateRight8();
-    void setPosition(Position newPos);
-    void setDirection(Direction newDirection);
     std::string toString() const override;
 };
 #endif

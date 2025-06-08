@@ -19,7 +19,6 @@ private:
 public:
     Board(int w, int h);
     ~Board();
-
     CellSlot& getSlot(int x, int y) const;
     void addObject(std::unique_ptr<Cell> obj, int x, int y);
     void removeTankAt(int x, int y);

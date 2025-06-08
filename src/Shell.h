@@ -12,16 +12,18 @@ private:
     static int globalIdCounter;
     char ownerId; 
     int id;
+    int getId() const { return id; }
+    char getSymbol() const override;
+
+
 public:
     Shell(Position p, Direction d, char ownerId);
     ~Shell();
-    char getSymbol() const override;
     const Position& getPosition() const;
     void move(int width, int height);
     Direction getDirection() const;
     char getOwnerId() const;
     std::string toString() const override;
-    int getId() const { return id; }
     void setPosition(const Position& newPos) { p = newPos; }
 };
 

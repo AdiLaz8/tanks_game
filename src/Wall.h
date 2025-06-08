@@ -7,7 +7,6 @@
 class Wall : public Cell {
 private:
     int health;
-
 public:
     Wall();
     virtual ~Wall() override {}

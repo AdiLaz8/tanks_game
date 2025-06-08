@@ -9,7 +9,6 @@
 class MyBattleInfo : public BattleInfo {
 public:
     MyBattleInfo(size_t rows, size_t cols, int numShells);
-    void reset();
     void addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols);
     const std::vector<std::pair<Position, char>>& getFullView() const;
     const std::vector<Position>& getShellPositions() const;
@@ -26,6 +25,8 @@ private:
     std::vector<Position> shellPositions;
     Position selfPosition{0, 0};
     bool selfPositionSet = false;
+    void reset();
+
 };
 
 #endif

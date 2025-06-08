@@ -25,26 +25,30 @@ protected:
     bool minesInitialized = false;
     bool moveAfterRotate = false;
     bool isMine(const Position& pos) const;
-public:
-    MyTankAlgorithm(int playerIndex, int tankIndex);
-    void updateBattleInfo(BattleInfo& info) override;
-    virtual ActionRequest getAction() override = 0;
-    int getTankId() const;
-    Direction getTankDirection() const;
-    Position getTankPosition() const;
-    int getAmmo() const;
-    int getShootingStatus() const;
-    int getBackwardStatus() const;
-    void decreaseShooting();
-    void decreaseBackward();
-    bool isThreatenedByShells() const;
-    Action moveIfThreatened();
-    bool canShootInDirection() const;
-    bool canShootInDirection(Direction dir) const;
     char selfSymbol() const { return playerId == 1 ? '1' : '2'; }
     char enemySymbol() const { return playerId == 1 ? '2' : '1'; }
     Direction::Value getDirectionTo(const Position& from, const Position& to) const;
     ActionRequest rotateTowards(Direction::Value current, Direction::Value desired);
+    bool canShootInDirection() const;
+    bool canShootInDirection(Direction dir) const;
+    bool isThreatenedByShells() const;
+    Action moveIfThreatened();
+    int getAmmo() const;
+    int getShootingStatus() const;
+    Direction getTankDirection() const;
+    Position getTankPosition() const;
+    void decreaseShooting();
+    int getTankId() const;
+    void updateBattleInfo(BattleInfo& info) override;
+
+
+
+public:
+    MyTankAlgorithm(int playerIndex, int tankIndex);
+    virtual ActionRequest getAction() override = 0;
+    int getBackwardStatus() const;
+    void decreaseBackward();
     void setBackward(int i);
 };
+
 #endif 

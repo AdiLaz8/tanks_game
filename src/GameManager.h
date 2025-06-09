@@ -43,6 +43,14 @@ private:
         bool wasKilledThisTurn = false;
         std::string lastAction = "DoNothing";
     };
+
+    struct TankMetaData {
+        TankAlgorithm* algoPtr;
+        int backwardStatus = 0;
+        int remainingShells;
+        bool isAlive = true;
+};
+
     std::vector<TankLogInfo> tankLog;
 
 

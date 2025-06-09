@@ -373,7 +373,6 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
     Position pos = tank->getPosition();
     Direction dir = tank->getDirection();
     std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
-
     Logger::debug(player + " initiates action:");
     if (algo.getBackwardStatus() == 3 && req != ActionRequest::MoveForward) {
         algo.decreaseBackward();

@@ -4,9 +4,6 @@
 #include "Logger.h"
 #include <unordered_set>
 
-
-
-
 GameManager::GameManager(const PlayerFactory& pf, const TankAlgorithmFactory& tf)
     : playerFactory(pf), tankAlgoFactory(tf), currentStep(0) {}
 GameManager::~GameManager() {
@@ -130,9 +127,10 @@ void GameManager::readBoard(const std::string& filename) {
                     hasTank1 = true;
                     std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(1, tankIndex1);
                     Tank* t = gameBoard->getSlot(x, y).getTank();
-                    auto raw = dynamic_cast<MyTankAlgorithm*>(base.get());
+                    t->setRemainingShells(numShells);
+                    auto raw = dynamic_cast<TankAlgorithm*>(base.get());
                     if (t && raw) {
-                        std::unique_ptr<MyTankAlgorithm> algo(static_cast<MyTankAlgorithm*>(base.release()));
+                        std::unique_ptr<TankAlgorithm> algo(static_cast<TankAlgorithm*>(base.release()));
                         tankPairs.emplace_back(std::move(algo), t);
                         logFile << "Player 1 tank placed at (" << x << "," << y << ")" << std::endl;
                         tankMap1++;
@@ -148,9 +146,10 @@ void GameManager::readBoard(const std::string& filename) {
                     hasTank2 = true;
                     std::unique_ptr<TankAlgorithm> base = tankAlgoFactory.create(2, tankIndex2);
                     Tank* t = gameBoard->getSlot(x, y).getTank();
-                    auto raw = dynamic_cast<MyTankAlgorithm*>(base.get());
+                    t->setRemainingShells(numShells);
+                    auto raw = dynamic_cast<TankAlgorithm*>(base.get());
                     if (t && raw) {
-                        std::unique_ptr<MyTankAlgorithm> algo(static_cast<MyTankAlgorithm*>(base.release()));
+                        std::unique_ptr<TankAlgorithm> algo(dynamic_cast<TankAlgorithm*>(base.release()));
                         tankPairs.emplace_back(std::move(algo), t);
                         logFile << "Player 2 tank placed at (" << x << "," << y << ")" << std::endl;
                         tankMap2++;
@@ -211,8 +210,6 @@ void GameManager::readBoard(const std::string& filename) {
     }
 }
 
-
-
 void GameManager::moveShells() {
     std::vector<Shell*> copy = gameBoard->getShells(); // לא נוגעים ב־ownedShells
 
@@ -225,7 +222,6 @@ void GameManager::moveShells() {
         shell->setPosition(newPos);
     }
 }
-
 
 void GameManager::gameLoop() {
     while (!checkGameOver()) {
@@ -291,7 +287,7 @@ void GameManager::gameLoop() {
                         player2->updateTankWithBattleInfo(*algoPtr, satellite);
                     }
                 } else {
-                    executeAction(request, *algoPtr, tank);
+                    executeAction(request, tank);
                     // תעד פעולה
                     if (!tank->isAlive()) {
                         actionStr += " (killed)";
@@ -305,31 +301,33 @@ void GameManager::gameLoop() {
             }
 
             checkCollisions();
-
-
-
-
+            if (noShellsLeftForAllLiveTanks()) {
+                stepsWithoutShells++;
+                logFile << "No shells left for all live tanks. Counter: " << stepsWithoutShells << std::endl;
+            } else {
+                stepsWithoutShells = 0;
+            }
         }
         currentStep++;
     }
-                for (size_t i = 0; i < tankLog.size(); ++i) {
-                std::string action;
-                if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) {
-                    action = tankLog[i].lastAction + " (killed)";
-                } else if (!tankLog[i].isAlive) {
-                    action = "killed";
-                } else {
-                    action = tankLog[i].lastAction;
-                }
+            //     for (size_t i = 0; i < tankLog.size(); ++i) {
+            //     std::string action;
+            //     if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) {
+            //         action = tankLog[i].lastAction + " (killed)";
+            //     } else if (!tankLog[i].isAlive) {
+            //         action = "killed";
+            //     } else {
+            //         action = tankLog[i].lastAction;
+            //     }
 
-                simpleOutput << action;
-                if (i + 1 < tankLog.size()) simpleOutput << ", ";
-            }
-            simpleOutput << std::endl;
+            //     simpleOutput << action;
+            //     if (i + 1 < tankLog.size()) simpleOutput << ", ";
+            // }
+            // simpleOutput << std::endl;
 
-            for (auto& info : tankLog) {
-                info.wasKilledThisTurn = false;
-            }
+            // for (auto& info : tankLog) {
+            //     info.wasKilledThisTurn = false;
+            // }
 
     logGameResult();
     int alive1 = 0, alive2 = 0;
@@ -339,52 +337,45 @@ void GameManager::gameLoop() {
             else if (t.symbol == '2') ++alive2;
         }
     }
-
-
     if (alive1 == 0 && alive2 == 0) {
         simpleOutput << "Tie, both players have zero tanks" << std::endl;
-    } else if (currentStep >= maxSteps) {
+    } else if (currentStep/2 >= maxSteps) {
         simpleOutput << "Tie, reached max steps = " << maxSteps << ", player 1 has " << alive1 << " tanks, player 2 has " << alive2 << " tanks" << std::endl;
-    } else if (/* אתה עוקב אחרי 40 צעדים בלי תחמושת? */ false) {
-        const int NO_SHELL_LIMIT = 40;
-        simpleOutput << "Tie, both players have zero shells for " << NO_SHELL_LIMIT << " steps" << std::endl;
+    } else if (stepsWithoutShells >= 40) {
+    simpleOutput << "Tie, both players have zero shells for " << stepsWithoutShells << " steps" << std::endl;
     } else if (alive1 > 0) {
         simpleOutput << "Player 1 won with " << alive1 << " tanks still alive" << std::endl;
     } else {
         simpleOutput << "Player 2 won with " << alive2 << " tanks still alive" << std::endl;
     }
     simpleOutput.close();
-
-
-
 }
 
 
-void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo, Tank* tank) {
+void GameManager::executeAction(const ActionRequest& req, Tank* tank) {
     Position pos = tank->getPosition();
     Direction dir = tank->getDirection();
     std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
-
     Logger::debug(player + " initiates action:");
-    if (algo.getBackwardStatus() == 3 && req != ActionRequest::MoveForward) {
-        algo.decreaseBackward();
+    if (tank->getBackwardStatus() == 3 && req != ActionRequest::MoveForward) {
+        tank->decreaseBackwardStatus();
         return;
     }
-    if (algo.getBackwardStatus() == 3 && req == ActionRequest::MoveForward) {
-        algo.setBackward(0);
+    if (tank->getBackwardStatus() == 3 && req == ActionRequest::MoveForward) {
+        tank->setBackwardStatus(0);
         return;
     }
-    if (algo.getBackwardStatus() == 2) {
+    if (tank->getBackwardStatus() == 2) {
         Position back = pos + dir.getOppositeDirection().toVector();
         wrapPosition(back);
         tank->moveBackward(gameBoard->getWidth(), gameBoard->getHeight());
         logFile << player << ": Moving backward now." << std::endl;
         Logger::debug(player + " moved backward.");
-        algo.decreaseBackward();
+        tank->decreaseBackwardStatus();
         return;
     }
-    if (algo.getBackwardStatus() == 1 && req != ActionRequest::MoveBackward) {
-        algo.decreaseBackward();
+    if (tank->getBackwardStatus() == 1 && req != ActionRequest::MoveBackward) {
+        tank->decreaseBackwardStatus();
     }
     switch (req) {
         case ActionRequest::MoveForward: {
@@ -397,16 +388,14 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
                 logFile << player << ": Bad step - blocked forward." << std::endl;
                 int birthIdx = tank->birthIndex;
                 tankLog[birthIdx].lastAction += "(ignored)";
-
-
             }
             break;
         }
         case ActionRequest::MoveBackward: {
             Position back = pos + dir.getOppositeDirection().toVector();
             wrapPosition(back);
-            if (algo.getBackwardStatus() == 0 && gameBoard->isPassable(back.getx(), back.gety())) {
-                algo.setBackward(3);
+            if (tank->getBackwardStatus() == 0 && gameBoard->isPassable(back.getx(), back.gety())) {
+                tank->setBackwardStatus(3);
                 logFile << player << ": Started MoveBackward process." << std::endl;
             }
             break;
@@ -428,6 +417,7 @@ void GameManager::executeAction(const ActionRequest& req, MyTankAlgorithm& algo,
     }
     logFile << player << ": Direction is now " << tank->getDirection().getDirection() << std::endl;
 }
+
 void GameManager::wrapPosition(Position& pos) {
     pos.setx((pos.getx() + gameBoard->getWidth()) % gameBoard->getWidth());
     pos.sety((pos.gety() + gameBoard->getHeight()) % gameBoard->getHeight());
@@ -457,14 +447,13 @@ std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
     }
     return board;
 }
+
 void GameManager::checkCollisions() {
     std::vector<std::pair<Shell*, Position>> toRemove;
-
     // מעבר על כל הפגזים ובדיקת התנגשויות
     for (Shell* shell : gameBoard->getShells()) {
         Position pos = shell->getPosition();
         CellSlot& slot = gameBoard->getSlot(pos.getx(), pos.gety());
-
         if (Tank* tank = slot.getTank()) {
             std::cout << "[COLLISION] Shell at (" << pos.getx() << "," << pos.gety()
               << ") hit TANK of player " << tank->getSymbol()
@@ -474,8 +463,6 @@ void GameManager::checkCollisions() {
             tank->Hit();
             if (symbol == '1') tankMap1--;
             else if (symbol == '2') tankMap2--;
-
-                        // ✅ הוספת עדכון ל־tankLog
             int birthIdx = tank->birthIndex;
             tankLog[birthIdx].isAlive = false;
             tankLog[birthIdx].wasKilledThisTurn = true;
@@ -547,9 +534,16 @@ void GameManager::checkCollisions() {
     }
 }
 
+bool GameManager::noShellsLeftForAllLiveTanks() const {
+    for (const auto& [algo, tank] : tankPairs) {
+        if (tank->isAlive() && tank->getRemainingShells() > 0)
+            return false;
+    }
+    return true;
+}
 
 bool GameManager::checkGameOver() const {
-    return tankMap1==0 || tankMap2==0|| currentStep >= maxSteps;
+    return tankMap1==0 || tankMap2==0|| currentStep/2 >= maxSteps || stepsWithoutShells >= NO_SHELL_LIMIT;
 }
 
 void GameManager::logGameResult() {

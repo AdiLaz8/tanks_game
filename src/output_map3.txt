@@ -721,5 +721,546 @@ Player 1: Direction is now 0
 Player 1: doing action - 2
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
+Turn : 51
+Board after Turn 51:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 52
+Board after Turn 52:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 53
+Board after Turn 53:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 54
+Board after Turn 54:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 55
+Board after Turn 55:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 56
+Board after Turn 56:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 57
+Board after Turn 57:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 58
+Board after Turn 58:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 59
+Board after Turn 59:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 60
+Board after Turn 60:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 61
+Board after Turn 61:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 62
+Board after Turn 62:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 63
+Board after Turn 63:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 64
+Board after Turn 64:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 65
+Board after Turn 65:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 66
+Board after Turn 66:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 67
+Board after Turn 67:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 68
+Board after Turn 68:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 69
+Board after Turn 69:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 70
+Board after Turn 70:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 71
+Board after Turn 71:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 72
+Board after Turn 72:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 73
+Board after Turn 73:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 74
+Board after Turn 74:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 75
+Board after Turn 75:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 76
+Board after Turn 76:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 77
+Board after Turn 77:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 78
+Board after Turn 78:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 79
+Board after Turn 79:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 80
+Board after Turn 80:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 81
+Board after Turn 81:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 82
+Board after Turn 82:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 83
+Board after Turn 83:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 84
+Board after Turn 84:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 85
+Board after Turn 85:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 86
+Board after Turn 86:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 87
+Board after Turn 87:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 88
+Board after Turn 88:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 89
+Board after Turn 89:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 90
+Board after Turn 90:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 91
+Board after Turn 91:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 92
+Board after Turn 92:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 93
+Board after Turn 93:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 94
+Board after Turn 94:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 95
+Board after Turn 95:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 96
+Board after Turn 96:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 97
+Board after Turn 97:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 98
+Board after Turn 98:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 2
+Player 1: Direction is now 0
+Player 1: doing action - 2
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 99
+Board after Turn 99:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 3
+Player 1: Direction is now 2
+Player 1: doing action - 3
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 100
+Board after Turn 100:
+  1@  
+  @#2 
+      
+# # ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
 Game Over!
 RESULT: Tie - Reached max steps

@@ -23,6 +23,7 @@ struct Position
         void move(Direction dir,int width, int height);
         int getx() const {return x;}
         int gety() const{return y;}
+        
     
 };
 #endif

@@ -53,6 +53,10 @@ private:
 public:
     GameManager(const PlayerFactory& pf, const TankAlgorithmFactory& tf);
     ~GameManager();
+    GameManager(const GameManager&) = delete;
+    GameManager& operator=(const GameManager&) = delete;
+    GameManager(GameManager&&) = delete;
+    GameManager& operator=(GameManager&&) = delete;
     void readBoard(const std::string& filename);
     void gameLoop();
 

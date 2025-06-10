@@ -19,6 +19,7 @@
 class GameManager {
 private:
     std::ofstream logFile;
+    std::ifstream file;
     std::unique_ptr<Board> gameBoard;
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
@@ -65,11 +66,13 @@ private:
     bool noShellsLeftForAllLiveTanks() const;
     void moveShells();
     void checkCollisions();
-
+    void readBoardHeader(const std::string& filename, std::ifstream& file, size_t& rows, size_t& cols);
     bool checkGameOver() const;
     void logGameResult();
     void wrapPosition(Position& pos);
     std::vector<std::vector<char>> buildBoardMatrix();
+    void populateTankOrderAndLog(size_t rows, size_t cols);
+    void finalizeBoardReading(std::ifstream& file, std::ofstream& errorFile, bool hasTank1, bool hasTank2);
 };
 
 #endif // GAMEMANAGER_H

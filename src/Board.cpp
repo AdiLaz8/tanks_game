@@ -14,11 +14,11 @@ Board::~Board() {
     }
     delete[] grid;
 }
-
+// Get the slot in some position, wrapping around if necessary
 CellSlot& Board::getSlot(int x, int y) const{
     return grid[(y + height) % height][(x + width) % width];
 }
-
+// adding shell to the board
 void Board::addShell(std::unique_ptr<Shell> shell) {
     Shell* raw = shell.get();
     shells.push_back(raw);
@@ -27,10 +27,14 @@ void Board::addShell(std::unique_ptr<Shell> shell) {
     grid[pos.gety()][pos.getx()].addShellPointerOnly(raw);
 
 }
+
+// moving shell to a new position
 void Board::moveShellTo(Shell* shell, int oldX, int oldY, int newX, int newY) {
     grid[oldY][oldX].removeShellPointerOnly(shell);
     grid[newY][newX].addShellPointerOnly(shell);
 }
+
+// add an object to the board at a specific position
 void Board::addObject(std::unique_ptr<Cell> obj, int x, int y) {
     Cell* raw = obj.get();
     if (auto* shell = dynamic_cast<Shell*>(raw)) {
@@ -47,10 +51,13 @@ void Board::addObject(std::unique_ptr<Cell> obj, int x, int y) {
         else if (tank->getSymbol() == '2') tanks2.push_back(tank);
     }
 }
+
+// remove a shell pointer from the board at a specific position
 void Board::removeShellPointerOnly(Shell* shell, const Position& pos) {
     grid[pos.gety()][pos.getx()].removeShellPointerOnly(shell);
 }
 
+// removing objects from the board
 void Board::removeTankAt(int x, int y) {
     Tank* tank = grid[y][x].getTank();
     if (!tank) return;
@@ -60,6 +67,7 @@ void Board::removeTankAt(int x, int y) {
 
     grid[y][x].removeTank(); 
 }
+
 void Board::removeWallAt(int x, int y) {
     grid[y][x].removeWall();
 }
@@ -67,6 +75,7 @@ void Board::removeWallAt(int x, int y) {
 void Board::removeMineAt(int x, int y) {
     grid[y][x].removeMine();
 }
+
 void Board::removeShell(Shell* shell, int x, int y) {
     grid[y][x].removeShellPointerOnly(shell);
     shells.erase(std::remove(shells.begin(), shells.end(), shell), shells.end());
@@ -75,16 +84,21 @@ void Board::removeShell(Shell* shell, int x, int y) {
         [shell](const std::unique_ptr<Shell>& ptr) { return ptr.get() == shell; });
     ownedShells.erase(it, ownedShells.end()); 
 }
+
+// check if the slot has wall (bad step) or if it's passable
 bool Board::isPassable(int x, int y) const {
     const CellSlot& slot = grid[(y + height) % height][(x + width) % width];
     return !slot.getWall();
 }
+
 int Board::getWidth() const {
     return width;
 }
+
 int Board::getHeight() const {
     return height;
 }
+
 const std::vector<Tank*>&::Board::getTanks(int playerId) const {
     return (playerId == 1) ? tanks1 : tanks2;
 }

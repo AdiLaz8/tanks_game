@@ -2,7 +2,7 @@
 #include "MyBattleInfo.h"
 void Algo2::updateBattleInfo(BattleInfo& info) {
     auto& myInfo = dynamic_cast<MyBattleInfo&>(info);
-    if(turnCounterSinceInfo==-1){
+    if(turnCounterSinceInfo==-1){ // first turn
         boardWidth = myInfo.getWidth();
         boardHeight = myInfo.getHeight();
         ammo = myInfo.getInitialShells();
@@ -11,8 +11,9 @@ void Algo2::updateBattleInfo(BattleInfo& info) {
     fullView = myInfo.getFullView();
     selfPosition = myInfo.getSelfPosition();
 }
+
 ActionRequest Algo2::getAction() {
-    if (turnCounterSinceInfo == -1) {
+    if (turnCounterSinceInfo == -1) { // first turn
         return ActionRequest::GetBattleInfo;
     }
     turnCounterSinceInfo++;
@@ -30,9 +31,10 @@ ActionRequest Algo2::getAction() {
         return ActionRequest::MoveForward;
     }
 
-    if (isThreatenedByShells()) {
+    if (isThreatenedByShells()) { // if the tank is threatened by shells, try to escape
         return moveIfThreatened().getType();
     }
+    
     //if enemy in sight --> shoot
     if (canShootInDirection()&& ammo>0 &&shootingStatus==0) {
         shootingStatus=5;

@@ -1,7 +1,5 @@
 #include "GameManager.h"
 #include "Shell.h"
-#include "Algorithm1.h"
-#include "Algorithm2.h"
 #include <iostream>
 #include "Logger.h"
 #include <unordered_set>
@@ -229,13 +227,6 @@ void GameManager::moveShells() {
 }
 
 
-
-
-
-
-
-
-
 void GameManager::gameLoop() {
     while (!checkGameOver()) {
         if (currentStep % 2 != 0) {
@@ -261,7 +252,7 @@ void GameManager::gameLoop() {
             }
         } else {
             std::string turn = std::to_string(currentStep / 2 + 1);
-            std::cout << "[DEBUG] Turn is " << turn << std::endl;
+            // std::cout << "[DEBUG] Turn is " << turn << std::endl;
             Logger::debug("Turn : " + turn);
             logFile << "Turn : " + turn << std::endl;
             // אפס את currentActions לכל הטנקים לפי birthIndex

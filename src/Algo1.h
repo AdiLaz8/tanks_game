@@ -23,6 +23,8 @@ private:
     std::vector<Direction::Value> computeBFS(const Position& from, const Position& to,
                                              const std::vector<std::pair<Position, char>>& fullView,
                                              size_t width, size_t height);
+    ActionRequest getShootingActionIfAvailable();
+    ActionRequest moveForwardAfterRotate();
 };
 #endif
 

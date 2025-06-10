@@ -1,5 +1,6 @@
 #include "Position.h"
 #include "Direction.h"
+#include <iostream>
 
 void Position::move(Direction dir, int width, int height) {
     Position delta = dir.toVector();

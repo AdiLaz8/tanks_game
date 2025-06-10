@@ -12,8 +12,18 @@ MyTankAlgorithm::MyTankAlgorithm(int playerIndex, int tankIndex)
       direction((playerIndex == 1) ? Direction::L : Direction::R),selfPosition(-1,-1) {}
 
 bool MyTankAlgorithm::isMine(const Position& pos) const {
-    return std::find(minePositions.begin(), minePositions.end(), pos) != minePositions.end();
+    for (const auto& mine : minePositions) {
+        if (mine == pos) {
+            std::cout << "[FOUND] Position " << pos.getx() << "," << pos.gety()
+                      << " is a mine!" << std::endl;
+            return true;
+        }
+    }
+    return false;
 }
+
+
+
 int MyTankAlgorithm::getTankId() const { return tankId; }
 Direction MyTankAlgorithm::getTankDirection() const { return direction; }
 Position MyTankAlgorithm::getTankPosition() const { return selfPosition; }
@@ -51,12 +61,15 @@ Action MyTankAlgorithm::moveIfThreatened() {
     forward.sety((forward.gety() + boardHeight) % boardHeight);
     auto isFree = [&](const Position& pos) {
         for (const auto& [p, sym] : fullView) {
-            if ((p == pos && sym != ' ') || !isMine(pos)) return false;
+            if ((p == pos && sym != ' ')) return false;
         }
         return true;
     };
-    if (isFree(forward)){
+    if (isFree(forward) && !isMine(forward)) {
         selfPosition = forward;
+        std::cout << "[MOVE1][TANK " << tankId << "] Moving forward to " 
+          << forward.getx() << "," << forward.gety() << std::endl;
+        moveAfterRotate = false;
         return Action(ActionRequest::MoveForward);
     }
     int currIndex = static_cast<int>(direction.getDirection());
@@ -69,7 +82,7 @@ Action MyTankAlgorithm::moveIfThreatened() {
         Position candidate = selfPosition + delta;
         candidate.setx((candidate.getx() + boardWidth) % boardWidth);
         candidate.sety((candidate.gety() + boardHeight) % boardHeight);
-        if (isFree(candidate)) {
+        if (isFree(candidate) && !isMine(candidate)) {
             moveAfterRotate = true;
             return Action(rotateTowards(direction.getDirection(), tryDir));
         }
@@ -81,25 +94,25 @@ bool MyTankAlgorithm::canShootInDirection() const {
     char enemySymbol = (playerId == 1 ? '2' : '1');
     char selfSymbol = (playerId == 1 ? '1' : '2');
     Position ray = selfPosition;
-    std::cout << "[DEBUG] Player ID: " << playerId
-          << ", selfSymbol: '" << selfSymbol
-          << "', enemySymbol: '" << enemySymbol << "'" << std::endl;
+    // std::cout << "[DEBUG] Player ID: " << playerId
+    //       << ", selfSymbol: '" << selfSymbol
+    //       << "', enemySymbol: '" << enemySymbol << "'" << std::endl;
     for (size_t i = 0; i < std::max(boardWidth, boardHeight); ++i) {
-        std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
+        // std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
         ray = ray + direction.toVector();
-        std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
+        // std::cout << "[DEBUG] direction = " << direction.getDirection() << " from position " << ray.getx()<<ray.gety() << std::endl;
         ray.setx((ray.getx() + boardWidth) % boardWidth);
         ray.sety((ray.gety() + boardHeight) % boardHeight);
         if (ray == selfPosition) break;
         for (const auto& [pos, symbol] : fullView) {
             if (pos == ray) {
-                std::cout << "[RAY] checking (" << ray.getx() << "," << ray.gety() << ") -> symbol: " << symbol << std::endl;
+                // std::cout << "[RAY] checking (" << ray.getx() << "," << ray.gety() << ") -> symbol: " << symbol << std::endl;
                 if (symbol == selfSymbol) {
-                    std::cout << "[BLOCKED] Friend at (" << ray.getx() << "," << ray.gety() << ")" << std::endl;
+                    // std::cout << "[BLOCKED] Friend at (" << ray.getx() << "," << ray.gety() << ")" << std::endl;
                     return false;
                 }
                 if (symbol == enemySymbol) {
-                    std::cout << "[TARGET] Enemy at (" << ray.getx() << "," << ray.gety() << ")" << std::endl;
+                    // std::cout << "[TARGET] Enemy at (" << ray.getx() << "," << ray.gety() << ")" << std::endl;
                     return true;
                 }
             }

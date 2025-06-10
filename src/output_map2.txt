@@ -17,9 +17,9 @@ Board after Turn 2:
   @   
    2# 
 ######
-Player 1: Requested action - 2
-Player 1: Direction is now 4
-Player 1: doing action - 2
+Player 1: Requested action - 3
+Player 1: Direction is now 0
+Player 1: doing action - 3
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Turn : 3
@@ -29,8 +29,234 @@ Board after Turn 3:
    2# 
 ######
 Player 1: Requested action - 6
-Player 1: Shoot from (3, 0) to (3, 1)
-Player 1: Direction is now 4
+Player 1: Shoot from (3, 0) to (3, 3)
+Player 1: Direction is now 0
+Player 1: doing action - 6
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Shell hit wall at (3,3). Wall HP: 1
+Turn : 4
+Board after Turn 4:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 5
+Board after Turn 5:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 6
+Board after Turn 6:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 4
+Player 1: Direction is now 0
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 7
+Board after Turn 7:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 8
+Board after Turn 8:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 6
+Player 1: Shoot from (3, 0) to (4, 3)
+Player 1: Direction is now 1
+Player 1: doing action - 6
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Shell hit wall at (4,3). Wall HP: 1
+Turn : 9
+Board after Turn 9:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 10
+Board after Turn 10:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 4
+Player 1: Direction is now 0
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 11
+Board after Turn 11:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 12
+Board after Turn 12:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 4
+Player 1: Direction is now 0
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 13
+Board after Turn 13:
+  #1  
+  @   
+   2# 
+######
+Player 1: Requested action - 6
+Player 1: Shoot from (3, 0) to (3, 3)
+Player 1: Direction is now 0
+Player 1: doing action - 6
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Shell hit wall at (3,3). Wall HP: 0
+Wall destroyed at (3,3)
+Turn : 14
+Board after Turn 14:
+  #1  
+  @   
+   2# 
+### ##
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 15
+Board after Turn 15:
+  #1  
+  @   
+   2# 
+### ##
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 16
+Board after Turn 16:
+  #1  
+  @   
+   2# 
+### ##
+Player 1: Requested action - 4
+Player 1: Direction is now 0
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 17
+Board after Turn 17:
+  #1  
+  @   
+   2# 
+### ##
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 18
+Board after Turn 18:
+  #1  
+  @   
+   2# 
+### ##
+Player 1: Requested action - 6
+Player 1: Shoot from (3, 0) to (4, 3)
+Player 1: Direction is now 1
+Player 1: doing action - 6
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Shell hit wall at (4,3). Wall HP: 0
+Wall destroyed at (4,3)
+Turn : 19
+Board after Turn 19:
+  #1  
+  @   
+   2# 
+###  #
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 20
+Board after Turn 20:
+  #1  
+  @   
+   2# 
+###  #
+Player 1: Requested action - 4
+Player 1: Direction is now 0
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 21
+Board after Turn 21:
+  #1  
+  @   
+   2# 
+###  #
+Player 1: Requested action - 5
+Player 1: Direction is now 1
+Player 1: doing action - 5
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 22
+Board after Turn 22:
+  #1  
+  @   
+   2# 
+###  #
+Player 1: Requested action - 4
+Player 1: Direction is now 0
+Player 1: doing action - 4
+Player 2: Requested action - 7
+Player 2: GetBattleInfo triggered
+Turn : 23
+Board after Turn 23:
+  #1  
+  @   
+   2# 
+###  #
+Player 1: Requested action - 6
+Player 1: Shoot from (3, 0) to (3, 3)
+Player 1: Direction is now 0
 Player 1: doing action - 6
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered

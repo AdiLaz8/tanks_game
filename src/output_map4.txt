@@ -115,12 +115,10 @@ Board after Turn 5:
   **        
             
             
-Player 1: Requested action - 3
-Player 1: Direction is now 3
-Player 1: doing action - 3
-Player 1: Requested action - 3
-Player 1: Direction is now 3
-Player 1: doing action - 3
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Player 2: Requested action - 7

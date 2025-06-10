@@ -53,14 +53,12 @@ Board after Turn 3:
 ######
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Player 1: Requested action - 3
-Player 1: Direction is now 0
-Player 1: doing action - 3
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Player 1: Requested action - 3
-Player 1: Direction is now 0
-Player 1: doing action - 3
+Player 1: Requested action - 7
+Player 1: GetBattleInfo triggered
 Turn : 4
 Board after Turn 4:
   2 1 
@@ -69,14 +67,14 @@ Board after Turn 4:
 ######
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Player 1: Requested action - 5
-Player 1: Direction is now 1
-Player 1: doing action - 5
+Player 1: Requested action - 3
+Player 1: Direction is now 0
+Player 1: doing action - 3
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Player 1: Requested action - 5
-Player 1: Direction is now 1
-Player 1: doing action - 5
+Player 1: Requested action - 3
+Player 1: Direction is now 0
+Player 1: doing action - 3
 Turn : 5
 Board after Turn 5:
   2 1 
@@ -86,12 +84,12 @@ Board after Turn 5:
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Player 1: Requested action - 5
-Player 1: Direction is now 2
+Player 1: Direction is now 1
 Player 1: doing action - 5
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
 Player 1: Requested action - 5
-Player 1: Direction is now 2
+Player 1: Direction is now 1
 Player 1: doing action - 5
 Turn : 6
 Board after Turn 6:
@@ -101,14 +99,14 @@ Board after Turn 6:
 ######
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Player 1: Requested action - 4
-Player 1: Direction is now 1
-Player 1: doing action - 4
+Player 1: Requested action - 5
+Player 1: Direction is now 2
+Player 1: doing action - 5
 Player 2: Requested action - 7
 Player 2: GetBattleInfo triggered
-Player 1: Requested action - 4
-Player 1: Direction is now 1
-Player 1: doing action - 4
+Player 1: Requested action - 5
+Player 1: Direction is now 2
+Player 1: doing action - 5
 Turn : 7
 Board after Turn 7:
   2 1 
@@ -120,18 +118,17 @@ Player 2: Shoot from (2, 0) to (3, 0)
 Player 2: Direction is now 2
 Player 2: doing action - 6
 Player 1: Requested action - 6
-Player 1: Shoot from (4, 0) to (5, 3)
-Player 1: Direction is now 1
+Player 1: Shoot from (4, 0) to (5, 0)
+Player 1: Direction is now 2
 Player 1: doing action - 6
 Player 2: Requested action - 6
 Player 2: Shoot from (3, 2) to (4, 2)
 Player 2: Direction is now 2
 Player 2: doing action - 6
 Player 1: Requested action - 6
-Player 1: Shoot from (5, 2) to (0, 1)
-Player 1: Direction is now 1
+Player 1: Shoot from (5, 2) to (0, 2)
+Player 1: Direction is now 2
 Player 1: doing action - 6
-Shell hit wall at (5,3). Wall HP: 1
 Shell: Tank 1 destroyed at (4,0)
 Shell: Tank 1 destroyed at (5,2)
 Game Over!

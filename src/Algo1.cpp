@@ -20,11 +20,6 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
     //calculating closest enemy tank 
     int minDist = boardWidth * boardHeight;
     for (const auto& [pos, symbol] : fullView) {
-        if (!minesInitialized){
-            if (symbol == '@') {
-                minePositions.push_back(pos);
-            }
-        }
         if (symbol == enemySymbol) {
             int dx = std::min((selfPosition.getx() - pos.getx() + boardWidth) % boardWidth,
                               (pos.getx() - selfPosition.getx() + boardWidth) % boardWidth);
@@ -37,33 +32,20 @@ void Algo1::updateBattleInfo(BattleInfo& info) {
             }
         }
     }
-    minesInitialized = true; 
+    if (!minesInitialized) {
+        minePositions.clear();
+        for (const auto& [pos, symbol] : fullView) {
+            if (symbol == '@') {
+                minePositions.push_back(pos);
+            }
+        }
+        minesInitialized = true;
+    }
+    // minesInitialized = true;
     computeShootingPath();
 }
 
-ActionRequest Algo1::getAction() {
-    if (turnCounterSinceInfo == -1){
-        return ActionRequest::GetBattleInfo;}
-    turnCounterSinceInfo++;
-    if(getShootingStatus()>0){
-        shootingStatus--;
-    }
-    //if the tank is threatened and rotated last turn so now it needs to move forward
-    if (moveAfterRotate) {
-        moveAfterRotate = false;
-        needsNewInfo = true;
-        turnCounterSinceInfo++;
-        Position newPos = selfPosition + direction.toVector();
-        newPos.setx((newPos.getx() + boardWidth) % boardWidth);
-        newPos.sety((newPos.gety() + boardHeight) % boardHeight);
-        selfPosition = newPos;
-        return ActionRequest::MoveForward;
-    }
-    if (isThreatenedByShells()) {
-        currentPath.clear();
-        turnCounterSinceInfo++;
-        return moveIfThreatened().getType();
-    }
+ActionRequest Algo1::getShootingActionIfAvailable(){
     bool canShootNow = canShootInDirection();
     //if enemy in sight --> shoot
     if (canShootNow) {
@@ -84,15 +66,59 @@ ActionRequest Algo1::getAction() {
         direction = tryDir;
         if (canShootInDirection()) {
             direction = originalDir; 
+            turnCounterSinceInfo++;
             return rotateTowards(originalDir.getDirection(), tryDir.getDirection());
         }
         direction = originalDir; 
     }
+    return ActionRequest::DoNothing;
+}
+//if the tank is threatened and rotated last turn so now it needs to move forward
+ActionRequest Algo1::moveForwardAfterRotate(){
+    if (isThreatenedByShells()) {
+        currentPath.clear();
+        turnCounterSinceInfo++;
+        return moveIfThreatened().getType();
+    }
+    if (moveAfterRotate) {
+            moveAfterRotate = false;
+            needsNewInfo = true;
+            turnCounterSinceInfo++;
+            Position newPos = selfPosition + direction.toVector();
+            newPos.setx((newPos.getx() + boardWidth) % boardWidth);
+            newPos.sety((newPos.gety() + boardHeight) % boardHeight);
+            if (!isMine(newPos)) {
+                std::cout << "[MOVE2][TANK " << tankId << "] Moving forward to " 
+          << newPos.getx() << "," << newPos.gety() << std::endl;
+
+                selfPosition = newPos;
+                return ActionRequest::MoveForward;
+            } else {
+                std::cout << "[BLOCKED] Tried to move to a mine at " << newPos.getx() << "," << newPos.gety() << std::endl;
+            }
+
+        }
+    return ActionRequest::DoNothing;
+}
+ActionRequest Algo1::getAction() {
+    ActionRequest action = ActionRequest::DoNothing;
+    if (turnCounterSinceInfo == -1 || turnCounterSinceInfo == 5){ return ActionRequest::GetBattleInfo; }
+    if(getShootingStatus()>0){
+        shootingStatus--;
+    }
+    action = moveForwardAfterRotate();
+    if (!(action == ActionRequest::DoNothing)) { 
+        std::cout << "[MOVE3][TANK " << tankId << "] Moving forward to " 
+          << std::endl;
+
+        return action; }
     if (needsNewBattleInfo()) {
         chasing = false;
         turnCounterSinceInfo = 0;
         return ActionRequest::GetBattleInfo;
     }
+    action = getShootingActionIfAvailable();
+    if (!(action == ActionRequest::DoNothing)) { return action;}
     //BFS next action
     if (!currentPath.empty()) {
         Direction::Value nextDir = currentPath.front();
@@ -108,6 +134,7 @@ ActionRequest Algo1::getAction() {
             if (it->second == '@' || it->second == '1' || it->second == '2') {
                 currentPath.clear();
                 needsNewInfo = true;
+                turnCounterSinceInfo = 0;
                 return ActionRequest::GetBattleInfo;
             }
             if (it->second == '#') {
@@ -115,17 +142,31 @@ ActionRequest Algo1::getAction() {
                     shootingStatus = 4;
                     ammo--;
                     needsNewInfo = true;
-                    std::cout << "tries to shoot test'" << std::endl;
+                    // std::cout << "tries to shoot test'" << std::endl;
+                    turnCounterSinceInfo++;
                     return ActionRequest::Shoot;
                 }
             }
         }
             currentPath.erase(currentPath.begin());
-            selfPosition = nextPos;
-            turnCounterSinceInfo++;
-            return ActionRequest::MoveForward;
+            if (!isMine(nextPos)) {
+                selfPosition = nextPos;
+                turnCounterSinceInfo++;
+                std::cout << "[MOVE4][TANK " << tankId << "] Moving forward to " 
+                << nextPos.getx() << "," << nextPos.gety() << std::endl;
+
+                return ActionRequest::MoveForward;
+            }
+            else {
+                std::cout << "[BLOCKED] BFS tried to move to mine at " << nextPos.getx() << "," << nextPos.gety() << std::endl;
+                currentPath.clear();  // נסיר את המסלול הלא בטוח
+                chasing = false;
+                turnCounterSinceInfo = 0;
+                return ActionRequest::GetBattleInfo;
+            }
         } else {
             direction = Direction(nextDir);
+            moveAfterRotate = true;
             turnCounterSinceInfo++;
             return rotateTowards(direction.getDirection(), nextDir);
         }
@@ -151,34 +192,27 @@ std::vector<Direction::Value> Algo1::computeBFS(const Position& from, const Posi
     std::set<Position> blocked;
     char friendSymbol = (playerId == 1 ? '1' : '2');
     char enemySymbol = (playerId == 1 ? '2' : '1');
-
     for (const auto& [pos, symbol] : fullView) {
-        if (symbol == '@' || symbol == friendSymbol)
+        if (isMine(pos) || symbol == '@' || symbol == friendSymbol)
             blocked.insert(pos);
     }
-
     std::queue<std::pair<Position, std::vector<Direction::Value>>> q;
     std::set<Position> visited;
     q.push({from, {}});
     visited.insert(from);
-
     while (!q.empty()) {
         auto [current, path] = q.front();
         q.pop();
-
         for (int i = 0; i < 8; ++i) {
             Direction::Value dirVal = static_cast<Direction::Value>(i);
             Position delta = Direction(dirVal).toVector();
             Position next = current + delta;
             next.setx((next.getx() + width) % width);
             next.sety((next.gety() + height) % height);
-
             if (visited.count(next) || blocked.count(next))
                 continue;
-
             std::vector<Direction::Value> newPath = path;
             newPath.push_back(dirVal);
-
             Position step = next;
             Direction shootingDir(dirVal);
             for (size_t s = 0; s < std::max(width, height); ++s) {
@@ -187,17 +221,14 @@ std::vector<Direction::Value> Algo1::computeBFS(const Position& from, const Posi
                 step = step + shootingDir.toVector();
                 if (step == from)
                     break;
-
                 for (const auto& [pos, symbol] : fullView) {
                     if (pos == step && symbol == enemySymbol)
                         return newPath;
                 }
             }
-
             q.push({next, newPath});
             visited.insert(next);
         }
     }
-
     return {};
 }

@@ -5,11 +5,13 @@ MyBattleInfo::MyBattleInfo(size_t rows, size_t cols, int numShells)
     : boardRows(rows), boardCols(cols), numShells(numShells) {
     reset();
 }
+
 void MyBattleInfo::reset() {
     fullView.clear();
     shellPositions.clear();
     selfPositionSet = false;
 }
+
 void MyBattleInfo::addObject(const Position& pos, char symbol, int playerId, int boardRows, int boardCols) {
     (void)playerId;
     (void)boardRows;

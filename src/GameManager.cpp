@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "ActionRequestUtils.h"
 #include "Shell.h"
 #include <iostream>
 #include "Logger.h"

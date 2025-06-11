@@ -6,6 +6,7 @@ struct Position
     private:
         int x;
         int y;
+        
     public:
         Position(int x, int y) : x(x), y(y) {}
         bool operator==(const Position& other) const{

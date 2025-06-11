@@ -23,8 +23,8 @@ private:
     std::unique_ptr<Board> gameBoard;
     std::unique_ptr<Player> player1;
     std::unique_ptr<Player> player2;
-    int tankMap1=0;
-    int tankMap2=0;
+    int tankIndex1 = 0;
+    int tankIndex2 = 0;
     const int NO_SHELL_LIMIT = 40;
     size_t numShells = 0;
     size_t maxSteps = 0;
@@ -70,13 +70,17 @@ private:
     bool noShellsLeftForAllLiveTanks() const;
     void moveShells();
     void checkCollisions();
+    void checkTankTankCollisions();
+    void checkTankMineCollisions();
+    void checkShellCollisions();
     void readBoardHeader(const std::string& filename, std::ifstream& file, size_t& rows, size_t& cols);
     bool checkGameOver() const;
     void logGameResult();
     void wrapPosition(Position& pos);
     std::vector<std::vector<char>> buildBoardMatrix();
     void populateTankOrderAndLog(size_t rows, size_t cols);
-    void finalizeBoardReading(std::ifstream& file, std::ofstream& errorFile, bool hasTank1, bool hasTank2);
+    void finalizeBoardReading(std::ifstream& file, std::ofstream& errorFile, int& tankIndex1, int& tankIndex2);
+    bool handleBackwardStatus(Tank* tank, const ActionRequest& req, const Position& pos, const Direction& dir, const std::string& player);
 };
 
 #endif // GAMEMANAGER_H

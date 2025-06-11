@@ -25,5 +25,6 @@ private:
                                              size_t width, size_t height);
     ActionRequest getShootingActionIfAvailable();
     ActionRequest moveForwardAfterRotate();
+    ActionRequest getActionFromPath();
 };
 #endif

@@ -51,9 +51,7 @@ void Algo1::computeShootingPath() {
     chasing = true;
 }
 
-std::vector<Direction::Value> Algo1::computeBFS(const Position& from, const Position& to,
-                                                const std::vector<std::pair<Position, char>>& fullView,
-                                                size_t width, size_t height) {
+std::vector<Direction::Value> Algo1::computeBFS(const Position& from, const Position& to,const std::vector<std::pair<Position, char>>& fullView,size_t width, size_t height) {
     (void)to; 
     std::set<Position> blocked;
     char friendSymbol = (playerId == 1 ? '1' : '2');
@@ -152,69 +150,83 @@ ActionRequest Algo1::moveForwardAfterRotate(){
     return ActionRequest::DoNothing;
 }
 
-ActionRequest Algo1::getAction() {
-    ActionRequest action = ActionRequest::DoNothing;
-    if (turnCounterSinceInfo == -1 || turnCounterSinceInfo == 5){ return ActionRequest::GetBattleInfo; }
-    if(getShootingStatus()>0){ shootingStatus--;}
-    action = moveForwardAfterRotate();
-    if (!(action == ActionRequest::DoNothing)) { return action; }
-    if (needsNewBattleInfo()) {
-        chasing = false;
-        turnCounterSinceInfo = 0;
-        return ActionRequest::GetBattleInfo;
-    }
-    action = getShootingActionIfAvailable();
-    if (!(action == ActionRequest::DoNothing)) { return action;}
-    if (!currentPath.empty()) { //BFS next action
+// get the action from the BFS path
+ActionRequest Algo1::getActionFromPath() {
+    if (!currentPath.empty()) {
         Direction::Value nextDir = currentPath.front();
         if (nextDir == direction.getDirection()) {
             Position nextPos = selfPosition + Direction(nextDir).toVector();
             nextPos.setx((nextPos.getx() + boardWidth) % boardWidth);
             nextPos.sety((nextPos.gety() + boardHeight) % boardHeight);
-            auto it = std::find_if(fullView.begin(), fullView.end(),
-                                   [&](const auto& cell) {
-                                       return cell.first == nextPos;
-                                   });
-        if (it != fullView.end()) {
-            if (it->second == '@' || it->second == '1' || it->second == '2') {
-                currentPath.clear();
-                needsNewInfo = true;
-                turnCounterSinceInfo = 0;
-                return ActionRequest::GetBattleInfo;
-            }
-            if (it->second == '#') {
-                if (ammo > 0 && getShootingStatus() == 0) {
-                    shootingStatus = 4;
-                    ammo--;
+            auto it = std::find_if(fullView.begin(), fullView.end(),[&](const auto& cell) {return cell.first == nextPos;});
+            if (it != fullView.end()) {
+                if (it->second == '@' || it->second == '1' || it->second == '2') {
+                    currentPath.clear();
                     needsNewInfo = true;
-                    turnCounterSinceInfo++;
-                    return ActionRequest::Shoot;
+                    turnCounterSinceInfo = 0;
+                    return ActionRequest::GetBattleInfo;
+                }
+                if (it->second == '#') {
+                    if (ammo > 0 && getShootingStatus() == 0) {
+                        shootingStatus = 4;
+                        ammo--;
+                        needsNewInfo = true;
+                        turnCounterSinceInfo++;
+                        return ActionRequest::Shoot;
+                    }
                 }
             }
-        }
             currentPath.erase(currentPath.begin());
-            if (!isMine(nextPos)) { // Check if the next position is a mine, and if not move forward
+            if (!isMine(nextPos)) {
                 selfPosition = nextPos;
                 turnCounterSinceInfo++;
                 return ActionRequest::MoveForward;
-            }
-            else { // the next position is a mine, we need to get battle info and compute a new paths
-                currentPath.clear();  // clear the unsafe route
+            } else {
+                currentPath.clear();
                 chasing = false;
                 turnCounterSinceInfo = 0;
                 return ActionRequest::GetBattleInfo;
             }
-        } else { // we need to rotate towards the next cell in the path
+        } else {
             direction = Direction(nextDir);
             moveAfterRotate = true;
             turnCounterSinceInfo++;
             return rotateTowards(direction.getDirection(), nextDir);
         }
     }
-    // we didn't find anything to do, so we request new battle info
+    return ActionRequest::DoNothing; // No actions available rom the path
+}
+
+ActionRequest Algo1::getAction() {
+    ActionRequest action = ActionRequest::DoNothing;
+    if (turnCounterSinceInfo == -1 || turnCounterSinceInfo == 5) {
+        return ActionRequest::GetBattleInfo;
+    }
+    if(getShootingStatus()>0){
+        shootingStatus--;
+    }
+    action = moveForwardAfterRotate();
+    if (action != ActionRequest::DoNothing) {
+        return action;
+    }
+    if (needsNewBattleInfo()) {
+        chasing = false;
+        turnCounterSinceInfo = 0;
+        return ActionRequest::GetBattleInfo;
+    }
+    action = getShootingActionIfAvailable();
+    if (action != ActionRequest::DoNothing) {
+        return action;
+    }
+    // try to get an action from the BFS path
+    action = getActionFromPath();
+    if (action != ActionRequest::DoNothing) {
+        return action;
+    }
     turnCounterSinceInfo = 0;
     chasing = false;
     return ActionRequest::GetBattleInfo;
+
 }
 
 // Check if the tank needs new battle info based on various conditions

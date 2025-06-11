@@ -8,6 +8,7 @@ Player1::Player1(int player_index, size_t x, size_t y, size_t max_steps, size_t 
       boardWidth(x), boardHeight(y), maxSteps(max_steps), numShells(num_shells) {
     (void)player_index; (void)x; (void)y; (void)max_steps; (void)num_shells;
 }
+
 void Player1::updateTankWithBattleInfo(
     TankAlgorithm& tank,
     SatelliteView& satellite_view) {

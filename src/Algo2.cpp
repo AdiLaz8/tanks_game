@@ -30,13 +30,10 @@ ActionRequest Algo2::getAction() {
         selfPosition = newPos;
         return ActionRequest::MoveForward;
     }
-
     if (isThreatenedByShells()) { // if the tank is threatened by shells, try to escape
         return moveIfThreatened().getType();
     }
-    
-    //if enemy in sight --> shoot
-    if (canShootInDirection()&& ammo>0 &&shootingStatus==0) {
+    if (canShootInDirection()&& ammo>0 &&shootingStatus==0) { //if enemy in sight --> shoot
         shootingStatus=5;
         ammo--;
         return ActionRequest::Shoot;

@@ -24,5 +24,3 @@ int main(int argc, char* argv[]) {
     manager.gameLoop();
     return 0;
 }
-
-

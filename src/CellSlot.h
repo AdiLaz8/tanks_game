@@ -18,6 +18,7 @@ private:
 public:
     void addObject(std::unique_ptr<Cell> obj);
     void removeTank();
+    void removeTank(Tank* tank); // for tank-tank collision
     void removeWall();
     void removeMine();
     void removeShell(Shell* shell);

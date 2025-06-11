@@ -17,6 +17,7 @@ public:
     int getInitialShells() const;
     size_t getWidth() const;
     size_t getHeight() const;
+
 private:
     size_t boardRows;
     size_t boardCols;

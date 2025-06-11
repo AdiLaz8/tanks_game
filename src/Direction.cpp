@@ -14,25 +14,32 @@ Position Direction::toVector() const {
         default: return Position(0, 0); 
     }
 }
+
 void Direction::rotateClockwise8() {
     currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 1) % 8);
 }
+
 void Direction::rotateClockwise4() {
     currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 2) % 8);
 }
+
 void Direction::rotateCounterClockwise8() {
     currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 7) % 8);
 }
+
 void Direction::rotateCounterClockwise4() {
     currentDirection = static_cast<Value>((static_cast<int>(currentDirection) + 6) % 8);
 }
+
 Direction Direction::getOppositeDirection() const {
     int oppositeIndex = (static_cast<int>(currentDirection) + 4) % 8;
     return Direction(static_cast<Value>(oppositeIndex));
 }
+
 Direction::Value Direction::getDirection() const {
     return currentDirection;
 }
+
 void Direction::setDirection(Value newDirection) {
     currentDirection = newDirection;
 }

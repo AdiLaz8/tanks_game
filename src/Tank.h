@@ -10,14 +10,15 @@ private:
     Direction d;
     Position p;
     bool alive = true;
+    int birthIndex = -1;
     int backwardStatus = 0;
     int remainingShells = 0;
     void setPosition(Position newPos);
     void setDirection(Direction newDirection);
+    
 public:
     Tank(char owner, Direction d = Direction(Direction::L), Position p = Position(0, 0));
     virtual ~Tank();
-    int birthIndex = -1;
     char getSymbol() const override;
     const Position& getPosition() const;
     const Direction& getDirection() const;
@@ -32,11 +33,11 @@ public:
     int getBackwardStatus() const { return backwardStatus; }
     void setBackwardStatus(int status) { backwardStatus = status; }
     void decreaseBackwardStatus() { if (backwardStatus > 0) backwardStatus--; }
-
+    int getBirthIndex() const { return birthIndex; }
+    void setBirthIndex(int index) { birthIndex = index; }
     int getRemainingShells() const { return remainingShells; }
     void decreaseShells() { if (remainingShells > 0) --remainingShells; }
     void setRemainingShells(int n) { remainingShells = n; }
-
     std::string toString() const override;
 };
 #endif

@@ -15,7 +15,6 @@ private:
     int getId() const { return id; }
     char getSymbol() const override;
 
-
 public:
     Shell(Position p, Direction d, char ownerId);
     ~Shell();

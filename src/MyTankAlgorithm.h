@@ -41,8 +41,6 @@ protected:
     int getTankId() const;
     void updateBattleInfo(BattleInfo& info) override;
 
-
-
 public:
     MyTankAlgorithm(int playerIndex, int tankIndex);
     virtual ActionRequest getAction() override = 0;

@@ -1,5 +1,4 @@
 #include "Player1.h"
-#include "MyTankAlgorithm.h"
 #include "MyBattleInfo.h"
 
 Player1::Player1(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells)
@@ -14,7 +13,20 @@ void Player1::updateTankWithBattleInfo(
     SatelliteView& satellite_view) {
     (void)maxSteps;
     Position currentPos(-1, -1);
+    if (!minesInitialized) {
+        minePositions.clear();
+        for (size_t j = 0; j < boardHeight; ++j) {
+            for (size_t i = 0; i < boardWidth; ++i) {
+                char symbol = satellite_view.getObjectAt(i, j);
+                if (symbol == '@') {
+                    minePositions.emplace_back(i, j);
+                }
+            }
+        }
+        minesInitialized = true;
+    }
     MyBattleInfo battleInfo(boardHeight, boardWidth, numShells);
+    battleInfo.setMinesPositions(minePositions);
     for (size_t j = 0; j < boardHeight; ++j) {
         for (size_t i = 0; i < boardWidth; ++i) {
             char symbol = satellite_view.getObjectAt(i, j);

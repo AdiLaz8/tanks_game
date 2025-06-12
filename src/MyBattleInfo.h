@@ -14,6 +14,7 @@ public:
     const std::vector<Position>& getShellPositions() const;
     Position getSelfPosition() const;
     void setSelfPosition(Position p);
+    void setMinesPositions(const std::vector<Position>& positions) { minePositions = positions;}
     int getInitialShells() const;
     size_t getWidth() const;
     size_t getHeight() const;
@@ -24,6 +25,7 @@ private:
     int numShells;
     std::vector<std::pair<Position, char>> fullView;
     std::vector<Position> shellPositions;
+    std::vector<Position> minePositions;
     Position selfPosition{0, 0};
     bool selfPositionSet = false;
     void reset();

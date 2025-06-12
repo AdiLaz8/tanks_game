@@ -112,24 +112,18 @@ void GameManager::readBoard(const std::string& filename) {
                 case '@':
                     gameBoard->addObject(std::make_unique<Mine>(), x, y);
                     break;
-                case '1': {
-                    gameBoard->addObject(std::make_unique<Tank>('1', Direction(Direction::L), Position(x, y)), x, y);
-                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(1, tankIndex1); // the algorithm of the tank
-                    Tank* t = gameBoard->getSlot(x, y).getTank(); // the physical tank on the board
-                    t->setRemainingShells(numShells);
-                    tankPairs.emplace_back(std::move(algo), t);
-                    logFile << "Player 1 tank placed at (" << x << "," << y << ")" << std::endl;
-                    tankIndex1++;
-                    break;
-                }
+                case '1':
                 case '2': {
-                    gameBoard->addObject(std::make_unique<Tank>('2', Direction(Direction::R), Position(x, y)), x, y);
-                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(2, tankIndex2);
+                    int playerId = (c == '1') ? 1 : 2;
+                    Direction dir = (c == '1') ? Direction(Direction::L) : Direction(Direction::R);
+                    int& tankIdx = (c == '1') ? tankIndex1 : tankIndex2;
+                    gameBoard->addObject(std::make_unique<Tank>(c, dir, Position(x, y)), x, y);
+                    std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(playerId, tankIdx);
                     Tank* t = gameBoard->getSlot(x, y).getTank();
                     t->setRemainingShells(numShells);
                     tankPairs.emplace_back(std::move(algo), t);
-                    logFile << "Player 2 tank placed at (" << x << "," << y << ")" << std::endl;
-                    tankIndex2++;
+                    logFile << "Player " << playerId << " tank placed at (" << x << "," << y << ")" << std::endl;
+                    tankIdx++;
                     break;
                 }
                 default:
@@ -140,6 +134,7 @@ void GameManager::readBoard(const std::string& filename) {
     populateTankOrderAndLog(rows, cols);
     finalizeBoardReading(file, errorFile, tankIndex1, tankIndex2);
 }
+
 // Setting up the tanks order for the output file
 void GameManager::populateTankOrderAndLog(size_t rows, size_t cols) {
     int birthIdx = 0;

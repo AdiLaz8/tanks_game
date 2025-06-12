@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "MyBattleInfo.h"
 #include <unordered_map>
+#include <unordered_set>
+
 class Player1 : public Player {
 public:
     Player1(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells);
@@ -10,6 +12,8 @@ public:
 
 private:
     int playerIndex;
+    bool minesInitialized = false;
+    std::vector<Position> minePositions;
     size_t boardWidth;
     size_t boardHeight;
     size_t maxSteps;

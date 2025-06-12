@@ -61,7 +61,7 @@ std::string Tank::toString() const {
 }
 std::string Tank::getFullIdString() const {
     std::stringstream ss;
-    ss << "Player " << owner << " Tank " << birthIndex;
+    ss << "Player " << owner << " Tank " << tankIndex;
     return ss.str();
 }
 

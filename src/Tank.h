@@ -10,7 +10,8 @@ private:
     Direction d;
     Position p;
     bool alive = true;
-    int birthIndex = -1;
+    int tankIndex = -1;
+    int birthIndex = -1; 
     int backwardStatus = 0;
     int remainingShells = 0;
     void setDirection(Direction newDirection);
@@ -35,6 +36,8 @@ public:
     void decreaseBackwardStatus() { if (backwardStatus > 0) backwardStatus--; }
     int getBirthIndex() const { return birthIndex; }
     void setBirthIndex(int index) { birthIndex = index; }
+    int getTankIndex() const { return tankIndex; }
+    void setTankIndex(int index) { tankIndex = index; }
     int getRemainingShells() const { return remainingShells; }
     void decreaseShells() { if (remainingShells > 0) --remainingShells; }
     void setRemainingShells(int n) { remainingShells = n; }

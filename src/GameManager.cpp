@@ -77,6 +77,7 @@ void GameManager::readBoardHeader(const std::string& filename, std::ifstream& fi
         Logger::debug("Error: Failed to parse Cols");
         exit(1);
     }
+    Logger::debug("Board size: " + std::to_string(rows) + " rows, " + std::to_string(cols) + " cols");
 }
 
 // reading the board from the input file
@@ -120,7 +121,7 @@ void GameManager::readBoard(const std::string& filename) {
                     gameBoard->addObject(std::make_unique<Tank>(c, dir, Position(x, y)), x, y);
                     std::unique_ptr<TankAlgorithm> algo = tankAlgoFactory.create(playerId, tankIdx);
                     Tank* t = gameBoard->getSlot(x, y).getTank();
-                    t->setBirthIndex(tankIdx);
+                    t->setTankIndex(tankIdx);
                     t->setRemainingShells(numShells);
                     tankPairs.emplace_back(std::move(algo), t);
                     Logger::debug(t->getFullIdString() + " tank placed at (" + std::to_string(x) + "," + std::to_string(y) + ")");
@@ -138,11 +139,13 @@ void GameManager::readBoard(const std::string& filename) {
 
 // Setting up the tanks order for the output file
 void GameManager::populateTankOrderAndLog(size_t rows, size_t cols) {
+    int birthIndex = 0;
     for (size_t y = 0; y < rows; ++y) {
         for (size_t x = 0; x < cols; ++x) {
             Tank* t = gameBoard->getSlot(x, y).getTank();
             if (t) {
                 tanksOrderedByBirth.push_back(t);
+                t->setBirthIndex(birthIndex++);
             }
         }
     }
@@ -442,21 +445,26 @@ void GameManager::checkTankMineCollisions() {
     }
 }
 
-// checking tank-tank collisions
 void GameManager::checkTankTankCollisions() {
     for (int y = 0; y < gameBoard->getHeight(); ++y) {
         for (int x = 0; x < gameBoard->getWidth(); ++x) {
             CellSlot& slot = gameBoard->getSlot(x, y);
-            // all tank in current cellslot
+
+            // שלב ראשון: אסוף את כל הפוינטרים לטנקים בתא
             std::vector<Tank*> tanks;
             for (const auto& obj : slot.getAll()) {
                 if (Tank* tank = dynamic_cast<Tank*>(obj.get()))
                     tanks.push_back(tank);
             }
+
             if (tanks.size() > 1) {
                 std::string posStr = "(" + std::to_string(x) + "," + std::to_string(y) + ")";
                 Logger::debug("Tank-Tank collision at " + posStr);
-                for (Tank* tank : tanks) {
+
+                // לא מוחקים מתוך הלולאה המקורית! קודם אוספים ואז מוחקים
+                std::vector<Tank*> toRemove = tanks;
+
+                for (Tank* tank : toRemove) {
                     char symbol = tank->getSymbol();
                     tank->Hit();
                     if (symbol == '1') tankIndex1--;
@@ -474,6 +482,8 @@ void GameManager::checkTankTankCollisions() {
         }
     }
 }
+
+
 
 
 // checking if there are no shells left for all live tanks, to start the counter of turns

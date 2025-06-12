@@ -318,6 +318,13 @@ void GameManager::executeAction(const ActionRequest& req, Tank* tank) {
             break;
         }
         case ActionRequest::Shoot: {
+            if (tank->getRemainingShells() <= 0) {
+                logFile << player << ": Bad step - no shells left." << std::endl;
+                int birthIdx = tank->getBirthIndex();
+                tankLog[birthIdx].lastAction += "(ignored)";
+                return;
+            }
+            tank->decreaseShells();
             Position shoot = pos + dir.toVector();
             wrapPosition(shoot);
             gameBoard->addShell(std::make_unique<Shell>(shoot, dir, player[0]));

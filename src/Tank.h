@@ -13,7 +13,6 @@ private:
     int birthIndex = -1;
     int backwardStatus = 0;
     int remainingShells = 0;
-    void setPosition(Position newPos);
     void setDirection(Direction newDirection);
     
 public:
@@ -38,6 +37,7 @@ public:
     int getRemainingShells() const { return remainingShells; }
     void decreaseShells() { if (remainingShells > 0) --remainingShells; }
     void setRemainingShells(int n) { remainingShells = n; }
+    void setPosition(const Position& newPos) { p = newPos; }
     std::string toString() const override;
 };
 #endif

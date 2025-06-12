@@ -46,10 +46,6 @@ private:
     };
     std::vector<TankLogInfo> tankLog;
 
-
-
-
-
 public:
     GameManager(const PlayerFactory& pf, const TankAlgorithmFactory& tf);
     ~GameManager();
@@ -58,7 +54,14 @@ public:
     GameManager(GameManager&&) = delete;
     GameManager& operator=(GameManager&&) = delete;
     void readBoard(const std::string& filename);
+    Board& getBoard() { return *gameBoard; }
     void gameLoop();
+    void executeAction(const ActionRequest& req, Tank* tank);
+    void checkCollisions();
+    bool checkGameOver() const;
+
+
+
 
 private:
     bool handleTankAction(TankAlgorithm& algo, Player& player, Tank* tank,
@@ -66,17 +69,15 @@ private:
                           std::unordered_map<TankAlgorithm*, Tank*>& tankMap,
                           std::unordered_map<TankAlgorithm*, Tank*>::iterator& it);
 
-    void executeAction(const ActionRequest& req, Tank* tank);
     bool noShellsLeftForAllLiveTanks() const;
     void moveShells();
-    void checkCollisions();
     void checkTankTankCollisions();
     void checkTankMineCollisions();
     void checkShellCollisions();
     void readBoardHeader(const std::string& filename, std::ifstream& file, size_t& rows, size_t& cols);
-    bool checkGameOver() const;
     void logGameResult();
     void wrapPosition(Position& pos);
+    
     std::vector<std::vector<char>> buildBoardMatrix();
     void populateTankOrderAndLog(size_t rows, size_t cols);
     void finalizeBoardReading(std::ifstream& file, std::ofstream& errorFile, int& tankIndex1, int& tankIndex2);

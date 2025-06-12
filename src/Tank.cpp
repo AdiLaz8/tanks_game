@@ -43,9 +43,9 @@ void Tank::rotateRight8() {
     d.rotateClockwise8();
 }
 
-void Tank::setPosition(Position newPos) {
-    p = newPos;
-}
+// void Tank::setPosition(Position newPos) {
+//     p = newPos;
+// }
 
 void Tank::setDirection(Direction newDirection) {
     d = newDirection;

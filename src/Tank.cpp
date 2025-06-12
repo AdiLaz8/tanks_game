@@ -59,6 +59,11 @@ std::string Tank::toString() const {
        << ")";
     return ss.str();
 }
+std::string Tank::getFullIdString() const {
+    std::stringstream ss;
+    ss << "Player " << owner << " Tank " << birthIndex;
+    return ss.str();
+}
 
 bool Tank::isAlive() const { return alive; }
 

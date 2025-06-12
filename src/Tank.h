@@ -15,6 +15,7 @@ private:
     int remainingShells = 0;
     void setDirection(Direction newDirection);
     
+    
 public:
     Tank(char owner, Direction d = Direction(Direction::L), Position p = Position(0, 0));
     virtual ~Tank();
@@ -39,5 +40,7 @@ public:
     void setRemainingShells(int n) { remainingShells = n; }
     void setPosition(const Position& newPos) { p = newPos; }
     std::string toString() const override;
+    std::string getFullIdString() const;
+
 };
 #endif

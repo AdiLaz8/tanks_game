@@ -16,11 +16,13 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage: " << argv[0] << " <map_file>" << std::endl;
         return 1;
     }
+    Logger::init("log_config.txt");
     std::string inputFileName = argv[1];
     MyPlayerFactory playerFactory;
     MyTankAlgorithmFactory tankFactory;
     GameManager manager(playerFactory, tankFactory); 
     manager.readBoard(inputFileName);
     manager.gameLoop();
+    Logger::shutdown();
     return 0;
 }

@@ -81,7 +81,7 @@ private:
     std::vector<std::vector<char>> buildBoardMatrix();
     void populateTankOrderAndLog(size_t rows, size_t cols);
     void finalizeBoardReading(std::ifstream& file, std::ofstream& errorFile, int& tankIndex1, int& tankIndex2);
-    bool handleBackwardStatus(Tank* tank, const ActionRequest& req, const Position& pos, const Direction& dir, const std::string& player);
+    bool handleBackwardStatus(Tank* tank, const ActionRequest& req, const Position& pos, const Direction& dir);
 };
 
 #endif // GAMEMANAGER_H

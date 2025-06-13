@@ -18,6 +18,22 @@ Board::~Board() {
 CellSlot& Board::getSlot(int x, int y) const{
     return grid[(y + height) % height][(x + width) % width];
 }
+
+void Board::moveTank(Tank* tank, const Position& newPos) {
+    // 1. מצא את התא הישן
+    Position oldPos = tank->getPosition();
+
+    // 2. הוצא את ה־unique_ptr של הטנק
+    std::unique_ptr<Cell> tankPtr = getSlot(oldPos.getx(), oldPos.gety()).extractTank(tank);
+
+    // 3. עדכן מיקום בטנק
+    tank->setPosition(newPos);
+
+    // 4. הכנס את ה־unique_ptr לתא החדש
+    getSlot(newPos.getx(), newPos.gety()).addObject(std::move(tankPtr));
+}
+
+
 // adding shell to the board
 void Board::addShell(std::unique_ptr<Shell> shell) {
     Shell* raw = shell.get();

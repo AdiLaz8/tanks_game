@@ -49,6 +49,18 @@ const std::vector<std::unique_ptr<Cell>>& CellSlot::getAll() const {
     return objects;
 }
 
+std::unique_ptr<Cell> CellSlot::extractTank(Tank* tank) {
+    auto it = std::find_if(objects.begin(), objects.end(),
+        [tank](const std::unique_ptr<Cell>& obj) { return obj.get() == tank; });
+    if (it != objects.end()) {
+        std::unique_ptr<Cell> ptr = std::move(*it);
+        objects.erase(it);
+        return ptr;
+    }
+    return nullptr;
+}
+
+
 Tank* CellSlot::getTank() const {
     for (const auto& obj : objects) {
         Tank* tank = dynamic_cast<Tank*>(obj.get());

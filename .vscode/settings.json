@@ -63,6 +63,7 @@
         "deque": "cpp",
         "execution": "cpp",
         "print": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "map": "cpp"
     }
 }

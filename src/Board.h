@@ -37,6 +37,7 @@ public:
     int getWidth() const;
     int getHeight() const;
     const std::vector<Tank*>& getTanks(int playerId) const;
+    void moveTank(Tank* tank, const Position& newPos);
 };
 
 #endif

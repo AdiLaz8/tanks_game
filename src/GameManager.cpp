@@ -293,7 +293,8 @@ void GameManager::executeAction(const ActionRequest& req, Tank* tank) {
             Position next = pos + dir.toVector();
             wrapPosition(next);
             if (gameBoard->isPassable(next.getx(), next.gety())) {
-                tank->moveForward(gameBoard->getWidth(), gameBoard->getHeight());
+                gameBoard->moveTank(tank, next);
+                // tank->moveForward(gameBoard->getWidth(), gameBoard->getHeight());
                 Logger::debug(tank->getFullIdString() + ": MoveForward to (" + std::to_string(next.getx()) + ", " + std::to_string(next.gety()) + ")");
             } else {
                 Logger::debug(tank->getFullIdString() + ": Bad step - blocked forward.");
@@ -496,7 +497,7 @@ bool GameManager::noShellsLeftForAllLiveTanks() const {
 }
 
 bool GameManager::checkGameOver() const {
-    return tankIndex1==0 || tankIndex2==0|| currentStep/2 >= maxSteps || stepsWithoutShells >= NO_SHELL_LIMIT;
+    return tankIndex1==0 || tankIndex2==0|| currentStep/2 >= maxSteps || stepsWithoutShells > NO_SHELL_LIMIT;
 }
 
 void GameManager::logGameResult() {
@@ -521,7 +522,7 @@ void GameManager::logGameResult() {
         simpleOutput << "Tie, both players have zero tanks" << std::endl;
     } else if (currentStep/2 >= maxSteps) {
         simpleOutput << "Tie, reached max steps = " << maxSteps << ", player 1 has " << alive1 << " tanks, player 2 has " << alive2 << " tanks" << std::endl;
-    } else if (stepsWithoutShells >= NO_SHELL_LIMIT) {
+    } else if (stepsWithoutShells > NO_SHELL_LIMIT) {
         simpleOutput << "Tie, both players have zero shells for " << NO_SHELL_LIMIT << " steps" << std::endl;
     } else if (alive1 > 0) {
         simpleOutput << "Player 1 won with " << alive1 << " tanks still alive" << std::endl;

@@ -25,6 +25,7 @@ public:
     const std::vector<std::unique_ptr<Cell>>& getAll() const;
     void removeShellPointerOnly(Shell* shell);
     void addShellPointerOnly(Shell* shell);
+    std::unique_ptr<Cell> extractTank(Tank* tank);
     Tank* getTank() const;
     Wall* getWall() const;
     Mine* getMine() const;

@@ -1,5 +1,7 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
+#include <string>
+
 
 struct Position;  
 
@@ -25,6 +27,7 @@ public:
     void rotateCounterClockwise4();
     Value getDirection() const;
     void setDirection(Value newDirection);
+    std::string toString() const;
 };
 
 #endif

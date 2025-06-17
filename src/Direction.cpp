@@ -1,5 +1,7 @@
 #include "Direction.h"
 #include "Position.h"
+#include <string>
+
 
 Position Direction::toVector() const {
     switch (currentDirection) {
@@ -12,6 +14,20 @@ Position Direction::toVector() const {
         case L:  return Position(-1, 0);
         case UL: return Position(-1, -1);
         default: return Position(0, 0); 
+    }
+}
+
+std::string Direction::toString() const {
+    switch (currentDirection) {
+        case U:  return "U";
+        case UR: return "UR";
+        case R:  return "R";
+        case DR: return "DR";
+        case D:  return "D";
+        case DL: return "DL";
+        case L:  return "L";
+        case UL: return "UL";
+        default: return "Unknown";
     }
 }
 

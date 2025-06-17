@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "MyBattleInfo.h"
 #include <iostream>
+#include "Logger.h"
 
 void Algo1::updateBattleInfo(BattleInfo& info) {
     auto& myInfo = dynamic_cast<MyBattleInfo&>(info);
@@ -107,6 +108,7 @@ ActionRequest Algo1::getShootingActionIfAvailable(){
             turnCounterSinceInfo++;
             needsNewInfo = true;
             check++;
+            Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Enemy in direct line of sight, firing in direction "+ direction.toString());
             return ActionRequest::Shoot;
         }
     }
@@ -119,6 +121,7 @@ ActionRequest Algo1::getShootingActionIfAvailable(){
         if (canShootInDirection()) {
             direction = originalDir; 
             turnCounterSinceInfo++;
+            Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Enemy in other line of sight at , rotating to direction " + tryDir.toString());
             return rotateTowards(originalDir.getDirection(), tryDir.getDirection());
         }
         direction = originalDir; 
@@ -132,6 +135,7 @@ ActionRequest Algo1::moveForwardAfterRotate(){
     if (isThreatenedByShells()) {
         currentPath.clear();
         turnCounterSinceInfo++;
+        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Shell threat detected, taking evasive action.");
         return moveIfThreatened().getType();
     }
     // if we rotated last turn, we move forward if there's no mine in front
@@ -144,6 +148,7 @@ ActionRequest Algo1::moveForwardAfterRotate(){
             newPos.sety((newPos.gety() + boardHeight) % boardHeight);
             if (!isMine(newPos)) {
                 selfPosition = newPos;
+                Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Shell threat detected, taking evasive action.");
                 return ActionRequest::MoveForward;
             }
         }
@@ -164,6 +169,7 @@ ActionRequest Algo1::getActionFromPath() {
                     currentPath.clear();
                     needsNewInfo = true;
                     turnCounterSinceInfo = 0;
+                    Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Path blocked (mine/tank/wall), cancelling path and requesting battle info.");
                     return ActionRequest::GetBattleInfo;
                 }
                 if (it->second == '#') {
@@ -172,6 +178,7 @@ ActionRequest Algo1::getActionFromPath() {
                         ammo--;
                         needsNewInfo = true;
                         turnCounterSinceInfo++;
+                        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": wall in the way, firing to destroy it. firing in direction "+ direction.toString());
                         return ActionRequest::Shoot;
                     }
                 }
@@ -180,17 +187,20 @@ ActionRequest Algo1::getActionFromPath() {
             if (!isMine(nextPos)) {
                 selfPosition = nextPos;
                 turnCounterSinceInfo++;
+                Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Advancing along BFS path towards target.");
                 return ActionRequest::MoveForward;
             } else {
                 currentPath.clear();
                 chasing = false;
                 turnCounterSinceInfo = 0;
+                Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Requesting GetBattleInfo to refresh map state.");
                 return ActionRequest::GetBattleInfo;
             }
         } else {
             direction = Direction(nextDir);
             moveAfterRotate = true;
             turnCounterSinceInfo++;
+            Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Rotating towards next direction in path: " + Direction(nextDir).toString());
             return rotateTowards(direction.getDirection(), nextDir);
         }
     }
@@ -200,6 +210,7 @@ ActionRequest Algo1::getActionFromPath() {
 ActionRequest Algo1::getAction() {
     ActionRequest action = ActionRequest::DoNothing;
     if (turnCounterSinceInfo == -1 || turnCounterSinceInfo == 5) {
+        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": No battle info yet or 5 turns passed since last update, requesting BattleInfo to refresh awareness.");
         return ActionRequest::GetBattleInfo;
     }
     if(getShootingStatus()>0){
@@ -212,6 +223,7 @@ ActionRequest Algo1::getAction() {
     if (needsNewBattleInfo()) {
         chasing = false;
         turnCounterSinceInfo = 0;
+        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Current path invalidated or target lost, requesting BattleInfo for updated state.");
         return ActionRequest::GetBattleInfo;
     }
     action = getShootingActionIfAvailable();
@@ -225,6 +237,7 @@ ActionRequest Algo1::getAction() {
     }
     turnCounterSinceInfo = 0;
     chasing = false;
+    Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Info outdated or chase failed, requesting updated battle info.");
     return ActionRequest::GetBattleInfo;
 
 }

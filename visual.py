@@ -401,10 +401,10 @@ def draw_board(ax, board, tanks, walls, mines, shells, tank_dirs, destroyed, log
     for (player, idx), tinfo in tanks.items():
         if not tinfo["alive"]:
             x, y = tinfo["pos"]
-            ax.text(x+0.5, h-y-0.5, "💥", fontsize=22, color=EXPLOSION_COLOR, ha='center', va='center', zorder=10)
+            ax.text(x+0.5, h-y-0.5, "X", fontsize=22, color=EXPLOSION_COLOR, ha='center', va='center', zorder=10)
 
     # הודעת לוג למטה
-    ax.text(w/2, -0.4, log_message, fontsize=13, ha='center', va='top', fontname=GRID_FONT)
+    ax.text(w/2, -0.4, log_message, fontsize=13, ha='center', va='top')
     ax.set_xlim(0, w)
     ax.set_ylim(-1, h+0.5)
     ax.axis("off")

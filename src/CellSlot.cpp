@@ -30,7 +30,6 @@ void CellSlot::removeTank(Tank* tank) {
     );
 }
 
-
 void CellSlot::removeWall() {
     auto it = std::remove_if(objects.begin(), objects.end(), [](const std::unique_ptr<Cell>& obj) {
         return dynamic_cast<Wall*>(obj.get()) != nullptr;
@@ -59,7 +58,6 @@ std::unique_ptr<Cell> CellSlot::extractTank(Tank* tank) {
     }
     return nullptr;
 }
-
 
 Tank* CellSlot::getTank() const {
     for (const auto& obj : objects) {

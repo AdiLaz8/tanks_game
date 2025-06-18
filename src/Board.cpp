@@ -20,16 +20,16 @@ CellSlot& Board::getSlot(int x, int y) const{
 }
 
 void Board::moveTank(Tank* tank, const Position& newPos) {
-    // 1. מצא את התא הישן
+    // find the previous cell
     Position oldPos = tank->getPosition();
 
-    // 2. הוצא את ה־unique_ptr של הטנק
+    // take out the unique ptr of the tank
     std::unique_ptr<Cell> tankPtr = getSlot(oldPos.getx(), oldPos.gety()).extractTank(tank);
 
-    // 3. עדכן מיקום בטנק
+    // updating the tank's position
     tank->setPosition(newPos);
 
-    // 4. הכנס את ה־unique_ptr לתא החדש
+    // inserting the tank into the new position
     getSlot(newPos.getx(), newPos.gety()).addObject(std::move(tankPtr));
 }
 

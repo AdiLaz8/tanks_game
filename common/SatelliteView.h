@@ -1,7 +1,6 @@
 #ifndef SATELITEVIEW_H
 #define SATELITEVIEW_H
 #include <cstddef>
-#include "TankAlgorithm.h"
 
 class SatelliteView {
 public:

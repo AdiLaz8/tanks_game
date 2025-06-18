@@ -24,10 +24,8 @@ SRCS = main.cpp \
 OBJS = $(SRCS:.cpp=.o)
 TARGET = tanks_game
 
-# הגדר לקבצי הטסטים (ללא main.o)
 TEST_OBJS = $(filter-out main.o, $(OBJS))
 
-# -- עדכן את הנתיבים כאן --
 GTEST_INC = -I$(HOME)/Downloads/googletest/googletest/include
 GTEST_LIB = $(HOME)/Downloads/googletest/build/lib/libgtest.a $(HOME)/Downloads/googletest/build/lib/libgtest_main.a
 
@@ -39,7 +37,6 @@ $(TARGET): $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# טסטים - ללא main.o!
 test_game: src/test_game.cpp $(TEST_OBJS)
 	$(CXX) $(CXXFLAGS) $(GTEST_INC) -o $@ src/test_game.cpp $(TEST_OBJS) $(GTEST_LIB) -lpthread
 

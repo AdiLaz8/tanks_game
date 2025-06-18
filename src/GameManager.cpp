@@ -180,7 +180,7 @@ void GameManager::finalizeBoardReading(std::ifstream& file, std::ofstream& error
     }
 }
 
-
+// moving the shells to their next positon on the map based on their direction
 void GameManager::moveShells() {
     std::vector<Shell*> copy = gameBoard->getShells(); 
     for (Shell* shell : copy) {
@@ -450,8 +450,6 @@ void GameManager::checkTankTankCollisions() {
     for (int y = 0; y < gameBoard->getHeight(); ++y) {
         for (int x = 0; x < gameBoard->getWidth(); ++x) {
             CellSlot& slot = gameBoard->getSlot(x, y);
-
-            // שלב ראשון: אסוף את כל הפוינטרים לטנקים בתא
             std::vector<Tank*> tanks;
             for (const auto& obj : slot.getAll()) {
                 if (Tank* tank = dynamic_cast<Tank*>(obj.get()))
@@ -461,10 +459,7 @@ void GameManager::checkTankTankCollisions() {
             if (tanks.size() > 1) {
                 std::string posStr = "(" + std::to_string(x) + "," + std::to_string(y) + ")";
                 Logger::debug("Tank-Tank collision at " + posStr);
-
-                // לא מוחקים מתוך הלולאה המקורית! קודם אוספים ואז מוחקים
                 std::vector<Tank*> toRemove = tanks;
-
                 for (Tank* tank : toRemove) {
                     char symbol = tank->getSymbol();
                     tank->Hit();
@@ -483,9 +478,6 @@ void GameManager::checkTankTankCollisions() {
         }
     }
 }
-
-
-
 
 // checking if there are no shells left for all live tanks, to start the counter of turns
 bool GameManager::noShellsLeftForAllLiveTanks() const {

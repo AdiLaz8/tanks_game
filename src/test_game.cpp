@@ -193,7 +193,7 @@ TEST(GameManagerTest, ReadBoardMissingRow) {
 // 12. tests reading board with extra row
 TEST(GameManagerTest, ReadBoardExtraRow) {
     std::string fname = "input_extrarow.txt";
-    std::vector<std::string> map = {"1     ", "      ", "2     ", "######", "######"}; // עודף
+    std::vector<std::string> map = {"1     ", "      ", "2     ", "######", "######"}; 
     createSimpleBoardFile(fname, map, 5, 6);
     MyPlayerFactory pf; MyTankAlgorithmFactory tf; GameManager gm(pf, tf);
     EXPECT_NO_THROW(gm.readBoard(fname));
@@ -212,7 +212,7 @@ TEST(GameManagerTest, TankMovesForwardToFreeCell) {
     gm.readBoard(fname);
     Tank* t = gm.getBoard().getSlot(1, 0).getTank();
     gm.executeAction(ActionRequest::MoveForward, t);
-    EXPECT_EQ(t->getPosition(), Position(0, 0)); // כיוון שמאלה
+    EXPECT_EQ(t->getPosition(), Position(0, 0)); 
     removeFile(fname);
     std::remove("output_input_movefwd.txt");
 }
@@ -244,7 +244,7 @@ TEST(GameManagerTest, TankRotatesCorrectly) {
     std::remove("output_input_rotate.txt");
 }
 
-// 16. טנק מבצע MoveBackward (מאתחל ל־3)
+// 16. MoveBackward Testing
 TEST(GameManagerTest, TankStartMoveBackward) {
     std::string fname = "input_backward.txt";
     std::vector<std::string> map = {" 1    ", "      ", "    2", "######"};
@@ -296,7 +296,7 @@ TEST(GameManagerTest, TankCannotShootWithoutShells) {
     t->setRemainingShells(0);
     auto count_before = gm.getBoard().getShells().size();
     gm.executeAction(ActionRequest::Shoot, t);
-    EXPECT_EQ(gm.getBoard().getShells().size(), count_before); // לא נוסף פגז
+    EXPECT_EQ(gm.getBoard().getShells().size(), count_before); // no shell added
     removeFile(fname);
     std::remove("output_input_shoot2.txt");
 }

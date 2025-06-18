@@ -2,7 +2,6 @@
 #define CELL_H
 #include <string>
 
-#include "Position.h"
 
 class Cell {
 public:

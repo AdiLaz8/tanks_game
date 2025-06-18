@@ -1,4 +1,3 @@
-
 #ifndef ALGO1_H
 #define ALGO1_H
 

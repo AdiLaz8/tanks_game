@@ -30,12 +30,15 @@ int MyTankAlgorithm::getBackwardStatus() const { return backwardStatus; }
 void MyTankAlgorithm::decreaseShooting() {
     if (shootingStatus > 0) shootingStatus--;
 }
+
 void MyTankAlgorithm::decreaseBackward() {
     if (backwardStatus > 0) backwardStatus--;
 }
+
 void MyTankAlgorithm::updateBattleInfo(BattleInfo&) {
     throw std::runtime_error("updateBattleInfo must be overridden.");
 }
+
 //searching for shells in the 2X2 slots around our tank, if so we are threatened
 bool MyTankAlgorithm::isThreatenedByShells() const {
     for (const auto& [pos, symbol] : fullView) {

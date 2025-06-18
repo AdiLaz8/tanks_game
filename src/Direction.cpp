@@ -2,7 +2,7 @@
 #include "Position.h"
 #include <string>
 
-
+// gets us the changes in x and y in the current direction
 Position Direction::toVector() const {
     switch (currentDirection) {
         case U:  return Position(0, -1);

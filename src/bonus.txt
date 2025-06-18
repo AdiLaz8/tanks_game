@@ -3,12 +3,17 @@ Bonus 1: Logging system with configuration file
 - Implemented a full logging system (Logger class) that writes debug messages into "debug_log.txt" file.
 - Logging is activated only if "log_config.txt" contains the line ENABLE_DEBUG_LOG=true.
 - Otherwise, the Logger remains inactive and does not create any file.
-- How to check: create a "log_config.txt" file with ENABLE_DEBUG_LOG=true before running the program. After the game, "debug_log.txt" will be generated containing debug logs for all major game actions.
+- How to check: After the game, "debug_log.txt" will be generated containing debug logs for all major game actions.
 
 Bonus 2: Visual Simulation
 ---------------------------
-- Developed a visual simulation (Python script named visual.py) that displays the progress of the game based on the input map and the output file generated during the game.
-- Visual.py reads the initial map (input file) and the moves (output file) and shows the tanks, walls, mines, and shells moving and interacting on the board graphically.
-- How to check: run the provided visual.py script after running the game. It will use the input and output files to recreate the visual simulation of the game progress.
+- Developed a visual simulation (Python script named visual.py) that displays the progress of the game based on the log file generated during the game.
+- Visual.py reads the initial map and the moves from the log file and shows the tanks, walls, mines, and shells moving and interacting on the board graphically.
+- How to check: run the provided visual.py script after running the game like that: python3 visual.py debug_log.txt
 - Visual.py is external to the game execution (does not affect gameplay) and is optional.
--python3 visual.py mapX.txt output_mapX.txt
+
+Bonus 3: Automatic Testing using GTest
+------------------------------
+- We used GoogleTest (gtest) to validate our tank game logic with unit tests.
+- The tests check game end conditions, such as stopping after a maximum number of turns, ending after 40 turns without shells, and handling special collision cases.
+- To run the tests, update the paths in the Makefile to your local gtest location, build with make test_game, and execute ./test_game to see the results.

@@ -1,9 +1,13 @@
-Simple Test Map
-MaxSteps = 100
-NumShells = 5
-Rows = 4
-Cols = 6
-  #1   
-  @    
-   2#  
-###### 
+Encircled - 3v2
+MaxSteps = 150
+NumShells = 6
+Rows = 8
+Cols = 10
+@   #    
+  #   2   #  
+   2  @       
+   #  #1@    
+   2##1#      
+  #   # 2    
+    2 @       
+  2    2      

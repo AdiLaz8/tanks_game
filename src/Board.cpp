@@ -2,20 +2,14 @@
 #include <typeinfo>
 #include <iostream>
 Board::Board(int w, int h) : width(w), height(h) {
-    grid = new CellSlot*[height];
+   grid.resize(height);
     for (int i = 0; i < height; ++i) {
-        grid[i] = new CellSlot[width];
+        grid[i].resize(width);
     }
 }
 
-Board::~Board() {
-    for (int i = 0; i < height; ++i) {
-        delete[] grid[i];
-    }
-    delete[] grid;
-}
 // Get the slot in some position, wrapping around if necessary
-CellSlot& Board::getSlot(int x, int y) const{
+CellSlot& Board::getSlot(int x, int y) {
     return grid[(y + height) % height][(x + width) % width];
 }
 

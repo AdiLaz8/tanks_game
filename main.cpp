@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     MyTankAlgorithmFactory tankFactory;
     GameManager manager(playerFactory, tankFactory); 
     manager.readBoard(inputFileName);
-    manager.gameLoop();
+    manager.run();
     Logger::shutdown();
     return 0;
 }

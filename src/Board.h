@@ -10,7 +10,7 @@
 class Board {
 private:
     int width, height;
-    CellSlot** grid;
+    std::vector<std::vector<CellSlot>> grid;
     std::vector<Shell*> shells;  
     std::vector<Tank*> tanks1;
     std::vector<Tank*> tanks2;
@@ -18,12 +18,11 @@ private:
 
 public:
     Board(int w, int h);
-    ~Board();
     Board(const Board&) = delete;
     Board& operator=(const Board&) = delete;
     Board(Board&&) = delete;
     Board& operator=(Board&&) = delete;
-    CellSlot& getSlot(int x, int y) const;
+    CellSlot& getSlot(int x, int y);
     void addObject(std::unique_ptr<Cell> obj, int x, int y);
     void removeTankAt(int x, int y);
     void removeWallAt(int x, int y);

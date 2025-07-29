@@ -55,7 +55,7 @@ public:
     GameManager& operator=(GameManager&&) = delete;
     void readBoard(const std::string& filename);
     Board& getBoard() { return *gameBoard; }
-    void gameLoop();
+    void run();
     void executeAction(const ActionRequest& req, Tank* tank);
     void checkCollisions();
     bool checkGameOver() const;

@@ -192,7 +192,7 @@ void GameManager::moveShells() {
     }
 }
 
-void GameManager::gameLoop() {
+void GameManager::run() {
     while (!checkGameOver()) {
         if (currentStep % 2 != 0) {
             moveShells();
@@ -348,7 +348,7 @@ std::vector<std::vector<char>> GameManager::buildBoardMatrix() {
     std::vector<std::vector<char>> board(h, std::vector<char>(w, ' '));
     for (size_t y = 0; y < h; ++y) {
         for (size_t x = 0; x < w; ++x) {
-            const CellSlot& slot = gameBoard->getSlot(x, y);
+            CellSlot& slot = gameBoard->getSlot(x, y);
             if (slot.getTank()) board[y][x] = slot.getTank()->getSymbol();
             else if (slot.getWall()) board[y][x] = '#';
             else if (slot.getMine()) {
@@ -472,7 +472,7 @@ void GameManager::checkTankTankCollisions() {
                         std::remove_if(tankPairs.begin(), tankPairs.end(),
                             [tank](const auto& pair) { return pair.second == tank; }),
                         tankPairs.end());
-                    slot.removeTank(tank);
+                    gameBoard->removeTankAt(tank->getPosition().getx(), tank->getPosition().gety());
                 }
             }
         }

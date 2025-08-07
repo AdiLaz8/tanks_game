@@ -1,0 +1,12 @@
+Test Map - Complex Movement
+MaxSteps=100
+NumShells=15
+Rows=7
+Cols=7
+1 # 2 # 1 # 2
+# @ # @ # @ #
+2 # 1 # 2 # 1
+# @ # @ # @ #
+1 # 2 # 1 # 2
+# @ # @ # @ #
+2 # 1 # 2 # 1 

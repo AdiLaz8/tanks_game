@@ -1,23 +1,21 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+
 #include <cstddef>
+#include <memory>
+#include <functional>
 #include "TankAlgorithm.h"
 #include "SatelliteView.h"
 
 class Player {
 public:
-    Player(int player_index,
-           size_t x, size_t y,
-           size_t max_steps, size_t num_shells) {
-            (void)player_index;
-            (void)x;
-            (void)y;
-            (void)max_steps;
-            (void)num_shells;
-           }
-    virtual ~Player() {}
-    virtual void updateTankWithBattleInfo(
-        TankAlgorithm& tank,
-        SatelliteView& satellite_view) = 0;
+	virtual ~Player() {}
+	virtual void updateTankWithBattleInfo
+(TankAlgorithm& tank, SatelliteView& satellite_view) = 0;
 };
-#endif 
+
+using PlayerFactory = 
+std::function<std::unique_ptr<Player>
+(int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells)>;
+
+#endif // PLAYER_H 

@@ -1,0 +1,32 @@
+CXX = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -Icommon -IUserCommon -ISimulator
+LDFLAGS = -ldl -pthread
+
+# Object files needed for the test
+OBJS = Simulator/GameRunner.o \
+       GameManager/GameManager_318772340_206580102.o \
+       GameManager/GameManagerRegistration.o \
+       GameManager/Board.o \
+       GameManager/Tank.o \
+       GameManager/Shell.o \
+       GameManager/Wall.o \
+       GameManager/CellSlot.o \
+       GameManager/MySatelliteView.o \
+       Algorithm/Player_318772340_206580102.o \
+       Algorithm/PlayerRegistration.o \
+       Algorithm/TankAlgorithm_318772340_206580102.o \
+       Algorithm/TankAlgorithmRegistration.o \
+       Algorithm/MyBattleInfo.o \
+       UserCommon/Position.o \
+       UserCommon/Direction.o \
+       UserCommon/Logger.o
+
+test_single_game_complete: $(OBJS) test_single_game_complete.cpp
+	$(CXX) $(CXXFLAGS) test_single_game_complete.cpp $(OBJS) -o test_single_game_complete $(LDFLAGS)
+
+test_single_game_debug: $(OBJS) test_single_game_debug.cpp
+	$(CXX) $(CXXFLAGS) test_single_game_debug.cpp $(OBJS) -o test_single_game_debug $(LDFLAGS)
+
+.PHONY: clean
+clean:
+	rm -f test_single_game_complete test_single_game_debug 

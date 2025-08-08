@@ -1,0 +1,27 @@
+CXX = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -Icommon -IUserCommon -ISimulator
+LDFLAGS = -ldl -pthread
+
+# Object files for the test
+TEST_OBJS = Simulator/GameRunner.o
+
+# Target executable
+TARGET = test_simulator_dynamic
+
+# Default target
+all: $(TARGET)
+
+# Build the test executable
+$(TARGET): test_simulator_dynamic.cpp $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+# Build GameRunner object file
+Simulator/GameRunner.o: Simulator/GameRunner.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Clean target
+clean:
+	rm -f $(TARGET)
+	find . -name "*.o" -delete
+
+.PHONY: all clean 

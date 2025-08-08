@@ -1,0 +1,34 @@
+CXX = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -I../common -I../UserCommon
+LDFLAGS = -ldl -pthread
+
+TARGET = simulator_318772340_206580102
+
+# Source files for comparative mode
+SRCS = main_comparative_standalone.cpp \
+       GameRunner.cpp
+
+OBJS = $(SRCS:.cpp=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.so ../Algorithm/Algorithm_318772340_206580102.so
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+test: $(TARGET)
+	@echo "Testing comparative mode..."
+	@echo "Creating test GameManager copies..."
+	@mkdir -p test_game_managers
+	@cp ../GameManager/GameManager_318772340_206580102.so test_game_managers/
+	@cp ../GameManager/GameManager_318772340_206580102.so test_game_managers/GameManager_copy1.so
+	@cp ../GameManager/GameManager_318772340_206580102.so test_game_managers/GameManager_copy2.so
+	@echo "Running comparative test..."
+	./$(TARGET) -comparative game_map=../test_map_collisions.txt game_managers_folder=test_game_managers algorithm1=../Algorithm/Algorithm_318772340_206580102.so algorithm2=../Algorithm/Algorithm_318772340_206580102.so num_threads=2 -verbose
+
+.PHONY: all clean test 

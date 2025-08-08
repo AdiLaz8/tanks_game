@@ -177,6 +177,8 @@ GameExecution GameRunner::runSingleGame(
     const MapData& map,
     bool verbose) {
     
+    std::cout << "DEBUG: runSingleGame started" << std::endl;
+    
     GameExecution execution;
     execution.gameManagerName = gameManagerName;
     execution.algorithmName = algorithmName;
@@ -187,25 +189,32 @@ GameExecution GameRunner::runSingleGame(
     auto startTime = std::chrono::steady_clock::now();
     
     try {
+        std::cout << "DEBUG: Creating GameManager..." << std::endl;
         // Create GameManager
         auto gameManager = gameManagerFactory(verbose);
         if (!gameManager) {
             throw std::runtime_error("Failed to create GameManager");
         }
+        std::cout << "DEBUG: GameManager created successfully" << std::endl;
         
+        std::cout << "DEBUG: Creating Players..." << std::endl;
         // Create Players (same factory creates both players with different indices)
         auto player1 = playerFactory(1, map.width, map.height, map.maxSteps, map.numShells);
         auto player2 = playerFactory(2, map.width, map.height, map.maxSteps, map.numShells);
         if (!player1 || !player2) {
             throw std::runtime_error("Failed to create Players");
         }
+        std::cout << "DEBUG: Players created successfully" << std::endl;
         
+        std::cout << "DEBUG: Creating SatelliteView..." << std::endl;
         // Create SatelliteView from map
         auto satelliteView = createSatelliteView(map);
         if (!satelliteView) {
             throw std::runtime_error("Failed to create SatelliteView");
         }
+        std::cout << "DEBUG: SatelliteView created successfully" << std::endl;
         
+        std::cout << "DEBUG: About to call gameManager->run()..." << std::endl;
         // Run the game
         execution.result = gameManager->run(
             map.width, map.height,
@@ -217,6 +226,7 @@ GameExecution GameRunner::runSingleGame(
             tankAlgorithmFactory,
             tankAlgorithmFactory
         );
+        std::cout << "DEBUG: gameManager->run() completed successfully!" << std::endl;
         
         execution.success = true;
         

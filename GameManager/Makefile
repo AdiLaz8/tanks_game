@@ -15,8 +15,7 @@ LOCAL_SRCS = GameManager_318772340_206580102.cpp \
              Shell.cpp \
              Wall.cpp \
              CellSlot.cpp \
-             MySatelliteView.cpp \
-             GameManagerRegistration.cpp
+             MySatelliteView.cpp
 
 # UserCommon source files that GameManager depends on
 USERCOMMON_SRCS = $(USERCOMMON_DIR)/Position.cpp \
@@ -30,7 +29,7 @@ OBJS = $(ALL_SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^
+	$(CXX) $(LDFLAGS) -o $@ $^ ../Simulator/GameManagerRegistration.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

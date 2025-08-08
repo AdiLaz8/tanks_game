@@ -12,6 +12,7 @@
 class DynamicLoader {
 private:
     std::vector<void*> loadedLibraries;
+    void extractRegistrations(void* handle);
     
 public:
     ~DynamicLoader();

@@ -1,4 +1,4 @@
-#include "../Algorithm/TankAlgorithmRegistration.h"
+#include "../common/TankAlgorithmRegistration.h"
 #include "../common/TankAlgorithm.h"
 #include <memory>
 #include <vector>
@@ -17,4 +17,15 @@ std::vector<std::string>& getTankAlgorithmNameRegistry() {
 // Implementation of TankAlgorithmRegistration constructor
 TankAlgorithmRegistration::TankAlgorithmRegistration(TankAlgorithmFactory factory) {
     getTankAlgorithmFactoryRegistry().push_back(factory);
+}
+
+// Global registration functions that Algorithm .so files can call
+extern "C" {
+    void registerTankAlgorithmFactory(TankAlgorithmFactory factory) {
+        getTankAlgorithmFactoryRegistry().push_back(factory);
+    }
+    
+    void registerTankAlgorithmName(const char* name) {
+        getTankAlgorithmNameRegistry().push_back(std::string(name));
+    }
 }

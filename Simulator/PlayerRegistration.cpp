@@ -18,3 +18,14 @@ std::vector<std::string>& getPlayerNameRegistry() {
 PlayerRegistration::PlayerRegistration(PlayerFactory factory) {
     getPlayerFactoryRegistry().push_back(factory);
 }
+
+// Global registration functions that Algorithm .so files can call
+extern "C" {
+    void registerPlayerFactory(PlayerFactory factory) {
+        getPlayerFactoryRegistry().push_back(factory);
+    }
+    
+    void registerPlayerName(const char* name) {
+        getPlayerNameRegistry().push_back(std::string(name));
+    }
+}

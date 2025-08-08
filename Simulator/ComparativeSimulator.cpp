@@ -200,7 +200,7 @@ std::vector<std::future<ComparativeExecution>> ComparativeSimulator::queueAllGam
     
     // Queue each GameManager with the same two algorithms
     for (size_t gmIdx = 0; gmIdx < gameManagerFactories.size(); ++gmIdx) {
-        auto future = threadPool->enqueue([=, &map]() -> ComparativeExecution {
+        auto future = threadPool->enqueue([=, this, &map]() -> ComparativeExecution {
             ComparativeExecution execution;
             execution.gameManagerName = gameManagerNames.empty() ? 
                 ("GameManager" + std::to_string(gmIdx)) : gameManagerNames[gmIdx];

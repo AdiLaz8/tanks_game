@@ -28,7 +28,40 @@ void* DynamicLoader::loadLibrary(const std::string& soPath) {
     
     std::cout << "Successfully loaded library: " << soPath << std::endl;
     loadedLibraries.push_back(handle);
+    
+    // Extract registration objects from the loaded library
+    extractRegistrations(handle);
+    
     return handle;
+}
+
+void DynamicLoader::extractRegistrations(void* handle) {
+    dlerror(); // Clear previous error
+    
+    // Try to find Player registration objects
+    typedef PlayerRegistration* (*GetPlayerRegistrationsFunc)();
+    GetPlayerRegistrationsFunc getPlayerRegistrations = (GetPlayerRegistrationsFunc)dlsym(handle, "getPlayerRegistrations");
+    if (getPlayerRegistrations) {
+        PlayerRegistration* registrations = getPlayerRegistrations();
+        // Register the factories with the Simulator's registry
+        // This is a simplified approach - in practice we'd need to iterate through the registrations
+    }
+    
+    // Try to find TankAlgorithm registration objects
+    typedef TankAlgorithmRegistration* (*GetTankAlgorithmRegistrationsFunc)();
+    GetTankAlgorithmRegistrationsFunc getTankAlgorithmRegistrations = (GetTankAlgorithmRegistrationsFunc)dlsym(handle, "getTankAlgorithmRegistrations");
+    if (getTankAlgorithmRegistrations) {
+        TankAlgorithmRegistration* registrations = getTankAlgorithmRegistrations();
+        // Register the factories with the Simulator's registry
+    }
+    
+    // Try to find GameManager registration objects
+    typedef GameManagerRegistration* (*GetGameManagerRegistrationsFunc)();
+    GetGameManagerRegistrationsFunc getGameManagerRegistrations = (GetGameManagerRegistrationsFunc)dlsym(handle, "getGameManagerRegistrations");
+    if (getGameManagerRegistrations) {
+        GameManagerRegistration* registrations = getGameManagerRegistrations();
+        // Register the factories with the Simulator's registry
+    }
 }
 
 std::vector<PlayerFactory> DynamicLoader::getPlayerFactories() const {

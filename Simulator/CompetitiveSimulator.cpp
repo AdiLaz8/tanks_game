@@ -100,7 +100,7 @@ void CompetitiveSimulator::setupThreadPool(size_t numThreads) {
 void CompetitiveSimulator::setupTournament() {
     std::cout << "Setting up tournament structure..." << std::endl;
     
-    Tournament::TournamentType tournamentType;
+    Tournament::TournamentType tournamentType = Tournament::ROUND_ROBIN; // Default value
     switch (competitiveConfig.format) {
         case CompetitiveConfig::ROUND_ROBIN:
             tournamentType = Tournament::ROUND_ROBIN;
@@ -110,6 +110,9 @@ void CompetitiveSimulator::setupTournament() {
             break;
         case CompetitiveConfig::DOUBLE_ELIMINATION:
             tournamentType = Tournament::DOUBLE_ELIMINATION;
+            break;
+        default:
+            tournamentType = Tournament::ROUND_ROBIN;
             break;
     }
     

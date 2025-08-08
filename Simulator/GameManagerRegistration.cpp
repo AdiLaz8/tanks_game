@@ -18,3 +18,14 @@ std::vector<std::string>& getGameManagerNameRegistry() {
 GameManagerRegistration::GameManagerRegistration(GameManagerFactory factory) {
     getGameManagerFactoryRegistry().push_back(factory);
 }
+
+// Global registration functions that GameManager .so files can call
+extern "C" {
+    void registerGameManagerFactory(GameManagerFactory factory) {
+        getGameManagerFactoryRegistry().push_back(factory);
+    }
+    
+    void registerGameManagerName(const char* name) {
+        getGameManagerNameRegistry().push_back(std::string(name));
+    }
+}

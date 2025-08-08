@@ -27,7 +27,7 @@ OBJS = $(ALL_SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^
+	$(CXX) $(LDFLAGS) -o $@ $^ ../Simulator/PlayerRegistration.o ../Simulator/TankAlgorithmRegistration.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

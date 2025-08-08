@@ -9,7 +9,7 @@
 #include <iostream>
 #include <queue>
 #include <set>
-#include "TankAlgorithmRegistration.h"
+#include "../common/TankAlgorithmRegistration.h"
 
 using namespace UserCommon_318772340_206580102;
 

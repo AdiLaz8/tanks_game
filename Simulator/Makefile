@@ -2,26 +2,17 @@ CXX = g++
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -I../common -I../UserCommon
 LDFLAGS = -ldl -pthread
 
-TARGET = tank_simulator
+TARGET = simulator_318772340_206580102
 
-SRCS = main.cpp \
-       ComparativeSimulator.cpp \
-       CompetitiveSimulator.cpp \
-       Tournament.cpp \
-       DynamicLoader.cpp \
-       ThreadPool.cpp \
-       GameRunner.cpp \
-       SimulationResults.cpp \
-       PlayerRegistration.cpp \
-       TankAlgorithmRegistration.cpp \
-       GameManagerRegistration.cpp
+SRCS = main_comparative_standalone.cpp \
+       GameRunner.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.o ../GameManager/Board.o ../GameManager/Tank.o ../GameManager/Shell.o ../GameManager/Wall.o ../GameManager/CellSlot.o ../GameManager/MySatelliteView.o ../GameManager/GameManagerRegistration.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o ../Algorithm/MyBattleInfo.o ../Algorithm/PlayerRegistration.o ../Algorithm/TankAlgorithmRegistration.o ../UserCommon/Position.o ../UserCommon/Direction.o ../UserCommon/Logger.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

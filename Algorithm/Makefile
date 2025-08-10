@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -fPIC -I../common -I../UserCommon
-LDFLAGS = -shared
+LDFLAGS = -shared -Wl,-soname,$(TARGET)
 
 TARGET = Algorithm_318772340_206580102.so
 
@@ -11,9 +11,7 @@ USERCOMMON_DIR = ../UserCommon
 # Local Algorithm source files
 LOCAL_SRCS = Player_318772340_206580102.cpp \
              TankAlgorithm_318772340_206580102.cpp \
-             MyBattleInfo.cpp \
-             PlayerRegistration.cpp \
-             TankAlgorithmRegistration.cpp
+             MyBattleInfo.cpp
 
 # UserCommon source files that Algorithm depends on
 USERCOMMON_SRCS = $(USERCOMMON_DIR)/Position.cpp \

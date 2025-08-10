@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -fPIC -I../common -I../UserCommon
-LDFLAGS = -shared
+LDFLAGS = -shared -Wl,-soname,$(TARGET)
 
 TARGET = GameManager_318772340_206580102.so
 
@@ -15,8 +15,7 @@ LOCAL_SRCS = GameManager_318772340_206580102.cpp \
              Shell.cpp \
              Wall.cpp \
              CellSlot.cpp \
-             MySatelliteView.cpp \
-             GameManagerRegistration.cpp
+             MySatelliteView.cpp
 
 # UserCommon source files that GameManager depends on
 USERCOMMON_SRCS = $(USERCOMMON_DIR)/Position.cpp \

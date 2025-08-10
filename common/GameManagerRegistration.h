@@ -1,7 +1,7 @@
 #include "AbstractGameManager.h"
 
 struct GameManagerRegistration {
-  GameManagerRegistration(GameManagerFactory);
+  GameManagerRegistration(GameManagerFactory factory);
 };
 
 #define REGISTER_GAME_MANAGER(class_name) \

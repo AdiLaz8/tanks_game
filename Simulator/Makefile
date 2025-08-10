@@ -1,18 +1,21 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -I../common -I../UserCommon
-LDFLAGS = -ldl -pthread
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -fPIC -I../common -I../UserCommon
+LDFLAGS = -ldl -pthread -Wl,-rpath,.
 
 TARGET = simulator_318772340_206580102
 
 SRCS = main_comparative_standalone.cpp \
-       GameRunner.cpp
+       GameRunner.cpp \
+       PlayerRegistration.cpp \
+       TankAlgorithmRegistration.cpp \
+       GameManagerRegistration.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.o ../GameManager/Board.o ../GameManager/Tank.o ../GameManager/Shell.o ../GameManager/Wall.o ../GameManager/CellSlot.o ../GameManager/MySatelliteView.o GameManagerRegistration.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o ../Algorithm/MyBattleInfo.o PlayerRegistration.o TankAlgorithmRegistration.o ../UserCommon/Position.o ../UserCommon/Direction.o ../UserCommon/Logger.o
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.o ../GameManager/Board.o ../GameManager/Tank.o ../GameManager/Shell.o ../GameManager/Wall.o ../GameManager/CellSlot.o ../GameManager/MySatelliteView.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o ../Algorithm/MyBattleInfo.o ../UserCommon/Position.o ../UserCommon/Direction.o ../UserCommon/Logger.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

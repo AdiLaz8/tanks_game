@@ -75,4 +75,4 @@ void Player_318772340_206580102::updatePlayer2BattleInfo(TankAlgorithm& tank, Sa
 
 // Register the Player (outside namespace)
 typedef Algorithm_318772340_206580102::Player_318772340_206580102 PlayerClass;
-REGISTER_PLAYER(PlayerClass)
+// REGISTER_PLAYER(PlayerClass) - Registration handled by Simulator when loading .so

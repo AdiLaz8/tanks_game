@@ -12,7 +12,7 @@ OBJS = $(SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.o ../GameManager/Board.o ../GameManager/Tank.o ../GameManager/Shell.o ../GameManager/Wall.o ../GameManager/CellSlot.o ../GameManager/MySatelliteView.o ../GameManager/GameManagerRegistration.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o ../Algorithm/MyBattleInfo.o ../Algorithm/PlayerRegistration.o ../Algorithm/TankAlgorithmRegistration.o ../UserCommon/Position.o ../UserCommon/Direction.o ../UserCommon/Logger.o
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.o ../GameManager/Board.o ../GameManager/Tank.o ../GameManager/Shell.o ../GameManager/Wall.o ../GameManager/CellSlot.o ../GameManager/MySatelliteView.o GameManagerRegistration.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o ../Algorithm/MyBattleInfo.o PlayerRegistration.o TankAlgorithmRegistration.o ../UserCommon/Position.o ../UserCommon/Direction.o ../UserCommon/Logger.o
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -48,4 +48,7 @@ test_single_game_fixed: GameRunner.o
 test_single_game_working: GameRunner.o
 	$(CXX) $(CXXFLAGS) test_single_game_working.cpp GameRunner.o ../GameManager/GameManager_318772340_206580102.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o -o test_single_game_working $(LDFLAGS)
 
-.PHONY: all clean install test test_map_parsing test_full_game test_complete_game test_actual_game test_run_game test_single_game_fixed test_single_game_working
+test_registration_solo: PlayerRegistration.o TankAlgorithmRegistration.o GameManagerRegistration.o
+	$(CXX) $(CXXFLAGS) test_registration_solo.cpp PlayerRegistration.o TankAlgorithmRegistration.o GameManagerRegistration.o -o test_registration_solo $(LDFLAGS)
+
+.PHONY: all clean install test test_map_parsing test_full_game test_complete_game test_actual_game test_run_game test_single_game_fixed test_single_game_working test_registration_solo

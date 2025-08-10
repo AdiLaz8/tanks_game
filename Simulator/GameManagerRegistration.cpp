@@ -14,6 +14,17 @@ std::vector<std::string>& getGameManagerNameRegistry() {
     return registry;
 }
 
+// Export functions with extern C to avoid mangling
+extern "C" {
+    std::vector<GameManagerFactory>* getGameManagerFactoryRegistryC() {
+        return &getGameManagerFactoryRegistry();
+    }
+    
+    std::vector<std::string>* getGameManagerNameRegistryC() {
+        return &getGameManagerNameRegistry();
+    }
+}
+
 // Implementation of GameManagerRegistration constructor
 GameManagerRegistration::GameManagerRegistration(GameManagerFactory factory) {
     getGameManagerFactoryRegistry().push_back(factory);

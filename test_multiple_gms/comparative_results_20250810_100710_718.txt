@@ -1,9 +1,0 @@
-game_map=../map1.txt
-algorithm1=../Algorithm/Algorithm_318772340_206580102.so
-algorithm2=../Algorithm/Algorithm_318772340_206580102.so
-
-GameManager_copy2,GameManager_copy1,GameManager_318772340_206580102
-Tie wins in round 250 (Max steps)
-250
-Final game state available
-

@@ -106,9 +106,12 @@ struct ComparativeGameResult {
     GameResult::Reason reason;
     size_t rounds;
     
+    // Final game state
+    std::string finalGameState;
+    
     // Constructor for creating from individual fields
-    ComparativeGameResult(std::string name, bool s, std::string error, int w, GameResult::Reason r, size_t rnds)
-        : gameManagerName(std::move(name)), success(s), errorMessage(std::move(error)), winner(w), reason(r), rounds(rnds) {}
+    ComparativeGameResult(std::string name, bool s, std::string error, int w, GameResult::Reason r, size_t rnds, std::string finalState = "")
+        : gameManagerName(std::move(name)), success(s), errorMessage(std::move(error)), winner(w), reason(r), rounds(rnds), finalGameState(std::move(finalState)) {}
     
     // Default constructor
     ComparativeGameResult() = default;
@@ -363,6 +366,29 @@ ComparativeGameResult runSingleGame(
         result.reason = execution.result.reason;
         result.rounds = execution.result.rounds;
         
+        // Extract final game state
+        if (execution.result.gameState) {
+            std::ostringstream finalStateStream;
+            
+            // For generic solution that works with all GameManager implementations,
+            // use the original map dimensions since the game board size doesn't change
+            size_t height = map.height;
+            size_t width = map.width;
+            
+            for (size_t row = 0; row < height; ++row) {
+                for (size_t col = 0; col < width; ++col) {
+                    char cell = execution.result.gameState->getObjectAt(col, row);
+                    finalStateStream << cell;
+                }
+                if (row < height - 1) {
+                    finalStateStream << "\n";
+                }
+            }
+            result.finalGameState = finalStateStream.str();
+        } else {
+            result.finalGameState = "Final game state not available";
+        }
+        
         std::cout << "DEBUG: Game completed successfully for " << result.gameManagerName << std::endl;
         
         // Cleanup
@@ -455,8 +481,8 @@ void writeResults(
             std::cout << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
             std::cout << result.rounds << "\n";
             
-            // Write final game state (simplified for now)
-            std::cout << "Final game state available\n";
+            // Write final game state
+            std::cout << result.finalGameState << "\n";
             std::cout << "\n";
         }
         return;
@@ -485,8 +511,8 @@ void writeResults(
         file << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
         file << result.rounds << "\n";
         
-        // Write final game state (simplified for now)
-        file << "Final game state available\n";
+        // Write final game state
+        file << result.finalGameState << "\n";
         file << "\n";
     }
     

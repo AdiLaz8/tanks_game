@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -fPIC -I../common -I../UserCommon
-LDFLAGS = -ldl -pthread -Wl,-rpath,.
+LDFLAGS = -ldl -pthread -Wl,-rpath,. -Wl,--export-dynamic
 
 TARGET = simulator_318772340_206580102
 
@@ -8,7 +8,8 @@ SRCS = main_comparative_standalone.cpp \
        GameRunner.cpp \
        PlayerRegistration.cpp \
        TankAlgorithmRegistration.cpp \
-       GameManagerRegistration.cpp
+       GameManagerRegistration.cpp \
+       Registry.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

@@ -266,43 +266,85 @@ ComparativeGameResult runSingleGame(
     result.gameManagerName = fs::path(gameManagerPath).stem().string();
     result.success = false;
     
+    std::cout << "DEBUG: Starting runSingleGame for GameManager: " << result.gameManagerName << std::endl;
+    std::cout << "DEBUG: GameManager path: " << gameManagerPath << std::endl;
+    std::cout << "DEBUG: Algorithm1 path: " << algorithm1Path << std::endl;
+    std::cout << "DEBUG: Algorithm2 path: " << algorithm2Path << std::endl;
+    
     try {
         // Load libraries
-        void* gameManagerHandle = dlopen(gameManagerPath.c_str(), RTLD_LAZY);
+        std::cout << "DEBUG: Loading GameManager library..." << std::endl;
+        void* gameManagerHandle = dlopen(gameManagerPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!gameManagerHandle) {
             result.errorMessage = "Failed to load GameManager library: " + std::string(dlerror());
+            std::cout << "DEBUG: FAILED to load GameManager: " << result.errorMessage << std::endl;
             return result;
         }
+        std::cout << "DEBUG: Successfully loaded GameManager library" << std::endl;
         
-        void* algorithm1Handle = dlopen(algorithm1Path.c_str(), RTLD_LAZY);
+        std::cout << "DEBUG: Loading Algorithm1 library..." << std::endl;
+        void* algorithm1Handle = dlopen(algorithm1Path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!algorithm1Handle) {
             dlclose(gameManagerHandle);
             result.errorMessage = "Failed to load Algorithm1 library: " + std::string(dlerror());
+            std::cout << "DEBUG: FAILED to load Algorithm1: " << result.errorMessage << std::endl;
             return result;
         }
+        std::cout << "DEBUG: Successfully loaded Algorithm1 library" << std::endl;
         
-        void* algorithm2Handle = dlopen(algorithm2Path.c_str(), RTLD_LAZY);
+        std::cout << "DEBUG: Loading Algorithm2 library..." << std::endl;
+        void* algorithm2Handle = dlopen(algorithm2Path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!algorithm2Handle) {
             dlclose(gameManagerHandle);
             dlclose(algorithm1Handle);
             result.errorMessage = "Failed to load Algorithm2 library: " + std::string(dlerror());
+            std::cout << "DEBUG: FAILED to load Algorithm2: " << result.errorMessage << std::endl;
             return result;
         }
+        std::cout << "DEBUG: Successfully loaded Algorithm2 library" << std::endl;
         
         // Create factories (using our known classes)
+        std::cout << "DEBUG: Creating hardcoded factories..." << std::endl;
         GameManagerFactory gameManagerFactory = [](bool verbose) -> std::unique_ptr<AbstractGameManager> {
-            return std::make_unique<GameManager_318772340_206580102::GameManager_318772340_206580102>(verbose);
+            std::cout << "DEBUG: Creating GameManager instance with verbose=" << verbose << std::endl;
+            try {
+                auto gm = std::make_unique<GameManager_318772340_206580102::GameManager_318772340_206580102>(verbose);
+                std::cout << "DEBUG: Successfully created GameManager instance" << std::endl;
+                return gm;
+            } catch (const std::exception& e) {
+                std::cout << "DEBUG: EXCEPTION creating GameManager: " << e.what() << std::endl;
+                throw;
+            }
         };
         
         PlayerFactory playerFactory = [](int playerIndex, size_t numTanks, size_t numShells, size_t maxSteps, size_t gameBoardWidth) -> std::unique_ptr<Player> {
-            return std::make_unique<Algorithm_318772340_206580102::Player_318772340_206580102>(playerIndex, numTanks, numShells, maxSteps, gameBoardWidth);
+            std::cout << "DEBUG: Creating Player instance with playerIndex=" << playerIndex << ", numTanks=" << numTanks << std::endl;
+            try {
+                auto player = std::make_unique<Algorithm_318772340_206580102::Player_318772340_206580102>(playerIndex, numTanks, numShells, maxSteps, gameBoardWidth);
+                std::cout << "DEBUG: Successfully created Player instance" << std::endl;
+                return player;
+            } catch (const std::exception& e) {
+                std::cout << "DEBUG: EXCEPTION creating Player: " << e.what() << std::endl;
+                throw;
+            }
         };
         
         TankAlgorithmFactory tankAlgorithmFactory = [](int playerIndex, int numTanks) -> std::unique_ptr<TankAlgorithm> {
-            return std::make_unique<Algorithm_318772340_206580102::TankAlgorithm_318772340_206580102>(playerIndex, numTanks);
+            std::cout << "DEBUG: Creating TankAlgorithm instance with playerIndex=" << playerIndex << ", numTanks=" << numTanks << std::endl;
+            try {
+                auto algo = std::make_unique<Algorithm_318772340_206580102::TankAlgorithm_318772340_206580102>(playerIndex, numTanks);
+                std::cout << "DEBUG: Successfully created TankAlgorithm instance" << std::endl;
+                return algo;
+            } catch (const std::exception& e) {
+                std::cout << "DEBUG: EXCEPTION creating TankAlgorithm: " << e.what() << std::endl;
+                throw;
+            }
         };
         
+        std::cout << "DEBUG: All factories created successfully" << std::endl;
+        
         // Run the game
+        std::cout << "DEBUG: Calling GameRunner::runSingleGame..." << std::endl;
         GameExecution execution = GameRunner::runSingleGame(
             gameManagerFactory,
             result.gameManagerName,
@@ -313,18 +355,34 @@ ComparativeGameResult runSingleGame(
             verbose
         );
         
+        std::cout << "DEBUG: GameRunner::runSingleGame completed successfully" << std::endl;
+        std::cout << "DEBUG: Game result - winner: " << execution.result.winner << ", reason: " << static_cast<int>(execution.result.reason) << ", rounds: " << execution.result.rounds << std::endl;
+        
         result.success = true;
         result.winner = execution.result.winner;
         result.reason = execution.result.reason;
         result.rounds = execution.result.rounds;
         
+        std::cout << "DEBUG: Game completed successfully for " << result.gameManagerName << std::endl;
+        
         // Cleanup
+        std::cout << "DEBUG: Cleaning up libraries..." << std::endl;
         dlclose(algorithm2Handle);
         dlclose(algorithm1Handle);
         dlclose(gameManagerHandle);
+        std::cout << "DEBUG: Libraries closed successfully" << std::endl;
         
     } catch (const std::exception& e) {
         result.errorMessage = "Exception during game execution: " + std::string(e.what());
+        std::cout << "DEBUG: EXCEPTION caught in runSingleGame: " << result.errorMessage << std::endl;
+    } catch (...) {
+        result.errorMessage = "Unknown exception during game execution";
+        std::cout << "DEBUG: UNKNOWN EXCEPTION caught in runSingleGame" << std::endl;
+    }
+    
+    std::cout << "DEBUG: runSingleGame finished for " << result.gameManagerName << " with success=" << result.success << std::endl;
+    if (!result.success) {
+        std::cout << "DEBUG: Error message: " << result.errorMessage << std::endl;
     }
     
     return result;
@@ -477,14 +535,21 @@ int main(int argc, char* argv[]) {
     std::vector<ComparativeGameResult> results;
     results.reserve(gameManagerFiles.size());
     
+    std::cout << "DEBUG: Starting to run " << gameManagerFiles.size() << " games..." << std::endl;
+    
     if (config.numThreads == 1) {
         // Single-threaded execution
+        std::cout << "DEBUG: Using single-threaded execution" << std::endl;
         for (const auto& gameManagerFile : gameManagerFiles) {
+            std::cout << "DEBUG: Processing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
+            
             if (config.verbose) {
                 std::cout << "Running game with: " << fs::path(gameManagerFile).filename() << "\n";
             }
             
             auto result = runSingleGame(gameManagerFile, config.algorithm1, config.algorithm2, map, config.verbose);
+            std::cout << "DEBUG: Got result for " << fs::path(gameManagerFile).filename() << " - success: " << result.success << std::endl;
+            
             results.push_back(std::move(result));
             
             if (config.verbose) {
@@ -497,19 +562,35 @@ int main(int argc, char* argv[]) {
         }
     } else {
         // Multi-threaded execution
+        std::cout << "DEBUG: Using multi-threaded execution with " << config.numThreads << " threads" << std::endl;
         ComparativeThreadPool pool(config.numThreads);
         std::vector<std::future<ComparativeGameResult>> futures;
         
         for (const auto& gameManagerFile : gameManagerFiles) {
+            std::cout << "DEBUG: Enqueueing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
             futures.push_back(pool.enqueue([gameManagerFile, &config, &map]() {
                 return runSingleGame(gameManagerFile, config.algorithm1, config.algorithm2, map, false);
             }));
         }
         
         // Collect results
-        for (auto& future : futures) {
-            results.push_back(future.get());
+        std::cout << "DEBUG: Collecting results from " << futures.size() << " futures..." << std::endl;
+        for (size_t i = 0; i < futures.size(); ++i) {
+            std::cout << "DEBUG: Getting result from future " << i << std::endl;
+            auto result = futures[i].get();
+            std::cout << "DEBUG: Future " << i << " result - success: " << result.success << std::endl;
+            results.push_back(std::move(result));
         }
+    }
+    
+    std::cout << "DEBUG: All games completed. Total results: " << results.size() << std::endl;
+    for (size_t i = 0; i < results.size(); ++i) {
+        std::cout << "DEBUG: Result " << i << " - GameManager: " << results[i].gameManagerName 
+                  << ", Success: " << results[i].success;
+        if (!results[i].success) {
+            std::cout << ", Error: " << results[i].errorMessage;
+        }
+        std::cout << std::endl;
     }
     
     // Group results by identical outcomes

@@ -44,18 +44,30 @@ void TankAlgorithm_318772340_206580102::decreaseBackward() {
 }
 
 void TankAlgorithm_318772340_206580102::updateBattleInfo(BattleInfo& info) {
-    auto& myInfo = dynamic_cast<MyBattleInfo&>(info);
-    
-    // First turn initialization for both players
-    if (turnCounterSinceInfo == -1) {
-        boardWidth = myInfo.getWidth();
-        boardHeight = myInfo.getHeight();
-        ammo = myInfo.getInitialShells();
+    // Try to cast to MyBattleInfo first (for compatibility with our own Player)
+    MyBattleInfo* myInfoPtr = dynamic_cast<MyBattleInfo*>(&info);
+    if (myInfoPtr) {
+        // This is our own BattleInfo - use it directly
+        auto& myInfo = *myInfoPtr;
+        
+        // First turn initialization for both players
+        if (turnCounterSinceInfo == -1) {
+            boardWidth = myInfo.getWidth();
+            boardHeight = myInfo.getHeight();
+            ammo = myInfo.getInitialShells();
+        }
+        
+        turnCounterSinceInfo = 0;
+        fullView = myInfo.getFullView();
+        selfPosition = myInfo.getSelfPosition();
+    } else {
+        // This is an external BattleInfo - we need to handle it differently
+        // For now, skip the update to avoid crashes
+        if (verbose) {
+            Logger::debug("Received external BattleInfo - skipping update for compatibility");
+        }
+        return;
     }
-    
-    turnCounterSinceInfo = 0;
-    fullView = myInfo.getFullView();
-    selfPosition = myInfo.getSelfPosition();
     
     if (playerId == 1) {
         // Player 1 specific logic (from Algo1)

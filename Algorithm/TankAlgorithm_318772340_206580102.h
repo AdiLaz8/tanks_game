@@ -67,6 +67,9 @@ protected:
     // Player-specific action methods
     ActionRequest getPlayer1Action();
     ActionRequest getPlayer2Action();
+    
+    // Debug flag
+    bool verbose = false;
 
 public:
     TankAlgorithm_318772340_206580102(int playerIndex, int tankIndex);

@@ -1,0 +1,7 @@
+game_maps_folder=maps
+game_manager=GameManagers/GameManager_207174533_321321945.so
+
+Algorithm_318772340_206580102 3
+Algorithm_206038929_314620071 1
+Algorithm_207174533_321321945 1
+Algorithm_209399021_208239152 0

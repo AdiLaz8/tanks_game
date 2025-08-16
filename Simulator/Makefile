@@ -4,7 +4,7 @@ LDFLAGS = -ldl -pthread -Wl,-rpath,. -Wl,--export-dynamic
 
 TARGET = simulator_318772340_206580102
 
-SRCS = main_comparative_standalone.cpp \
+SRCS = main_simulator.cpp \
        GameRunner.cpp \
        PlayerRegistration.cpp \
        TankAlgorithmRegistration.cpp \

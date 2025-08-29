@@ -33,14 +33,12 @@ std::vector<std::string>& getTankAlgorithmNameRegistry();
 std::vector<std::string>& getGameManagerNameRegistry();
 
 // Exported registration functions for dynamically loaded libraries to call
-extern "C" {
-    void registerPlayerFactory(PlayerFactory factory);
-    void registerTankAlgorithmFactory(TankAlgorithmFactory factory);
-    void registerGameManagerFactory(GameManagerFactory factory);
-    void registerPlayerName(const char* name);
-    void registerTankAlgorithmName(const char* name);
-    void registerGameManagerName(const char* name);
-}
+void registerPlayerFactory(PlayerFactory factory);
+void registerTankAlgorithmFactory(TankAlgorithmFactory factory);
+void registerGameManagerFactory(GameManagerFactory factory);
+void registerPlayerName(const char* name);
+void registerTankAlgorithmName(const char* name);
+void registerGameManagerName(const char* name);
 
 #endif // SIMULATOR_REGISTRY_H
 

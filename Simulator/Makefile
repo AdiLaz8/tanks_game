@@ -16,7 +16,7 @@ OBJS = $(SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS) ../GameManager/GameManager_318772340_206580102.o ../GameManager/Board.o ../GameManager/Tank.o ../GameManager/Shell.o ../GameManager/Wall.o ../GameManager/CellSlot.o ../GameManager/MySatelliteView.o ../Algorithm/Player_318772340_206580102.o ../Algorithm/TankAlgorithm_318772340_206580102.o ../Algorithm/MyBattleInfo.o ../UserCommon/Position.o ../UserCommon/Direction.o ../UserCommon/Logger.o
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -18,9 +18,7 @@
 
 // Include our actual classes
 #include "GameRunner.h"
-#include "../GameManager/GameManager_318772340_206580102.h"
-#include "../Algorithm/Player_318772340_206580102.h"
-#include "../Algorithm/TankAlgorithm_318772340_206580102.h"
+#include "Registry.h"
 
 namespace fs = std::filesystem;
 
@@ -260,10 +258,10 @@ std::string getTimestampString() {
 // Load and run a single game
 ComparativeGameResult runSingleGame(
     const std::string& gameManagerPath,
-    const std::string& algorithm1Path,
-    const std::string& algorithm2Path,
     const MapData& map,
-    bool verbose
+    bool verbose,
+    const std::vector<PlayerFactory>& playerFactories,
+    const std::vector<TankAlgorithmFactory>& tankAlgorithmFactories
 ) {
     ComparativeGameResult result;
     result.gameManagerName = fs::path(gameManagerPath).stem().string();
@@ -271,11 +269,17 @@ ComparativeGameResult runSingleGame(
     
     std::cout << "DEBUG: Starting runSingleGame for GameManager: " << result.gameManagerName << std::endl;
     std::cout << "DEBUG: GameManager path: " << gameManagerPath << std::endl;
-    std::cout << "DEBUG: Algorithm1 path: " << algorithm1Path << std::endl;
-    std::cout << "DEBUG: Algorithm2 path: " << algorithm2Path << std::endl;
     
     try {
-        // Load libraries
+        // Clear any existing GameManager registrations before loading new library
+        std::cout << "DEBUG: Clearing existing GameManager registrations..." << std::endl;
+        {
+            std::lock_guard<std::mutex> lock(registryMutex);
+            gameManagerFactories.clear();
+            gameManagerNames.clear();
+        }
+        
+        // Load GameManager library
         std::cout << "DEBUG: Loading GameManager library..." << std::endl;
         void* gameManagerHandle = dlopen(gameManagerPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!gameManagerHandle) {
@@ -285,66 +289,28 @@ ComparativeGameResult runSingleGame(
         }
         std::cout << "DEBUG: Successfully loaded GameManager library" << std::endl;
         
-        std::cout << "DEBUG: Loading Algorithm1 library..." << std::endl;
-        void* algorithm1Handle = dlopen(algorithm1Path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
-        if (!algorithm1Handle) {
+        // Wait for static initialization to complete
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        
+        // Check what GameManager was registered
+        std::cout << "DEBUG: Checking GameManager registrations..." << std::endl;
+        std::lock_guard<std::mutex> lock(registryMutex);
+        std::cout << "DEBUG: Registered GameManagers: " << gameManagerFactories.size() << std::endl;
+        
+        if (gameManagerFactories.empty()) {
             dlclose(gameManagerHandle);
-            result.errorMessage = "Failed to load Algorithm1 library: " + std::string(dlerror());
-            std::cout << "DEBUG: FAILED to load Algorithm1: " << result.errorMessage << std::endl;
+            result.errorMessage = "No GameManager factories registered after loading library";
+            std::cout << "DEBUG: NO GameManager factories registered!" << std::endl;
             return result;
         }
-        std::cout << "DEBUG: Successfully loaded Algorithm1 library" << std::endl;
         
-        std::cout << "DEBUG: Loading Algorithm2 library..." << std::endl;
-        void* algorithm2Handle = dlopen(algorithm2Path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
-        if (!algorithm2Handle) {
-            dlclose(gameManagerHandle);
-            dlclose(algorithm1Handle);
-            result.errorMessage = "Failed to load Algorithm2 library: " + std::string(dlerror());
-            std::cout << "DEBUG: FAILED to load Algorithm2: " << result.errorMessage << std::endl;
-            return result;
-        }
-        std::cout << "DEBUG: Successfully loaded Algorithm2 library" << std::endl;
+        // Use the registered GameManager factory and the pre-loaded algorithm factories
+        // Make copies to avoid holding references to registry after library is closed
+        GameManagerFactory gameManagerFactory = gameManagerFactories[0];
+        PlayerFactory playerFactory = playerFactories[0];
+        TankAlgorithmFactory tankAlgorithmFactory = tankAlgorithmFactories[0];
         
-        // Create factories (using our known classes)
-        std::cout << "DEBUG: Creating hardcoded factories..." << std::endl;
-        GameManagerFactory gameManagerFactory = [](bool verbose) -> std::unique_ptr<AbstractGameManager> {
-            std::cout << "DEBUG: Creating GameManager instance with verbose=" << verbose << std::endl;
-            try {
-                auto gm = std::make_unique<GameManager_318772340_206580102::GameManager_318772340_206580102>(verbose);
-                std::cout << "DEBUG: Successfully created GameManager instance" << std::endl;
-                return gm;
-            } catch (const std::exception& e) {
-                std::cout << "DEBUG: EXCEPTION creating GameManager: " << e.what() << std::endl;
-                throw;
-            }
-        };
-        
-        PlayerFactory playerFactory = [](int playerIndex, size_t numTanks, size_t numShells, size_t maxSteps, size_t gameBoardWidth) -> std::unique_ptr<Player> {
-            std::cout << "DEBUG: Creating Player instance with playerIndex=" << playerIndex << ", numTanks=" << numTanks << std::endl;
-            try {
-                auto player = std::make_unique<Algorithm_318772340_206580102::Player_318772340_206580102>(playerIndex, numTanks, numShells, maxSteps, gameBoardWidth);
-                std::cout << "DEBUG: Successfully created Player instance" << std::endl;
-                return player;
-            } catch (const std::exception& e) {
-                std::cout << "DEBUG: EXCEPTION creating Player: " << e.what() << std::endl;
-                throw;
-            }
-        };
-        
-        TankAlgorithmFactory tankAlgorithmFactory = [](int playerIndex, int numTanks) -> std::unique_ptr<TankAlgorithm> {
-            std::cout << "DEBUG: Creating TankAlgorithm instance with playerIndex=" << playerIndex << ", numTanks=" << numTanks << std::endl;
-            try {
-                auto algo = std::make_unique<Algorithm_318772340_206580102::TankAlgorithm_318772340_206580102>(playerIndex, numTanks);
-                std::cout << "DEBUG: Successfully created TankAlgorithm instance" << std::endl;
-                return algo;
-            } catch (const std::exception& e) {
-                std::cout << "DEBUG: EXCEPTION creating TankAlgorithm: " << e.what() << std::endl;
-                throw;
-            }
-        };
-        
-        std::cout << "DEBUG: All factories created successfully" << std::endl;
+        std::cout << "DEBUG: Using registered GameManager factory and pre-loaded algorithm factories" << std::endl;
         
         // Run the game
         std::cout << "DEBUG: Calling GameRunner::runSingleGame..." << std::endl;
@@ -366,15 +332,13 @@ ComparativeGameResult runSingleGame(
         result.reason = execution.result.reason;
         result.rounds = execution.result.rounds;
         
-        // Extract final game state
+        // Extract final game state from the game execution result
+        std::ostringstream finalStateStream;
+        size_t height = map.height;
+        size_t width = map.width;
+        
+        // Try to use the actual final game state if available, otherwise use original map
         if (execution.result.gameState) {
-            std::ostringstream finalStateStream;
-            
-            // For generic solution that works with all GameManager implementations,
-            // use the original map dimensions since the game board size doesn't change
-            size_t height = map.height;
-            size_t width = map.width;
-            
             for (size_t row = 0; row < height; ++row) {
                 for (size_t col = 0; col < width; ++col) {
                     char cell = execution.result.gameState->getObjectAt(col, row);
@@ -384,19 +348,29 @@ ComparativeGameResult runSingleGame(
                     finalStateStream << "\n";
                 }
             }
-            result.finalGameState = finalStateStream.str();
         } else {
-            result.finalGameState = "Final game state not available";
+            // Fallback to original map data if gameState is not available
+            for (size_t row = 0; row < height; ++row) {
+                for (size_t col = 0; col < width; ++col) {
+                    char cell = map.data[row][col];
+                    finalStateStream << cell;
+                }
+                if (row < height - 1) {
+                    finalStateStream << "\n";
+                }
+            }
         }
+        result.finalGameState = finalStateStream.str();
         
         std::cout << "DEBUG: Game completed successfully for " << result.gameManagerName << std::endl;
+        std::cout << "DEBUG: About to return from runSingleGame..." << std::endl;
+        std::cout << "DEBUG: Final result values - success: " << result.success << ", winner: " << result.winner << ", rounds: " << result.rounds << std::endl;
         
-        // Cleanup
-        std::cout << "DEBUG: Cleaning up libraries..." << std::endl;
-        dlclose(algorithm2Handle);
-        dlclose(algorithm1Handle);
-        dlclose(gameManagerHandle);
-        std::cout << "DEBUG: Libraries closed successfully" << std::endl;
+        // Don't close the library here - we'll close all libraries at the end
+        // This prevents segmentation faults and endless loops
+        std::cout << "DEBUG: Keeping library open to avoid crashes..." << std::endl;
+        
+        return result;
         
     } catch (const std::exception& e) {
         result.errorMessage = "Exception during game execution: " + std::string(e.what());
@@ -411,6 +385,7 @@ ComparativeGameResult runSingleGame(
         std::cout << "DEBUG: Error message: " << result.errorMessage << std::endl;
     }
     
+    std::cout << "DEBUG: About to return result from runSingleGame..." << std::endl;
     return result;
 }
 
@@ -435,7 +410,8 @@ std::vector<std::vector<ComparativeGameResult>> groupResults(const std::vector<C
             
             if (result1.winner == result2.winner &&
                 result1.reason == result2.reason &&
-                result1.rounds == result2.rounds) {
+                result1.rounds == result2.rounds &&
+                result1.finalGameState == result2.finalGameState) {
                 group.push_back(results[j]);
                 processed[j] = true;
             }
@@ -478,7 +454,11 @@ void writeResults(
             std::string reason = (result.reason == GameResult::ALL_TANKS_DEAD ? "All tanks dead" :
                                  result.reason == GameResult::MAX_STEPS ? "Max steps" : "Zero shells");
             
-            std::cout << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
+            if (result.winner == 0) {
+                std::cout << "Tie in round " << result.rounds << " (" << reason << ")\n";
+            } else {
+                std::cout << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
+            }
             std::cout << result.rounds << "\n";
             
             // Write final game state
@@ -508,7 +488,11 @@ void writeResults(
         std::string reason = (result.reason == GameResult::ALL_TANKS_DEAD ? "All tanks dead" :
                              result.reason == GameResult::MAX_STEPS ? "Max steps" : "Zero shells");
         
-        file << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
+        if (result.winner == 0) {
+            file << "Tie in round " << result.rounds << " (" << reason << ")\n";
+        } else {
+            file << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
+        }
         file << result.rounds << "\n";
         
         // Write final game state
@@ -557,6 +541,55 @@ int main(int argc, char* argv[]) {
     std::cout << "Found " << gameManagerFiles.size() << " GameManager files\n";
     std::cout << "Using " << config.numThreads << " thread(s)\n";
     
+    // Load algorithm libraries ONCE at the beginning
+    std::cout << "DEBUG: Loading algorithm libraries..." << std::endl;
+    
+    // Clear any existing registrations
+    {
+        std::lock_guard<std::mutex> lock(registryMutex);
+        playerFactories.clear();
+        playerNames.clear();
+        tankAlgorithmFactories.clear();
+        tankAlgorithmNames.clear();
+    }
+    
+    // Load Algorithm1 library
+    std::cout << "DEBUG: Loading Algorithm1 library: " << config.algorithm1 << std::endl;
+    void* algorithm1Handle = dlopen(config.algorithm1.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+    if (!algorithm1Handle) {
+        std::cerr << "Error: Failed to load Algorithm1 library: " << dlerror() << "\n";
+        return 1;
+    }
+    
+    // Load Algorithm2 library
+    std::cout << "DEBUG: Loading Algorithm2 library: " << config.algorithm2 << std::endl;
+    void* algorithm2Handle = dlopen(config.algorithm2.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+    if (!algorithm2Handle) {
+        dlclose(algorithm1Handle);
+        std::cerr << "Error: Failed to load Algorithm2 library: " << dlerror() << "\n";
+        return 1;
+    }
+    
+    // Wait for static initialization to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    
+    // Check what algorithms were registered
+    std::cout << "DEBUG: Checking algorithm registrations..." << std::endl;
+    {
+        std::lock_guard<std::mutex> lock(registryMutex);
+        std::cout << "DEBUG: Registered Players: " << playerFactories.size() << std::endl;
+        std::cout << "DEBUG: Registered TankAlgorithms: " << tankAlgorithmFactories.size() << std::endl;
+        
+        if (playerFactories.empty() || tankAlgorithmFactories.empty()) {
+            dlclose(algorithm2Handle);
+            dlclose(algorithm1Handle);
+            std::cerr << "Error: No algorithms registered after loading libraries\n";
+            return 1;
+        }
+    }
+    
+    std::cout << "DEBUG: Successfully loaded algorithm libraries" << std::endl;
+    
     // Run games
     std::vector<ComparativeGameResult> results;
     results.reserve(gameManagerFiles.size());
@@ -573,7 +606,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "Running game with: " << fs::path(gameManagerFile).filename() << "\n";
             }
             
-            auto result = runSingleGame(gameManagerFile, config.algorithm1, config.algorithm2, map, config.verbose);
+            auto result = runSingleGame(gameManagerFile, map, config.verbose, playerFactories, tankAlgorithmFactories);
             std::cout << "DEBUG: Got result for " << fs::path(gameManagerFile).filename() << " - success: " << result.success << std::endl;
             
             results.push_back(std::move(result));
@@ -594,8 +627,8 @@ int main(int argc, char* argv[]) {
         
         for (const auto& gameManagerFile : gameManagerFiles) {
             std::cout << "DEBUG: Enqueueing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
-            futures.push_back(pool.enqueue([gameManagerFile, &config, &map]() {
-                return runSingleGame(gameManagerFile, config.algorithm1, config.algorithm2, map, false);
+            futures.push_back(pool.enqueue([gameManagerFile, &map, &config]() {
+                return runSingleGame(gameManagerFile, map, false, playerFactories, tankAlgorithmFactories);
             }));
         }
         
@@ -635,6 +668,10 @@ int main(int argc, char* argv[]) {
     std::cout << "  Successful games: " << std::count_if(results.begin(), results.end(), [](const auto& r) { return r.success; }) << "\n";
     std::cout << "  Failed games: " << std::count_if(results.begin(), results.end(), [](const auto& r) { return !r.success; }) << "\n";
     std::cout << "  Result groups: " << groups.size() << "\n";
+    
+    // Cleanup algorithm libraries
+    dlclose(algorithm2Handle);
+    dlclose(algorithm1Handle);
     
     return 0;
 } 

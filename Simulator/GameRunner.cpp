@@ -35,7 +35,7 @@ bool parseKeyValue(const std::string& line, const std::string& key, size_t& valu
     }
 }
 
-bool MapData::loadFromFile(const std::string& filepath) {
+bool MapData::loadFromFile(const std::string& filepath, bool verbose) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
         std::cerr << "Error: Cannot open map file: " << filepath << std::endl;
@@ -45,7 +45,11 @@ bool MapData::loadFromFile(const std::string& filepath) {
     // Extract map name from filename for error file
     std::string mapName = filepath.substr(filepath.find_last_of("/\\") + 1);
     std::string errorFile = mapName + ".error";
-    std::ofstream errorOut(errorFile);
+    std::ofstream errorOut;
+    // Only create error file if verbose mode is enabled
+    if (verbose) {
+        errorOut.open(errorFile);
+    }
     
     filename = filepath;
     
@@ -68,6 +72,9 @@ bool MapData::loadFromFile(const std::string& filepath) {
     }
     if (!parseKeyValue(line, "MaxSteps", maxSteps)) {
         std::cerr << "Error: Invalid MaxSteps format in " << filepath << ": " << line << std::endl;
+        if (errorOut.is_open()) {
+            errorOut << "Error: Invalid MaxSteps format in " << filepath << ": " << line << std::endl;
+        }
         return false;
     }
     
@@ -173,7 +180,8 @@ GameExecution GameRunner::runSingleGame(
     const std::string& gameManagerName,
     PlayerFactory playerFactory,
     TankAlgorithmFactory tankAlgorithmFactory,
-    const std::string& algorithmName,
+    const std::string& algorithm1Name,
+    const std::string& algorithm2Name,
     const MapData& map,
     bool verbose) {
     
@@ -181,7 +189,7 @@ GameExecution GameRunner::runSingleGame(
     
     GameExecution execution;
     execution.gameManagerName = gameManagerName;
-    execution.algorithmName = algorithmName;
+    execution.algorithmName = algorithm1Name; // Keep for backward compatibility
     execution.mapName = map.name;
     execution.player1Name = "Player1";
     execution.player2Name = "Player2";
@@ -221,8 +229,8 @@ GameExecution GameRunner::runSingleGame(
             *satelliteView,
             map.name,
             map.maxSteps, map.numShells,
-            *player1, execution.player1Name,
-            *player2, execution.player2Name,
+            *player1, algorithm1Name,  // Use first algorithm name
+            *player2, algorithm2Name,  // Use second algorithm name
             tankAlgorithmFactory,
             tankAlgorithmFactory
         );

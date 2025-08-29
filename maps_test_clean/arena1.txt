@@ -1,0 +1,15 @@
+Arena 1 - Corner Battle
+MaxSteps = 60
+NumShells = 4
+Rows = 10
+Cols = 10
+##########
+#1      2#
+#        #
+#  ##### #
+#  #   # #
+#  #   # #
+#  ##### #
+#        #
+#2      1#
+##########

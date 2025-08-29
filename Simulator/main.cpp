@@ -245,7 +245,8 @@ int main(int argc, char* argv[]) {
                 extConfig.gameMapFile,
                 extConfig.algorithm1File,
                 extConfig.algorithm2File,
-                config.numThreads
+                config.numThreads,
+                config.verbose
             );
             simulator.runComparative();
         } else {

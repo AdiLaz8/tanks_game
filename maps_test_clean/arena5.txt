@@ -1,0 +1,16 @@
+Arena 5 - Strategic Battle
+MaxSteps = 100
+NumShells = 8
+Rows = 10
+Cols = 10
+##########
+#1       #
+#        #
+# #####  #
+# #   #  #
+# #   #  #
+# #####  #
+#        #
+#        #
+#       2#
+##########

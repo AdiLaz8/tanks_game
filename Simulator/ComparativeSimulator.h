@@ -42,6 +42,7 @@ private:
     std::string algorithm1File;
     std::string algorithm2File;
     size_t numThreads;
+    bool verbose;
     
     // Loaded factories
     std::vector<GameManagerFactory> gameManagerFactories;
@@ -62,7 +63,8 @@ public:
                   const std::string& gameMapFile,
                   const std::string& algorithm1File,
                   const std::string& algorithm2File,
-                  size_t numThreads);
+                  size_t numThreads,
+                  bool verbose = false);
     
     // Execution
     void runComparative();
@@ -73,6 +75,7 @@ private:
     void validateConfiguration() const;
     void setupThreadPool();
     std::vector<std::future<ComparativeExecution>> queueAllGameManagers();
+    ComparativeExecution runSingleGame(size_t gmIdx, const MapData& map);
     void writeResultsToFile(const std::string& outputFile) const;
     std::string generateTimestampedFilename() const;
     std::string serializeMapState(const SatelliteView* satelliteView) const;

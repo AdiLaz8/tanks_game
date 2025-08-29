@@ -3,26 +3,40 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -fPIC -I../common -I..
 LDFLAGS = -ldl -pthread -Wl,-rpath,. -Wl,--export-dynamic
 
 TARGET = simulator_318772340_206580102
+COMPETITIVE_TARGET = simulator_competitive_318772340_206580102
 
 SRCS = main_comparative_standalone.cpp \
+       ComparativeSimulator.cpp \
        GameRunner.cpp \
        PlayerRegistration.cpp \
        TankAlgorithmRegistration.cpp \
        GameManagerRegistration.cpp \
-       Registry.cpp
+       Registry.cpp \
+       ThreadPool.cpp \
+       DynamicLoader.cpp
+
+COMPETITIVE_SRCS = main_competitive.cpp \
+                   GameRunner.cpp \
+                   PlayerRegistration.cpp \
+                   TankAlgorithmRegistration.cpp \
+                   GameManagerRegistration.cpp \
+                   Registry.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
-all: $(TARGET)
+all: $(TARGET) $(COMPETITIVE_TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+
+$(COMPETITIVE_TARGET): $(COMPETITIVE_SRCS:.cpp=.o)
+	$(CXX) $(COMPETITIVE_SRCS:.cpp=.o) -o $@ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) $(COMPETITIVE_TARGET)
 
 install: $(TARGET)
 	cp $(TARGET) ../

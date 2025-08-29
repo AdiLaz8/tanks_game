@@ -20,7 +20,7 @@ struct MapData {
     size_t numShells;
     std::vector<std::vector<char>> data;
     
-    bool loadFromFile(const std::string& filepath);
+    bool loadFromFile(const std::string& filepath, bool verbose = false);
 };
 
 class GameRunner {
@@ -30,7 +30,8 @@ public:
         const std::string& gameManagerName,
         PlayerFactory playerFactory,
         TankAlgorithmFactory tankAlgorithmFactory,
-        const std::string& algorithmName,
+        const std::string& algorithm1Name,
+        const std::string& algorithm2Name,
         const MapData& map,
         bool verbose = false
     );

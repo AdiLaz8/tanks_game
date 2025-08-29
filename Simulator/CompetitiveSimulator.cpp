@@ -94,7 +94,10 @@ void CompetitiveSimulator::loadLibraries(const SimulationConfig& config) {
 }
 
 void CompetitiveSimulator::setupThreadPool(size_t numThreads) {
-    threadPool = std::make_unique<ThreadPool>(numThreads);
+    // For numThreads >= 2, create numThreads worker threads
+    // The main thread will also participate in the work
+    size_t workerThreads = (numThreads >= 2) ? numThreads : 0;
+    threadPool = std::make_unique<ThreadPool>(workerThreads);
 }
 
 void CompetitiveSimulator::setupTournament() {
@@ -232,28 +235,75 @@ void CompetitiveSimulator::runTournament() {
 std::vector<std::future<GameExecution>> CompetitiveSimulator::executeAllMatches() {
     std::vector<std::future<GameExecution>> futures;
     
+    // Get all pending matches
+    auto pendingMatches = tournament->getAllPendingMatches();
+    size_t totalMatches = pendingMatches.size();
+    
+    if (totalMatches == 0) {
+        return futures;
+    }
+    
     // For round robin, we can execute all matches in parallel
     // For elimination tournaments, we need to execute round by round
     if (competitiveConfig.format == CompetitiveConfig::ROUND_ROBIN) {
-        auto pendingMatches = tournament->getAllPendingMatches();
+        // Calculate how many matches to run in worker threads vs main thread
+        size_t workerThreads = threadPool->size();
+        size_t matchesForWorkers = std::min(workerThreads, totalMatches);
+        size_t matchesForMain = totalMatches - matchesForWorkers;
         
-        for (auto* match : pendingMatches) {
-            auto future = threadPool->enqueue([this, match]() -> GameExecution {
+        // Queue matches for worker threads
+        for (size_t i = 0; i < matchesForWorkers; ++i) {
+            auto future = threadPool->enqueue([this, match = pendingMatches[i]]() -> GameExecution {
                 return executeMatch(match);
             });
             futures.push_back(std::move(future));
         }
+        
+        // Main thread runs remaining matches
+        for (size_t i = matchesForWorkers; i < totalMatches; ++i) {
+            // Create a packaged_task to wrap the match execution
+            auto task = std::packaged_task<GameExecution()>([this, match = pendingMatches[i]]() -> GameExecution {
+                return executeMatch(match);
+            });
+            
+            // Get the future from the packaged_task
+            futures.push_back(task.get_future());
+            
+            // Execute the task immediately in the main thread
+            task();
+        }
+        
     } else {
         // For elimination tournaments, execute one round at a time
         while (!tournament->isComplete()) {
-            auto pendingMatches = tournament->getAllPendingMatches();
+            auto roundMatches = tournament->getAllPendingMatches();
             std::vector<std::future<GameExecution>> roundFutures;
             
-            for (auto* match : pendingMatches) {
-                auto future = threadPool->enqueue([this, match]() -> GameExecution {
+            size_t roundTotal = roundMatches.size();
+            size_t workerThreads = threadPool->size();
+            size_t matchesForWorkers = std::min(workerThreads, roundTotal);
+            size_t matchesForMain = roundTotal - matchesForWorkers;
+            
+            // Queue matches for worker threads
+            for (size_t i = 0; i < matchesForWorkers; ++i) {
+                auto future = threadPool->enqueue([this, match = roundMatches[i]]() -> GameExecution {
                     return executeMatch(match);
                 });
                 roundFutures.push_back(std::move(future));
+            }
+            
+            // Main thread runs remaining matches
+            for (size_t i = matchesForWorkers; i < roundTotal; ++i) {
+                // Create a packaged_task to wrap the match execution
+                auto task = std::packaged_task<GameExecution()>([this, match = roundMatches[i]]() -> GameExecution {
+                    return executeMatch(match);
+                });
+                
+                // Get the future from the packaged_task
+                roundFutures.push_back(task.get_future());
+                
+                // Execute the task immediately in the main thread
+                task();
             }
             
             // Wait for current round to complete

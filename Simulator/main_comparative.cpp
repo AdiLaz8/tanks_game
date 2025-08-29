@@ -290,7 +290,8 @@ ComparativeGameResult runSingleGame(
             result.gameManagerName,
             playerFactory,
             tankAlgorithmFactory,
-            "TankAlgorithm_318772340_206580102",
+            "TankAlgorithm_318772340_206580102",  // First algorithm name
+            "TankAlgorithm_318772340_206580102",  // Second algorithm name (same in comparative mode)
             map,
             verbose
         );

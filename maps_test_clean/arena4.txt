@@ -1,0 +1,16 @@
+Arena 4 - Diagonal Battle
+MaxSteps = 90
+NumShells = 7
+Rows = 10
+Cols = 10
+##########
+#1       #
+#        #
+#        #
+# #####  #
+# #   #  #
+# #####  #
+#        #
+#        #
+#       2#
+##########

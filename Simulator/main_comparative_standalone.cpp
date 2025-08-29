@@ -319,7 +319,8 @@ ComparativeGameResult runSingleGame(
             result.gameManagerName,
             playerFactory,
             tankAlgorithmFactory,
-            "TankAlgorithm_318772340_206580102",
+            "TankAlgorithm_318772340_206580102",  // First algorithm name
+            "TankAlgorithm_318772340_206580102",  // Second algorithm name (same in comparative mode)
             map,
             verbose
         );
@@ -520,7 +521,7 @@ int main(int argc, char* argv[]) {
     
     // Load map
     MapData map;
-    if (!map.loadFromFile(config.gameMap)) {
+    if (!map.loadFromFile(config.gameMap, config.verbose)) {
         std::cerr << "Error: Failed to load game map: " << config.gameMap << "\n";
         return 1;
     }

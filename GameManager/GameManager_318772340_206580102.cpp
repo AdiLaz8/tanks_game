@@ -27,11 +27,11 @@ GameResult GameManager_318772340_206580102::run(
     const SatelliteView& map,
     string map_name,
     size_t max_steps, size_t num_shells,
-    Player& player1, string /*name1*/, Player& player2, string /*name2*/, 
+    Player& player1, string name1, Player& player2, string name2, 
     TankAlgorithmFactory player1_tank_algo_factory,
     TankAlgorithmFactory player2_tank_algo_factory) {
     
-    std::cout << "DEBUG: GameManager::run() started" << std::endl;
+
     
     // Initialize game state
     maxSteps = max_steps;
@@ -41,26 +41,18 @@ GameResult GameManager_318772340_206580102::run(
     tankIndex1 = 0;
     tankIndex2 = 0;
     
-    std::cout << "DEBUG: Game state initialized: maxSteps=" << maxSteps << ", numShells=" << numShells << std::endl;
-    
     // Create game board
     gameBoard = std::make_unique<Board>(map_width, map_height);
-    std::cout << "DEBUG: Game board created" << std::endl;
     
     // Parse map and create tanks with algorithms
-    std::cout << "DEBUG: About to parse map..." << std::endl;
     parseMapFromSatelliteView(map, map_width, map_height, player1, player2,
                              player1_tank_algo_factory, player2_tank_algo_factory);
-    std::cout << "DEBUG: Map parsed, tankIndex1=" << tankIndex1 << ", tankIndex2=" << tankIndex2 << std::endl;
     
     // Setup tank logging
-    std::cout << "DEBUG: About to populate tank order and log..." << std::endl;
     populateTankOrderAndLog(map_height, map_width);
-    std::cout << "DEBUG: Tank order and log populated" << std::endl;
     
     // Check if valid game setup
     if (tankIndex1 == 0 && tankIndex2 == 0) {
-        std::cout << "DEBUG: No tanks found, returning early" << std::endl;
         GameResult result;
         result.winner = 0;
         result.reason = GameResult::ALL_TANKS_DEAD;
@@ -72,13 +64,50 @@ GameResult GameManager_318772340_206580102::run(
     
     // Open output file if verbose mode
     if (verbose) {
-        std::string outputFile = "output_" + map_name;
+        // Create unique output file name based on map and algorithm names
+        std::string outputFile;
+        
+
+        
+        if (!name1.empty() && !name2.empty()) {
+            // Check if this is comparative mode (same algorithm vs itself) or competitive mode (different algorithms)
+            if (name1 == name2 || (name1.find("Player") == 0 && name2.find("Player") == 0)) {
+                // Comparative mode: use map name only (no algorithm names needed since it's the same algorithm)
+                outputFile = "output_" + map_name;
+            } else {
+                // Competitive mode: use algorithm names for unique identification
+                // Extract just the filename without path and extension for cleaner names
+                std::string algo1Name = name1;
+                std::string algo2Name = name2;
+                
+                // Remove path and .so extension if present
+                size_t lastSlash = algo1Name.find_last_of("/\\");
+                if (lastSlash != std::string::npos) {
+                    algo1Name = algo1Name.substr(lastSlash + 1);
+                }
+                if (algo1Name.length() > 3 && algo1Name.substr(algo1Name.length() - 3) == ".so") {
+                    algo1Name = algo1Name.substr(0, algo1Name.length() - 3);
+                }
+                
+                lastSlash = algo2Name.find_last_of("/\\");
+                if (lastSlash != std::string::npos) {
+                    algo2Name = algo2Name.substr(lastSlash + 1);
+                }
+                if (algo2Name.length() > 3 && algo2Name.substr(algo2Name.length() - 3) == ".so") {
+                    algo2Name = algo2Name.substr(0, algo2Name.length() - 3);
+                }
+                
+                // Create a clean filename
+                outputFile = "output_" + map_name + "_" + algo1Name + "_vs_" + algo2Name;
+            }
+        } else {
+            // Fallback: use map name only
+            outputFile = "output_" + map_name;
+        }
         simpleOutput.open(outputFile);
-        std::cout << "DEBUG: Output file opened: " << outputFile << std::endl;
     }
     
     // Execute game loop
-    std::cout << "DEBUG: About to execute game loop..." << std::endl;
     return executeGameLoop(player1, player2);
 }
 
@@ -127,14 +156,9 @@ void GameManager_318772340_206580102::parseMapFromSatelliteView(const SatelliteV
 }
 
 GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Player& player2) {
-    std::cout << "DEBUG: executeGameLoop started" << std::endl;
-    std::cout << "DEBUG: Initial checkGameOver() = " << (checkGameOver() ? "true" : "false") << std::endl;
-    std::cout << "DEBUG: tankIndex1=" << tankIndex1 << ", tankIndex2=" << tankIndex2 << ", currentStep=" << currentStep << ", maxSteps=" << maxSteps << std::endl;
     
     while (!checkGameOver()) {
-        std::cout << "DEBUG: Game loop iteration, currentStep=" << currentStep << std::endl;
         if (currentStep % 2 != 0) {
-            std::cout << "DEBUG: Odd step (shell movement phase), currentStep=" << currentStep << std::endl;
             moveShells();
             checkCollisions();
             
@@ -157,26 +181,18 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
                 for (auto& info : tankLog) { info.wasKilledThisTurn = false; }
             }
         } else {
-            std::cout << "DEBUG: Even step (tank action phase), currentStep=" << currentStep << std::endl;
             std::string turn = std::to_string(currentStep / 2 + 1);
-            std::cout << "DEBUG: Turn " << turn << " starting" << std::endl;
             if (verbose) {
                 Logger::debug("Turn : " + turn);
             }
             
-            std::cout << "DEBUG: Moving shells..." << std::endl;
             moveShells();
-            std::cout << "DEBUG: Checking collisions..." << std::endl;
             checkCollisions();
-            std::cout << "DEBUG: Checking game over after shell movement..." << std::endl;
             if (checkGameOver()) {
-                std::cout << "DEBUG: Game over detected, breaking loop" << std::endl;
                 break;
             }
             
-            std::cout << "DEBUG: Building board matrix..." << std::endl;
             auto boardView = buildBoardMatrix();
-            std::cout << "DEBUG: Creating satellite view..." << std::endl;
             MySatelliteView satellite(boardView);
             
             if (verbose) {
@@ -190,45 +206,56 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
                 }
             }
             
-            std::cout << "DEBUG: Starting tank action loop, tankPairs.size()=" << tankPairs.size() << std::endl;
             for (auto& [algoPtr, tank] : tankPairs) {
                 int birthIdx = tank->getBirthIndex();
-                std::cout << "DEBUG: Processing tank " << tank->getFullIdString() << ", birthIdx=" << birthIdx << ", isAlive=" << tank->isAlive() << std::endl;
                 if (!tank->isAlive()) {
-                    std::cout << "DEBUG: Tank " << tank->getFullIdString() << " is dead, skipping" << std::endl;
                     continue;
                 }
                 
-                std::cout << "DEBUG: About to get action from " << tank->getFullIdString() << std::endl;
                 ActionRequest request = algoPtr->getAction();
-                std::cout << "DEBUG: " << tank->getFullIdString() << " requested action: " << actionToString(request) << std::endl;
                 if (verbose) {
                     Logger::debug(tank->getFullIdString() + ": Requested action - " + actionToString(request));
                 }
                 
                 std::string actionStr = actionToString(request);
                 if (request == ActionRequest::GetBattleInfo) {
-                    std::cout << "DEBUG: " << tank->getFullIdString() << " requested GetBattleInfo" << std::endl;
                     tankLog[birthIdx].lastAction = "GetBattleInfo";
                     if (verbose) {
                         Logger::debug(tank->getFullIdString() + ": GetBattleInfo triggered");
                     }
                     satellite.setPosition(tank->getPosition());
                     if (tank->getSymbol() == '1') {
-                        std::cout << "DEBUG: Updating Player 1 tank with battle info" << std::endl;
                         player1.updateTankWithBattleInfo(*algoPtr, satellite);
                     } else { 
-                        std::cout << "DEBUG: Updating Player 2 tank with battle info" << std::endl;
                         player2.updateTankWithBattleInfo(*algoPtr, satellite); 
                     }
                 } else {
-                    std::cout << "DEBUG: Executing action " << actionStr << " for " << tank->getFullIdString() << std::endl;
                     executeAction(request, tank);
                     if (!tank->isAlive()) {
-                        std::cout << "DEBUG: Tank " << tank->getFullIdString() << " was killed" << std::endl;
                         actionStr += " (killed)";
                         tankLog[birthIdx].isAlive = false;
                         tankLog[birthIdx].wasKilledThisTurn = true;
+                        // Write the action immediately if verbose is on, since the game might end
+                        if (verbose && simpleOutput.is_open()) {
+                            // Write current actions for this turn
+                            for (size_t i = 0; i < tankLog.size(); ++i) {
+                                std::string action;
+                                if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) { 
+                                    action = tankLog[i].lastAction + " (killed)"; 
+                                }
+                                else if (!tankLog[i].isAlive) { 
+                                    action = "killed"; 
+                                }
+                                else { 
+                                    action = tankLog[i].lastAction; 
+                                }
+                                simpleOutput << action;
+                                if (i + 1 < tankLog.size()) simpleOutput << ", ";
+                            }
+                            simpleOutput << std::endl;
+                            // Reset the killed flag after writing
+                            for (auto& info : tankLog) { info.wasKilledThisTurn = false; }
+                        }
                     }
                     tankLog[birthIdx].lastAction = actionStr;
                     if (verbose) {
@@ -237,21 +264,15 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
                 }
             }
             
-            std::cout << "DEBUG: Tank action loop completed" << std::endl;
-            std::cout << "DEBUG: Checking collisions after tank actions..." << std::endl;
             checkCollisions();
-            std::cout << "DEBUG: Checking if no shells left for all live tanks..." << std::endl;
             if (noShellsLeftForAllLiveTanks()) {
                 stepsWithoutShells++;
-                std::cout << "DEBUG: No shells left, stepsWithoutShells=" << stepsWithoutShells << std::endl;
                 if (verbose) {
                     Logger::debug("No shells left for all live tanks. Counter: " + std::to_string(stepsWithoutShells));
                 }
             }
         }
-        std::cout << "DEBUG: About to increment currentStep from " << currentStep << " to " << (currentStep + 1) << std::endl;
         currentStep++;
-        std::cout << "DEBUG: currentStep incremented to " << currentStep << std::endl;
     }
     
     if (verbose) {
@@ -409,14 +430,9 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
 }
 
 void GameManager_318772340_206580102::checkCollisions() {
-    std::cout << "DEBUG: Starting checkCollisions()" << std::endl;
-    std::cout << "DEBUG: Calling checkShellCollisions()" << std::endl;
     checkShellCollisions();
-    std::cout << "DEBUG: Calling checkTankMineCollisions()" << std::endl;
     checkTankMineCollisions();
-    std::cout << "DEBUG: Calling checkTankTankCollisions()" << std::endl;
     checkTankTankCollisions();
-    std::cout << "DEBUG: Finished checkCollisions()" << std::endl;
 }
 
 void GameManager_318772340_206580102::checkShellCollisions() {
@@ -505,19 +521,13 @@ void GameManager_318772340_206580102::checkTankMineCollisions() {
 }
 
 void GameManager_318772340_206580102::checkTankTankCollisions() {
-    std::cout << "DEBUG: checkTankTankCollisions() started" << std::endl;
     for (int y = 0; y < gameBoard->getHeight(); ++y) {
         for (int x = 0; x < gameBoard->getWidth(); ++x) {
-            std::cout << "DEBUG: Checking position (" << x << "," << y << ")" << std::endl;
             CellSlot& slot = gameBoard->getSlot(x, y);
-            std::cout << "DEBUG: Got slot, about to call getAll()" << std::endl;
             std::vector<Tank*> tanks;
             const auto& allObjects = slot.getAll();
-            std::cout << "DEBUG: getAll() returned, objects.size()=" << allObjects.size() << std::endl;
             for (const auto& obj : allObjects) {
-                std::cout << "DEBUG: About to dynamic_cast object" << std::endl;
                 if (Tank* tank = dynamic_cast<Tank*>(obj.get())) {
-                    std::cout << "DEBUG: Found tank at (" << x << "," << y << ")" << std::endl;
                     tanks.push_back(tank);
                 }
             }
@@ -527,12 +537,10 @@ void GameManager_318772340_206580102::checkTankTankCollisions() {
                     std::string posStr = "(" + std::to_string(x) + "," + std::to_string(y) + ")";
                     Logger::debug("Tank-Tank collision at " + posStr);
                 }
-                std::cout << "DEBUG: Found " << tanks.size() << " tanks at position (" << x << "," << y << ")" << std::endl;
                 
                 // Collect all tank information before removing any tanks
                 std::vector<std::tuple<Tank*, char, int, int, int>> tankInfo;
                 for (Tank* tank : tanks) {
-                    std::cout << "DEBUG: Collecting info for tank at (" << tank->getPosition().getx() << "," << tank->getPosition().gety() << ")" << std::endl;
                     char symbol = tank->getSymbol();
                     int birthIdx = tank->getBirthIndex();
                     int tankX = tank->getPosition().getx();
@@ -548,20 +556,16 @@ void GameManager_318772340_206580102::checkTankTankCollisions() {
                     int tankX = std::get<3>(info);
                     int tankY = std::get<4>(info);
                     
-                    std::cout << "DEBUG: Processing tank collision for tank at (" << tankX << "," << tankY << ")" << std::endl;
                     tank->Hit();
                     if (symbol == '1') tankIndex1--;
                     else if (symbol == '2') tankIndex2--;
                     tankLog[birthIdx].isAlive = false;
                     tankLog[birthIdx].wasKilledThisTurn = true;
-                    std::cout << "DEBUG: About to remove tank from tankPairs" << std::endl;
                     tankPairs.erase(
                         std::remove_if(tankPairs.begin(), tankPairs.end(),
                             [tank](const auto& pair) { return pair.second == tank; }),
                         tankPairs.end());
-                    std::cout << "DEBUG: About to remove tank from board" << std::endl;
                     gameBoard->removeTankAt(tankX, tankY);
-                    std::cout << "DEBUG: Tank removal completed" << std::endl;
                 }
             }
         }
@@ -578,10 +582,6 @@ bool GameManager_318772340_206580102::noShellsLeftForAllLiveTanks() const {
 
 bool GameManager_318772340_206580102::checkGameOver() const {
     bool result = tankIndex1==0 || tankIndex2==0|| currentStep/2 >= maxSteps || stepsWithoutShells > NO_SHELL_LIMIT;
-    std::cout << "DEBUG: checkGameOver() called: tankIndex1=" << tankIndex1 << ", tankIndex2=" << tankIndex2 
-              << ", currentStep=" << currentStep << ", currentStep/2=" << (currentStep/2) << ", maxSteps=" << maxSteps 
-              << ", stepsWithoutShells=" << stepsWithoutShells << ", NO_SHELL_LIMIT=" << NO_SHELL_LIMIT 
-              << ", result=" << (result ? "true" : "false") << std::endl;
     return result;
 }
 

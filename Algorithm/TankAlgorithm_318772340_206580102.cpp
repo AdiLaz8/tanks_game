@@ -234,14 +234,14 @@ void TankAlgorithm_318772340_206580102::setBackward(int i){
 
 // Main action dispatcher based on player ID
 ActionRequest TankAlgorithm_318772340_206580102::getAction() {
-    std::cout << "DEBUG: TankAlgorithm::getAction() called for Player " << playerId << " Tank " << tankId << std::endl;
+
     ActionRequest result;
     if (playerId == 1) {
         result = getPlayer1Action();
     } else {
         result = getPlayer2Action();
     }
-    std::cout << "DEBUG: TankAlgorithm::getAction() returning " << static_cast<int>(result) << " for Player " << playerId << " Tank " << tankId << std::endl;
+
     return result;
 }
 
@@ -282,9 +282,9 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer1Action() {
 
 // Player 2 action logic (from Algo2)
 ActionRequest TankAlgorithm_318772340_206580102::getPlayer2Action() {
-    std::cout << "DEBUG: getPlayer2Action() called for Tank " << tankId << ", turnCounterSinceInfo=" << turnCounterSinceInfo << std::endl;
+
     if (turnCounterSinceInfo == -1) { // first turn
-        std::cout << "DEBUG: Player 2 Tank " << tankId << ": First turn, requesting battle info." << std::endl;
+
         Logger::debug("Player 2: Tank " + std::to_string(tankId) + ": First turn, requesting battle info.");
         return ActionRequest::GetBattleInfo;
     }
@@ -382,25 +382,19 @@ ActionRequest TankAlgorithm_318772340_206580102::moveForwardAfterRotate() {
 }
 
 ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
-    std::cout << "DEBUG: getActionFromPath() called for Player " << playerId << " Tank " << tankId << std::endl;
+
 
     if (!currentPath.empty()) {
-        std::cout << "DEBUG: Path not empty, processing next direction" << std::endl;
+
         Direction::Value nextDir = currentPath.front();
-        std::cout << "DEBUG: Next direction: " << static_cast<int>(nextDir) << std::endl;
-        
         if (nextDir == direction.getDirection()) {
-            std::cout << "DEBUG: Direction matches, checking next position" << std::endl;
             Position nextPos = selfPosition + Direction(nextDir).toVector();
             nextPos.setx((nextPos.getx() + boardWidth) % boardWidth);
             nextPos.sety((nextPos.gety() + boardHeight) % boardHeight);
-            std::cout << "DEBUG: Next position: (" << nextPos.getx() << "," << nextPos.gety() << ")" << std::endl;
             
             auto it = std::find_if(fullView.begin(), fullView.end(),[&](const auto& cell) {return cell.first == nextPos;});
             if (it != fullView.end()) {
-                std::cout << "DEBUG: Found cell at next position: '" << it->second << "'" << std::endl;
                 if (it->second == '@' || it->second == '1' || it->second == '2') {
-                    std::cout << "DEBUG: Path blocked by mine/tank, cancelling path" << std::endl;
                     currentPath.clear();
                     needsNewInfo = true;
                     turnCounterSinceInfo = 0;
@@ -409,7 +403,6 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
                 }
                 if (it->second == '#') {
                     if (ammo > 0 && getShootingStatus() == 0) {
-                        std::cout << "DEBUG: Wall in the way, firing to destroy it" << std::endl;
                         shootingStatus = 4;
                         ammo--;
                         needsNewInfo = true;
@@ -421,13 +414,11 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
             }
             currentPath.erase(currentPath.begin());
             if (!isMine(nextPos)) {
-                std::cout << "DEBUG: Moving forward to next position" << std::endl;
                 selfPosition = nextPos;
                 turnCounterSinceInfo++;
                 Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Advancing along BFS path towards target.");
                 return ActionRequest::MoveForward;
             } else {
-                std::cout << "DEBUG: Mine detected, cancelling path" << std::endl;
                 currentPath.clear();
                 chasing = false;
                 turnCounterSinceInfo = 0;
@@ -435,7 +426,6 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
                 return ActionRequest::GetBattleInfo;
             }
         } else {
-            std::cout << "DEBUG: Direction doesn't match, rotating towards next direction" << std::endl;
             direction = Direction(nextDir);
             moveAfterRotate = true;
             turnCounterSinceInfo++;
@@ -443,16 +433,11 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
             return rotateTowards(direction.getDirection(), nextDir);
         }
     }
-    std::cout << "DEBUG: No path available, returning DoNothing" << std::endl;
     return ActionRequest::DoNothing; // No actions available from the path
 }
 
 void TankAlgorithm_318772340_206580102::computeShootingPath() {
-    std::cout << "DEBUG: computeShootingPath() called for Player " << playerId << " Tank " << tankId << std::endl;
-    std::cout << "DEBUG: selfPosition=(" << selfPosition.getx() << "," << selfPosition.gety() << "), targetPos=(" << targetPos.getx() << "," << targetPos.gety() << ")" << std::endl;
-    std::cout << "DEBUG: boardWidth=" << boardWidth << ", boardHeight=" << boardHeight << std::endl;
     currentPath = computeBFS(selfPosition, targetPos, fullView, boardWidth, boardHeight);
-    std::cout << "DEBUG: BFS completed, path size=" << currentPath.size() << std::endl;
     if (!currentPath.empty()) {
         Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Computed new path to target with " + std::to_string(currentPath.size()) + " steps.");
         chasing = true;
@@ -462,29 +447,6 @@ void TankAlgorithm_318772340_206580102::computeShootingPath() {
 std::vector<Direction::Value> TankAlgorithm_318772340_206580102::computeBFS(const Position& from, const Position& to,
                                                          const std::vector<std::pair<Position, char>>& fullView,
                                                          size_t width, size_t height) {
-    std::cout << "DEBUG: computeBFS() called: from=(" << from.getx() << "," << from.gety() << "), to=(" << to.getx() << "," << to.gety() << ")" << std::endl;
-    std::cout << "DEBUG: width=" << width << ", height=" << height << std::endl;
-    
-    // Print current board state for debugging
-    std::cout << "DEBUG: Current board state:" << std::endl;
-    for (size_t y = 0; y < height; ++y) {
-        std::cout << "DEBUG: Row " << y << ": ";
-        for (size_t x = 0; x < width; ++x) {
-            Position pos(x, y);
-            bool found = false;
-            for (const auto& [boardPos, symbol] : fullView) {
-                if (boardPos == pos) {
-                    std::cout << symbol;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                std::cout << ".";
-            }
-        }
-        std::cout << std::endl;
-    }
     
     (void)to; 
     std::set<Position> blocked;
@@ -521,7 +483,6 @@ std::vector<Direction::Value> TankAlgorithm_318772340_206580102::computeBFS(cons
                     break;
                 for (const auto& [pos, symbol] : fullView) {
                     if (pos == step && symbol == enemySymbol) {
-                        std::cout << "DEBUG: Found shooting position at (" << next.getx() << "," << next.gety() << ") with path size " << newPath.size() << std::endl;
                         return newPath;
                     }
                 }
@@ -530,7 +491,6 @@ std::vector<Direction::Value> TankAlgorithm_318772340_206580102::computeBFS(cons
             visited.insert(next);
         }
     }
-    std::cout << "DEBUG: No path found" << std::endl;
     return {};
 }
 

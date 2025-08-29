@@ -29,10 +29,11 @@ ComparativeSimulator::ComparativeSimulator() = default;
 ComparativeSimulator::~ComparativeSimulator() = default;
 
 void ComparativeSimulator::configure(const std::string& gameManagersFolder,
-                                    const std::string& gameMapFile,
-                                    const std::string& algorithm1File,
-                                    const std::string& algorithm2File,
-                                    size_t numThreads) {
+                                   const std::string& gameMapFile,
+                                   const std::string& algorithm1File,
+                                   const std::string& algorithm2File,
+                                   size_t numThreads,
+                                   bool verbose) {
     std::cout << "Configuring Comparative Simulator..." << std::endl;
     
     this->gameManagersFolder = gameManagersFolder;
@@ -40,6 +41,7 @@ void ComparativeSimulator::configure(const std::string& gameManagersFolder,
     this->algorithm1File = algorithm1File;
     this->algorithm2File = algorithm2File;
     this->numThreads = numThreads;
+    this->verbose = verbose;
     
     // Load algorithm libraries first
     loadAlgorithmLibraries();
@@ -111,7 +113,10 @@ void ComparativeSimulator::loadAlgorithmLibraries() {
 }
 
 void ComparativeSimulator::setupThreadPool() {
-    threadPool = std::make_unique<ThreadPool>(numThreads);
+    // For numThreads >= 2, create numThreads worker threads
+    // The main thread will also participate in the work
+    size_t workerThreads = (numThreads >= 2) ? numThreads : 0;
+    threadPool = std::make_unique<ThreadPool>(workerThreads);
 }
 
 void ComparativeSimulator::validateConfiguration() const {
@@ -149,7 +154,7 @@ void ComparativeSimulator::runComparative() {
     
     // Load the single map
     MapData map;
-    if (!map.loadFromFile(gameMapFile)) {
+    if (!map.loadFromFile(gameMapFile, verbose)) {
         throw std::runtime_error("Failed to load game map: " + gameMapFile);
     }
     
@@ -194,63 +199,98 @@ std::vector<std::future<ComparativeExecution>> ComparativeSimulator::queueAllGam
     
     // Load the single map for all executions
     MapData map;
-    if (!map.loadFromFile(gameMapFile)) {
+    if (!map.loadFromFile(gameMapFile, verbose)) {
         throw std::runtime_error("Failed to load game map: " + gameMapFile);
     }
     
-    // Queue each GameManager with the same two algorithms
-    for (size_t gmIdx = 0; gmIdx < gameManagerFactories.size(); ++gmIdx) {
-        auto future = threadPool->enqueue([=, &map]() -> ComparativeExecution {
-            ComparativeExecution execution;
-            execution.gameManagerName = gameManagerNames.empty() ? 
-                ("GameManager" + std::to_string(gmIdx)) : gameManagerNames[gmIdx];
-            
-            try {
-                // Create GameManager
-                auto gameManager = gameManagerFactories[gmIdx](false); // verbose = false
-                
-                // Create satellite view from map
-                auto satelliteView = GameRunner::createSatelliteView(map);
-                
-                // Create players with the same factory but different indices
-                auto player1 = playerFactory(1, map.width, map.height, map.maxSteps, map.numShells); // player index 1
-                auto player2 = playerFactory(2, map.width, map.height, map.maxSteps, map.numShells); // player index 2
-                
-                // Create algorithms with different factories
-                auto algorithm1 = algorithm1Factory(1, 0); // player 1, tank 0
-                auto algorithm2 = algorithm2Factory(2, 0); // player 2, tank 0
-                
-                // Run the game
-                GameResult result = gameManager->run(
-                    map.width, map.height,
-                    *satelliteView,
-                    std::filesystem::path(gameMapFile).filename().string(),
-                    map.maxSteps, map.numShells,
-                    *player1, "Player1", *player2, "Player2",
-                    algorithm1Factory, algorithm2Factory
-                );
-                
-                // Convert to ComparativeGameResult
-                execution.result.winner = result.winner;
-                execution.result.reason = result.reason;
-                execution.result.rounds = result.rounds;
-                execution.result.remaining_tanks = result.remaining_tanks;
-                execution.result.finalMapState = serializeMapState(result.gameState.get());
-                execution.finalMapState = execution.result.finalMapState;
-                execution.success = true;
-                
-            } catch (const std::exception& e) {
-                execution.success = false;
-                execution.errorMessage = e.what();
-            }
-            
-            return execution;
-        });
+    size_t totalGameManagers = gameManagerFactories.size();
+    
+    if (numThreads == 1) {
+        // Single-threaded: queue all games for the single worker thread
+        for (size_t gmIdx = 0; gmIdx < totalGameManagers; ++gmIdx) {
+            auto future = threadPool->enqueue([=, this]() -> ComparativeExecution {
+                return runSingleGame(gmIdx, map);
+            });
+            futures.push_back(std::move(future));
+        }
+    } else {
+        // Multi-threaded: distribute work between worker threads and main thread
+        size_t workerThreads = threadPool->size();
+        size_t gamesForWorkers = std::min(workerThreads, totalGameManagers);
         
-        futures.push_back(std::move(future));
+        // Queue games for worker threads
+        for (size_t gmIdx = 0; gmIdx < gamesForWorkers; ++gmIdx) {
+            auto future = threadPool->enqueue([=, this]() -> ComparativeExecution {
+                return runSingleGame(gmIdx, map);
+            });
+            futures.push_back(std::move(future));
+        }
+        
+        // Main thread runs remaining games
+        for (size_t gmIdx = gamesForWorkers; gmIdx < totalGameManagers; ++gmIdx) {
+            // Create a packaged_task to wrap the game execution
+            auto task = std::packaged_task<ComparativeExecution()>([=, this]() -> ComparativeExecution {
+                return runSingleGame(gmIdx, map);
+            });
+            
+            // Get the future from the packaged_task
+            futures.push_back(task.get_future());
+            
+            // Execute the task immediately in the main thread
+            task();
+        }
     }
     
     return futures;
+}
+
+
+
+ComparativeExecution ComparativeSimulator::runSingleGame(size_t gmIdx, const MapData& map) {
+    ComparativeExecution execution;
+    execution.gameManagerName = gameManagerNames.empty() ? 
+        ("GameManager" + std::to_string(gmIdx)) : gameManagerNames[gmIdx];
+    
+    try {
+        // Create GameManager
+        auto gameManager = gameManagerFactories[gmIdx](verbose);
+        
+        // Create satellite view from map
+        auto satelliteView = GameRunner::createSatelliteView(map);
+        
+        // Create players with the same factory but different indices
+        auto player1 = playerFactory(1, map.width, map.height, map.maxSteps, map.numShells);
+        auto player2 = playerFactory(2, map.width, map.height, map.maxSteps, map.numShells);
+        
+        // Create algorithms with different factories
+        auto algorithm1 = algorithm1Factory(1, 0);
+        auto algorithm2 = algorithm2Factory(2, 0);
+        
+        // Run the game
+        GameResult result = gameManager->run(
+            map.width, map.height,
+            *satelliteView,
+            std::filesystem::path(gameMapFile).filename().string(),
+            map.maxSteps, map.numShells,
+            *player1, "Player1", *player2, "Player2",
+            algorithm1Factory, algorithm2Factory
+        );
+        
+        // Convert to ComparativeGameResult
+        execution.result.winner = result.winner;
+        execution.result.reason = result.reason;
+        execution.result.rounds = result.rounds;
+        execution.result.remaining_tanks = result.remaining_tanks;
+        execution.result.finalMapState = serializeMapState(result.gameState.get());
+        execution.finalMapState = execution.result.finalMapState;
+        execution.success = true;
+        
+    } catch (const std::exception& e) {
+        execution.success = false;
+        execution.errorMessage = e.what();
+    }
+    
+    return execution;
 }
 
 std::string ComparativeSimulator::generateTimestampedFilename() const {

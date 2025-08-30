@@ -91,7 +91,6 @@ void TankAlgorithm_318772340_206580102::updateBattleInfo(BattleInfo& info) {
         computeShootingPath();
     }
     
-    // Player 2 doesn't need additional logic beyond the common initialization
 }
 
 //searching for shells in the 2X2 slots around our tank, if so we are threatened
@@ -245,7 +244,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getAction() {
     return result;
 }
 
-// Player 1 action logic (from Algo1)
+// Player 1 action logic 
 ActionRequest TankAlgorithm_318772340_206580102::getPlayer1Action() {
     ActionRequest action = ActionRequest::DoNothing;
     if (turnCounterSinceInfo == -1 || turnCounterSinceInfo == 5) {
@@ -280,7 +279,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer1Action() {
     return ActionRequest::GetBattleInfo;
 }
 
-// Player 2 action logic (from Algo2)
+// Player 2 action logic
 ActionRequest TankAlgorithm_318772340_206580102::getPlayer2Action() {
 
     if (turnCounterSinceInfo == -1) { // first turn
@@ -321,7 +320,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer2Action() {
     return ActionRequest::MoveForward;
 }
 
-// Player 1 specific methods (from Algo1)
+// Player 1 specific methods 
 bool TankAlgorithm_318772340_206580102::needsNewBattleInfo() const {
     return needsNewInfo || turnCounterSinceInfo >= 5 || (chasing && currentPath.empty());
 }

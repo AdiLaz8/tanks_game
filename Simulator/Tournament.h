@@ -20,7 +20,7 @@ struct Competitor {
     size_t losses = 0;
     size_t ties = 0;
     size_t totalGames = 0;
-    double score = 0.0; // Tournament scoring system
+    double score = 0.0;
     
     double getWinRate() const {
         return totalGames > 0 ? static_cast<double>(wins) / totalGames : 0.0;

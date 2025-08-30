@@ -23,7 +23,6 @@ private:
     size_t maxSteps;
     size_t numShells;
     
-    // Player 1 specific (mine tracking)
     bool minesInitialized = false;
     std::vector<Position> minePositions;
     

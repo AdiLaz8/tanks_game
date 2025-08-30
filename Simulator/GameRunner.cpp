@@ -4,10 +4,10 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include "../UserCommon/Logger.h"
 
 // Helper function to parse key-value pairs like "MaxSteps = 100"
 bool parseKeyValue(const std::string& line, const std::string& key, size_t& value) {
-    // Find the key
     size_t keyPos = line.find(key);
     if (keyPos == std::string::npos) {
         return false;
@@ -63,7 +63,7 @@ bool MapData::loadFromFile(const std::string& filepath, bool verbose) {
         }
         return false;
     }
-    name = line; // Store the actual map name from the file
+    name = line;
     
     // Line 2: MaxSteps = <NUM>
     if (!std::getline(file, line)) {
@@ -108,7 +108,7 @@ bool MapData::loadFromFile(const std::string& filepath, bool verbose) {
         return false;
     }
     
-    // Read map data (Lines 6 and on) with EX2 error handling
+    // Read map data 
     data.resize(height);
     size_t actualRows = 0;
     size_t maxActualCols = 0;
@@ -119,7 +119,7 @@ bool MapData::loadFromFile(const std::string& filepath, bool verbose) {
         // Trim trailing spaces to get actual content length
         size_t contentLength = line.find_last_not_of(" \t");
         if (contentLength != std::string::npos) {
-            contentLength++; // Include the last non-space character
+            contentLength++; 
         } else {
             contentLength = 0; // Line is all spaces
         }
@@ -189,58 +189,127 @@ GameExecution GameRunner::runSingleGame(
     
     GameExecution execution;
     execution.gameManagerName = gameManagerName;
-    execution.algorithmName = algorithm1Name; // Keep for backward compatibility
+    execution.algorithmName = algorithm1Name;
     execution.mapName = map.name;
     execution.player1Name = "Player1";
     execution.player2Name = "Player2";
+    
+    LOG_INFO("=== STARTING GAME EXECUTION ===", "GAMERUNNER");
+    LOG_INFO("GameManager: " + gameManagerName, "GAMERUNNER");
+    LOG_INFO("Map: " + map.name + " (" + std::to_string(map.width) + "x" + std::to_string(map.height) + ")", "GAMERUNNER");
+    LOG_INFO("Max Steps: " + std::to_string(map.maxSteps), "GAMERUNNER");
+    LOG_INFO("Shells per Tank: " + std::to_string(map.numShells), "GAMERUNNER");
+    LOG_INFO("Algorithm 1: " + algorithm1Name, "GAMERUNNER");
+    LOG_INFO("Algorithm 2: " + algorithm2Name, "GAMERUNNER");
+    LOG_DEBUG("Verbose mode: " + std::string(verbose ? "enabled" : "disabled"), "GAMERUNNER");
     
     auto startTime = std::chrono::steady_clock::now();
     
     try {
         // Create GameManager
+        LOG_DEBUG("Creating GameManager instance", "GAMERUNNER");
         auto gameManager = gameManagerFactory(verbose);
         if (!gameManager) {
+            LOG_ERROR("Failed to create GameManager", "GAMERUNNER");
             throw std::runtime_error("Failed to create GameManager");
         }
+        LOG_INFO("GameManager created successfully", "GAMERUNNER");
         
-        // Create Players (same factory creates both players with different indices)
+        // Create Players 
+        LOG_DEBUG("Creating Player 1", "GAMERUNNER");
         auto player1 = playerFactory(1, map.width, map.height, map.maxSteps, map.numShells);
+        LOG_DEBUG("Creating Player 2", "GAMERUNNER");
         auto player2 = playerFactory(2, map.width, map.height, map.maxSteps, map.numShells);
         if (!player1 || !player2) {
+            LOG_ERROR("Failed to create Players", "GAMERUNNER");
             throw std::runtime_error("Failed to create Players");
         }
+        LOG_INFO("Both players created successfully", "GAMERUNNER");
         
         // Create SatelliteView from map
+        LOG_DEBUG("Creating SatelliteView from map", "GAMERUNNER");
         auto satelliteView = createSatelliteView(map);
         if (!satelliteView) {
+            LOG_ERROR("Failed to create SatelliteView", "GAMERUNNER");
             throw std::runtime_error("Failed to create SatelliteView");
         }
+        LOG_DEBUG("SatelliteView created successfully", "GAMERUNNER");
+        
         // Run the game
+        LOG_INFO("=== STARTING GAME SIMULATION ===", "GAMERUNNER");
+        LOG_INFO("Calling GameManager->run() with parameters:", "GAMERUNNER");
+        LOG_DEBUG("  Map size: " + std::to_string(map.width) + "x" + std::to_string(map.height), "GAMERUNNER");
+        LOG_DEBUG("  Map name: " + map.name, "GAMERUNNER");
+        LOG_DEBUG("  Max steps: " + std::to_string(map.maxSteps), "GAMERUNNER");
+        LOG_DEBUG("  Shells per tank: " + std::to_string(map.numShells), "GAMERUNNER");
+        LOG_DEBUG("  Player 1 algorithm: " + algorithm1Name, "GAMERUNNER");
+        LOG_DEBUG("  Player 2 algorithm: " + algorithm2Name, "GAMERUNNER");
+        
         execution.result = gameManager->run(
             map.width, map.height,
             *satelliteView,
             map.name,
             map.maxSteps, map.numShells,
-            *player1, algorithm1Name,  // Use first algorithm name
-            *player2, algorithm2Name,  // Use second algorithm name
+            *player1, algorithm1Name,  
+            *player2, algorithm2Name,  
             tankAlgorithmFactory,
             tankAlgorithmFactory
         );
         
+        LOG_INFO("=== GAME SIMULATION COMPLETED ===", "GAMERUNNER");
+        
+        // Log detailed game results
+        LOG_INFO("=== DETAILED GAME RESULTS ===", "GAMERUNNER");
+        LOG_INFO("Winner: " + (execution.result.winner == 0 ? "TIE" : "Player " + std::to_string(execution.result.winner)), "GAMERUNNER");
+        LOG_INFO("Total Rounds Played: " + std::to_string(execution.result.rounds), "GAMERUNNER");
+        
+        std::string reasonStr;
+        switch (execution.result.reason) {
+            case GameResult::ALL_TANKS_DEAD: reasonStr = "ALL_TANKS_DEAD"; break;
+            case GameResult::MAX_STEPS: reasonStr = "MAX_STEPS_REACHED"; break;
+            case GameResult::ZERO_SHELLS: reasonStr = "ZERO_SHELLS"; break;
+            default: reasonStr = "UNKNOWN"; break;
+        }
+        LOG_INFO("End Reason: " + reasonStr, "GAMERUNNER");
+        
+        // Log remaining tanks for each player
+        if (execution.result.remaining_tanks.size() >= 2) {
+            LOG_INFO("Player 1 remaining tanks: " + std::to_string(execution.result.remaining_tanks[0]), "GAMERUNNER");
+            LOG_INFO("Player 2 remaining tanks: " + std::to_string(execution.result.remaining_tanks[1]), "GAMERUNNER");
+        }
+        
+        // Log game state information if available
+        if (execution.result.gameState) {
+            LOG_DEBUG("Final game state captured successfully", "GAMERUNNER");
+        } else {
+            LOG_WARN("No final game state available", "GAMERUNNER");
+        }
+        
         execution.success = true;
+        LOG_INFO("Game execution marked as successful", "GAMERUNNER");
         
     } catch (const std::exception& e) {
         execution.success = false;
         execution.errorMessage = e.what();
+        LOG_ERROR("Game execution failed with exception: " + std::string(e.what()), "GAMERUNNER");
         std::cerr << "Game execution failed: " << e.what() << std::endl;
     } catch (...) {
         execution.success = false;
         execution.errorMessage = "Unknown error occurred";
+        LOG_ERROR("Game execution failed with unknown error", "GAMERUNNER");
         std::cerr << "Game execution failed with unknown error" << std::endl;
     }
     
     auto endTime = std::chrono::steady_clock::now();
     execution.executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+    
+    LOG_INFO("=== GAME EXECUTION SUMMARY ===", "GAMERUNNER");
+    LOG_INFO("Execution time: " + std::to_string(execution.executionTime.count()) + " ms", "GAMERUNNER");
+    LOG_INFO("Success: " + std::string(execution.success ? "true" : "false"), "GAMERUNNER");
+    if (!execution.success) {
+        LOG_ERROR("Error message: " + execution.errorMessage, "GAMERUNNER");
+    }
+    LOG_INFO("=== END GAME EXECUTION ===", "GAMERUNNER");
     
     return execution;
 }

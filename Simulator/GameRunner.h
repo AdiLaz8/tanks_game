@@ -41,7 +41,6 @@ public:
 private:
 };
 
-// Simple SatelliteView implementation for map data
 class MapSatelliteView : public SatelliteView {
 private:
     std::vector<std::vector<char>> mapData;

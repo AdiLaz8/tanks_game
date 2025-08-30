@@ -49,7 +49,6 @@ void Tournament::generateRoundRobin() {
         return;
     }
     
-    // In round robin, we need one round per matchup
     size_t totalRounds = useMultipleMaps ? maps.size() : 1;
     
     for (size_t mapIdx = 0; mapIdx < totalRounds; ++mapIdx) {
@@ -86,13 +85,12 @@ void Tournament::generateSingleElimination() {
         return;
     }
     
-    // For single elimination, we need log2(competitors) rounds
     size_t numRounds = static_cast<size_t>(std::ceil(std::log2(competitors.size())));
     
     // Create first round with all competitors
     auto firstRound = std::make_unique<TournamentRound>(0);
     
-    // Pair up competitors (if odd number, one gets a bye)
+    // Pair up competitors
     for (size_t i = 0; i < competitors.size(); i += 2) {
         if (i + 1 < competitors.size()) {
             // Use first map for elimination tournament
@@ -110,12 +108,10 @@ void Tournament::generateSingleElimination() {
             
             firstRound->matches.push_back(std::move(match));
         }
-        // If odd number, competitors[i] gets a bye to next round (handled later)
     }
     
     rounds.push_back(std::move(firstRound));
     
-    // Create placeholder rounds for later (will be populated as tournament progresses)
     for (size_t r = 1; r < numRounds; ++r) {
         rounds.push_back(std::make_unique<TournamentRound>(r));
     }
@@ -146,7 +142,6 @@ void Tournament::recordMatchResult(const std::string& matchId, const GameExecuti
     for (auto& round : rounds) {
         for (auto& match : round->matches) {
             if (match->id == matchId) {
-                // match->result = std::move(result); // Commented out due to copy assignment issues
                 match->completed = true;
                 
                 // Update competitor statistics
@@ -191,7 +186,7 @@ void Tournament::generateNextEliminationRound(size_t completedRoundNum) {
             } else if (match->result.result.winner == 2) {
                 winners.push_back(match->competitor2);
             } else {
-                // Tie - use some tiebreaker (e.g., first competitor advances)
+                // Tie - use tiebreaker
                 winners.push_back(match->competitor1);
             }
         }
@@ -229,7 +224,7 @@ bool Tournament::isComplete() const {
 std::vector<Competitor> Tournament::getFinalStandings() const {
     std::vector<Competitor> standings = competitors;
     
-    // Sort by score (wins), then by win rate, then by name
+    // Sort by score , then by win rate, then by name
     std::sort(standings.begin(), standings.end(), [](const Competitor& a, const Competitor& b) {
         if (a.wins != b.wins) return a.wins > b.wins;
         if (a.getWinRate() != b.getWinRate()) return a.getWinRate() > b.getWinRate();

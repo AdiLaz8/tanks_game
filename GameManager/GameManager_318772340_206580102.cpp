@@ -9,7 +9,6 @@
 #include <iostream>
 #include <unordered_set>
 
-// Use UserCommon namespace
 using namespace UserCommon_318772340_206580102;
 
 namespace GameManager_318772340_206580102 {
@@ -70,17 +69,15 @@ GameResult GameManager_318772340_206580102::run(
 
         
         if (!name1.empty() && !name2.empty()) {
-            // Check if this is comparative mode (same algorithm vs itself) or competitive mode (different algorithms)
+            // Check if this is comparative mode or competitive mode
             if (name1 == name2 || (name1.find("Player") == 0 && name2.find("Player") == 0)) {
-                // Comparative mode: use map name only (no algorithm names needed since it's the same algorithm)
+                // Comparative mode:
                 outputFile = "output_" + map_name;
             } else {
-                // Competitive mode: use algorithm names for unique identification
-                // Extract just the filename without path and extension for cleaner names
+                // Competitive mode:
                 std::string algo1Name = name1;
                 std::string algo2Name = name2;
                 
-                // Remove path and .so extension if present
                 size_t lastSlash = algo1Name.find_last_of("/\\");
                 if (lastSlash != std::string::npos) {
                     algo1Name = algo1Name.substr(lastSlash + 1);
@@ -235,9 +232,7 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
                         actionStr += " (killed)";
                         tankLog[birthIdx].isAlive = false;
                         tankLog[birthIdx].wasKilledThisTurn = true;
-                        // Write the action immediately if verbose is on, since the game might end
                         if (verbose && simpleOutput.is_open()) {
-                            // Write current actions for this turn
                             for (size_t i = 0; i < tankLog.size(); ++i) {
                                 std::string action;
                                 if (!tankLog[i].isAlive && tankLog[i].wasKilledThisTurn) { 
@@ -313,7 +308,6 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
     return result;
 }
 
-// Existing methods adapted with namespace and verbose logging...
 void GameManager_318772340_206580102::moveShells() {
     std::vector<Shell*> copy = gameBoard->getShells(); 
     for (Shell* shell : copy) {

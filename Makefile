@@ -42,13 +42,11 @@ test: all
 	@echo "=== Running tests ==="
 	$(MAKE) -C Simulator test
 
-# Quick build (parallel where possible)
 quick: usercommon
 	@echo "=== Quick parallel build ==="
 	$(MAKE) -j2 algorithm gamemanager
 	$(MAKE) simulator
 
-# Rebuild everything from scratch
 rebuild: clean all
 
 # Show build status

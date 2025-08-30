@@ -5,7 +5,6 @@
 #include <string>
 #include <iostream>
 
-// Global registries - these will be accessed by the Simulator
 std::vector<PlayerFactory> playerFactories;
 std::vector<TankAlgorithmFactory> tankAlgorithmFactories;
 std::vector<GameManagerFactory> gameManagerFactories;

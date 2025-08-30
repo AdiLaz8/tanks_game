@@ -7,7 +7,6 @@
 #include <vector>
 #include <memory>
 
-// Forward declarations
 class Tank;
 
 using namespace UserCommon_318772340_206580102;

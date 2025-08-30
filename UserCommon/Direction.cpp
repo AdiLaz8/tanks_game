@@ -4,7 +4,6 @@
 
 namespace UserCommon_318772340_206580102 {
 
-// gets us the changes in x and y in the current direction
 Position Direction::toVector() const {
     switch (currentDirection) {
         case U:  return Position(0, -1);

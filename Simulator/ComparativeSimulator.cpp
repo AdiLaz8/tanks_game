@@ -10,7 +10,6 @@
 #include <filesystem>
 #include <thread>
 
-// ComparativeGameResult comparison operators for grouping
 bool ComparativeGameResult::operator<(const ComparativeGameResult& other) const {
     if (winner != other.winner) return winner < other.winner;
     if (reason != other.reason) return reason < other.reason;
@@ -79,12 +78,9 @@ void ComparativeSimulator::loadGameManagerLibraries() {
         throw std::runtime_error("No .so files found in GameManager folder: " + gameManagersFolder);
     }
     
-    // CRITICAL FIX: Load GameManager libraries one by one to avoid race conditions
-    // This prevents the global registry conflicts in multi-threaded mode
     gameManagerFactories.clear();
     gameManagerNames.clear();
     
-    // Get reference to the global registry
     auto& gmRegistry = getGameManagerFactoryRegistry();
     
     for (const auto& soFile : soFiles) {
@@ -117,7 +113,6 @@ void ComparativeSimulator::loadGameManagerLibraries() {
         }
     }
     
-    // Clear the global registry to prevent confusion during multi-threaded execution
     gmRegistry.clear();
     
     std::cout << "Loaded " << gameManagerFactories.size() << " GameManager(s) with isolated factories" << std::endl;
@@ -142,7 +137,7 @@ void ComparativeSimulator::loadAlgorithmLibraries() {
         throw std::runtime_error("Need at least 2 TankAlgorithm factories (for algorithm1 and algorithm2)");
     }
     
-    // Use the first player factory for both players (they differentiate by player index)
+    // Use the first player factory for both players
     playerFactory = playerFactories[0];
     
     // Use first two algorithm factories as algorithm1 and algorithm2
@@ -153,8 +148,6 @@ void ComparativeSimulator::loadAlgorithmLibraries() {
 }
 
 void ComparativeSimulator::setupThreadPool() {
-    // CRITICAL FIX: Ensure we have enough threads for all GameManagers
-    // Each GameManager needs its own thread to avoid race conditions
     size_t minThreadsNeeded = gameManagerFactories.size();
     size_t actualThreads = std::max(numThreads, minThreadsNeeded);
     
@@ -262,7 +255,7 @@ std::vector<std::future<ComparativeExecution>> ComparativeSimulator::queueAllGam
         std::cout << "Using multi-threaded execution with " << actualThreads << " worker threads" << std::endl;
     }
     
-    // SIMPLIFIED: Queue all GameManagers to worker threads (one per GameManager)
+    //Queue all GameManagers to worker threads (one per GameManager)
     for (size_t gmIdx = 0; gmIdx < totalGameManagers; ++gmIdx) {
         auto future = threadPool->enqueue([=, this]() -> ComparativeExecution {
             std::cout << "Thread ID: " << std::this_thread::get_id() << " processing GameManager " << gmIdx 
@@ -283,13 +276,11 @@ ComparativeExecution ComparativeSimulator::runSingleGame(size_t gmIdx, const Map
         ("GameManager" + std::to_string(gmIdx)) : gameManagerNames[gmIdx];
     
     try {
-        // Use the pre-loaded factories directly (single-threaded execution ensures no conflicts)
         auto gameManager = gameManagerFactories[gmIdx](verbose);
         auto satelliteView = GameRunner::createSatelliteView(map);
         auto player1 = playerFactory(1, map.width, map.height, map.maxSteps, map.numShells);
         auto player2 = playerFactory(2, map.width, map.height, map.maxSteps, map.numShells);
         
-        // Run the game using the GameManager directly
         GameResult result = gameManager->run(
             map.width, map.height,
             *satelliteView,
@@ -357,23 +348,18 @@ void ComparativeSimulator::writeResultsToFile(const std::string& outputFile) con
     
     // Write each result group
     for (const auto& [result, gameManagerNames] : resultGroups) {
-        // Line 5: Comma-separated list of GameManager names with identical results
         for (size_t i = 0; i < gameManagerNames.size(); ++i) {
             if (i > 0) *out << ",";
             *out << gameManagerNames[i];
         }
         *out << std::endl;
         
-        // Line 6: Game result message
         *out << getGameResultMessage(result) << std::endl;
         
-        // Line 7: Round number
         *out << result.rounds << std::endl;
         
-        // Line 8+: Final map state
         *out << result.finalMapState << std::endl;
         
-        // Empty line before next group (if any)
         if (&result != &resultGroups.rbegin()->first) {
             *out << std::endl;
         }
@@ -389,7 +375,6 @@ std::string ComparativeSimulator::serializeMapState(const SatelliteView* satelli
         return "Error: No final game state available";
     }
     
-    // Try to cast to MapSatelliteView to get dimensions
     const MapSatelliteView* mapView = dynamic_cast<const MapSatelliteView*>(satelliteView);
     if (!mapView) {
         return "Error: Cannot access map dimensions";

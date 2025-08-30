@@ -4,8 +4,6 @@
 #include <memory>
 #include <vector>
 
-// Implementation of TankAlgorithmRegistration constructor
 TankAlgorithmRegistration::TankAlgorithmRegistration(TankAlgorithmFactory factory) {
-    // Use the global registry from Registry.cpp
     registerTankAlgorithmFactory(factory);
 }

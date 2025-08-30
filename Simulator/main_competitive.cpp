@@ -17,15 +17,14 @@
 #include <functional>
 #include <numeric>
 
-// Include our actual classes
 #include "GameRunner.h"
+#include "../UserCommon/Logger.h"
 #include "Registry.h"
 
 namespace fs = std::filesystem;
 
 
 
-// Command line argument structure for competitive mode
 struct CompetitiveArgs {
     std::string gameMapsFolder;
     std::string gameManager;
@@ -140,7 +139,6 @@ CompetitiveArgs parseArgs(int argc, char* argv[]) {
     return args;
 }
 
-// Forward declarations
 std::vector<std::pair<int, int>> calculatePairings(int mapIndex, int numAlgorithms);
 void writeCompetitionResults(const std::string& outputPath, 
                            const CompetitiveArgs& config,
@@ -197,7 +195,7 @@ CompetitiveGameResult runCompetitiveGame(
             return result;
         }
         
-        // Check registrations - we need at least 2 algorithms
+        // Check registrations
         {
             std::lock_guard<std::mutex> lock(registryMutex);
             std::cout << "Registered Players: " << playerFactories.size() 
@@ -221,7 +219,6 @@ CompetitiveGameResult runCompetitiveGame(
             }
         }
         
-        // Use the registered factories - algorithm1 for player1, algorithm2 for player2
         GameManagerFactory gameManagerFactory = gameManagerFactories[0];
         PlayerFactory player1Factory = playerFactories[0];  // First registered player
         PlayerFactory player2Factory = playerFactories[1];  // Second registered player
@@ -235,13 +232,12 @@ CompetitiveGameResult runCompetitiveGame(
                 "CompetitiveGame",
                 player1Factory,
                 tankAlgorithm1Factory,
-                result.algorithm1,  // First algorithm name
-                result.algorithm2,  // Second algorithm name
+                result.algorithm1,  
+                result.algorithm2,  
                 map,
                 verbose
             );
             
-            // Determine winner
             result.winner = execution.result.winner;
             result.success = true;
             result.rounds = execution.result.rounds;
@@ -273,7 +269,7 @@ std::vector<std::pair<int, int>> calculatePairings(int mapIndex, int numAlgorith
         
         // Avoid duplicate pairings when k = N/2 - 1 (if N is even)
         if (numAlgorithms % 2 == 0 && mapIndex == numAlgorithms / 2 - 1) {
-            if (i < opponent) { // Only add each pair once
+            if (i < opponent) { 
                 pairings.emplace_back(i, opponent);
             }
         } else {
@@ -316,28 +312,43 @@ void writeCompetitionResults(const std::string& outputPath,
 }
 
 int main(int argc, char* argv[]) {
+    // Initialize logging system
+    UserCommon_318772340_206580102::Logger::init("logging.conf");
+    LOG_INFO("Starting competitive mode simulator", "COMPETITIVE");
+    
     // Check for competitive mode flag
     if (argc < 2 || std::string(argv[1]) != "-competition") {
+        LOG_ERROR("Invalid command line arguments - missing -competition flag", "COMPETITIVE");
         std::cerr << "Usage: " << argv[0] << " -competition game_maps_folder=<dir> game_manager=<file> algorithms_folder=<dir> [num_threads=<n>] [-verbose]\n";
+        UserCommon_318772340_206580102::Logger::shutdown();
         return 1;
     }
     
-    // Declare library handles outside try block so they can be cleaned up in catch
     std::vector<void*> algorithmHandles;
     void* gameManagerHandle = nullptr;
     
     try {
-        // Parse arguments (skip the -competition flag)
-        char** args = argv + 1;
-        CompetitiveArgs config = parseArgs(argc - 1, args);
+            // Parse arguments 
+    char** args = argv + 1;
+    CompetitiveArgs config = parseArgs(argc - 1, args);
+    
+    LOG_INFO("Configuration parsed successfully", "COMPETITIVE");
+    LOG_INFO("Game maps folder: " + config.gameMapsFolder, "COMPETITIVE");
+    LOG_INFO("Game manager: " + config.gameManager, "COMPETITIVE");
+    LOG_INFO("Algorithms folder: " + config.algorithmsFolder, "COMPETITIVE");
+    LOG_INFO("Number of threads: " + std::to_string(config.numThreads), "COMPETITIVE");
+    LOG_INFO("Verbose mode: " + std::string(config.verbose ? "enabled" : "disabled"), "COMPETITIVE");
         
         if (!config.isValid()) {
+            LOG_ERROR("Invalid arguments - missing required parameters", "COMPETITIVE");
             std::cerr << "Error: Invalid arguments. All required parameters must be provided.\n";
+            UserCommon_318772340_206580102::Logger::shutdown();
             return 1;
         }
         
         // Validate paths
         validatePaths(config);
+        LOG_INFO("Paths validated successfully", "COMPETITIVE");
         
         // Collect map files
         std::vector<std::string> mapFiles;
@@ -348,9 +359,13 @@ int main(int argc, char* argv[]) {
         }
         
         if (mapFiles.empty()) {
+            LOG_ERROR("No map files found in game maps folder: " + config.gameMapsFolder, "COMPETITIVE");
             std::cerr << "Error: No map files found in game maps folder: " << config.gameMapsFolder << std::endl;
+            UserCommon_318772340_206580102::Logger::shutdown();
             return 1;
         }
+        
+        LOG_INFO("Found " + std::to_string(mapFiles.size()) + " map files", "COMPETITIVE");
         
         // Collect algorithm files
         std::vector<std::string> algorithmFiles;
@@ -447,7 +462,6 @@ int main(int argc, char* argv[]) {
                     
                     allResults.push_back(result);
                     
-                    // Debug: Show each game result
                     std::cout << "GAME RESULT: " << result.mapName << " - " 
                               << fs::path(algorithmFiles[algo1Index]).filename().string() << " vs " 
                               << fs::path(algorithmFiles[algo2Index]).filename().string() 
@@ -506,7 +520,7 @@ int main(int argc, char* argv[]) {
                             algorithmFiles[algo2Index],
                             algo1Index,
                             algo2Index,
-                            config.verbose // Use the actual verbose flag from config
+                            config.verbose 
                         );
                     }));
                 }
@@ -517,7 +531,6 @@ int main(int argc, char* argv[]) {
                 auto result = future.get();
                 allResults.push_back(result);
                 
-                // Debug: Show each game result
                 std::cout << "GAME RESULT: " << result.mapName << " - " 
                           << result.algorithm1 << " vs " << result.algorithm2 
                           << " -> Winner: ";
@@ -562,7 +575,6 @@ int main(int argc, char* argv[]) {
         
         std::sort(sortedScores.begin(), sortedScores.end(), 
                  [](const AlgorithmScore& a, const AlgorithmScore& b) {
-                     // Sort by wins first (descending), then by total score as tiebreaker
                      if (a.wins != b.wins) {
                          return a.wins > b.wins;
                      }
@@ -591,13 +603,16 @@ int main(int argc, char* argv[]) {
                       << " points (W:" << score.wins << " T:" << score.ties << " L:" << score.losses << ")\n";
         }
         
-        // Note: Libraries will be cleaned up by the OS when the program exits
         std::cout << "Competition completed successfully!" << std::endl;
         
     } catch (const std::exception& e) {
+        LOG_ERROR("Exception caught: " + std::string(e.what()), "COMPETITIVE");
         std::cerr << "Error: " << e.what() << std::endl;
+        UserCommon_318772340_206580102::Logger::shutdown();
         return 1;
     }
     
+    LOG_INFO("Competitive simulation completed successfully", "COMPETITIVE");
+    UserCommon_318772340_206580102::Logger::shutdown();
     return 0;
 }

@@ -13,7 +13,6 @@
 #include "ThreadPool.h"
 #include "GameRunner.h"
 
-// Structure to represent a unique game result for grouping
 struct ComparativeGameResult {
     int winner;
     GameResult::Reason reason;

@@ -23,7 +23,6 @@ public:
     explicit ThreadPool(size_t numThreads);
     ~ThreadPool();
     
-    // Add a task to the thread pool and return a future for the result
     template<class F, class... Args>
     auto enqueue(F&& f, Args&&... args) 
         -> std::future<typename std::invoke_result<F, Args...>::type>;
@@ -35,7 +34,6 @@ public:
     size_t size() const { return workers.size(); }
 };
 
-// Template implementation
 template<class F, class... Args>
 auto ThreadPool::enqueue(F&& f, Args&&... args) 
     -> std::future<typename std::invoke_result<F, Args...>::type> {

@@ -21,12 +21,11 @@ void CompetitiveSimulator::configure(const SimulationConfig& config) {
     
     // Set up competitive configuration
     CompetitiveConfig compConfig;
-    compConfig.format = CompetitiveConfig::ROUND_ROBIN; // Default
+    compConfig.format = CompetitiveConfig::ROUND_ROBIN; 
     compConfig.useMultipleMaps = true;
     compConfig.gamesPerMatchup = 1;
     compConfig.parallelizeMatches = true;
     
-    // Use first GameManager for competitive mode
     if (!config.gameManagerSoFiles.empty()) {
         compConfig.gameManagerSo = config.gameManagerSoFiles[0];
     }
@@ -82,7 +81,7 @@ void CompetitiveSimulator::loadLibraries(const SimulationConfig& config) {
         }
     }
     
-    // Load Algorithm libraries (these will compete against each other)
+    // Load Algorithm libraries
     if (!config.algorithmSoFiles.empty()) {
         loader.loadAlgorithmLibraries(config.algorithmSoFiles);
         playerFactories = loader.getPlayerFactories();
@@ -94,8 +93,7 @@ void CompetitiveSimulator::loadLibraries(const SimulationConfig& config) {
 }
 
 void CompetitiveSimulator::setupThreadPool(size_t numThreads) {
-    // For numThreads >= 2, create numThreads worker threads
-    // The main thread will also participate in the work
+
     size_t workerThreads = (numThreads >= 2) ? numThreads : 0;
     threadPool = std::make_unique<ThreadPool>(workerThreads);
 }
@@ -213,7 +211,6 @@ void CompetitiveSimulator::runTournament() {
             }
         }
     } else {
-        // Execute matches sequentially
         auto pendingMatches = tournament->getAllPendingMatches();
         for (auto* match : pendingMatches) {
             GameExecution execution = executeMatch(match);
@@ -243,10 +240,8 @@ std::vector<std::future<GameExecution>> CompetitiveSimulator::executeAllMatches(
         return futures;
     }
     
-    // For round robin, we can execute all matches in parallel
     // For elimination tournaments, we need to execute round by round
     if (competitiveConfig.format == CompetitiveConfig::ROUND_ROBIN) {
-        // Calculate how many matches to run in worker threads vs main thread
         size_t workerThreads = threadPool->size();
         size_t matchesForWorkers = std::min(workerThreads, totalMatches);
         size_t matchesForMain = totalMatches - matchesForWorkers;
@@ -259,17 +254,14 @@ std::vector<std::future<GameExecution>> CompetitiveSimulator::executeAllMatches(
             futures.push_back(std::move(future));
         }
         
-        // Main thread runs remaining matches
         for (size_t i = matchesForWorkers; i < totalMatches; ++i) {
             // Create a packaged_task to wrap the match execution
             auto task = std::packaged_task<GameExecution()>([this, match = pendingMatches[i]]() -> GameExecution {
                 return executeMatch(match);
             });
             
-            // Get the future from the packaged_task
             futures.push_back(task.get_future());
             
-            // Execute the task immediately in the main thread
             task();
         }
         
@@ -292,17 +284,14 @@ std::vector<std::future<GameExecution>> CompetitiveSimulator::executeAllMatches(
                 roundFutures.push_back(std::move(future));
             }
             
-            // Main thread runs remaining matches
             for (size_t i = matchesForWorkers; i < roundTotal; ++i) {
                 // Create a packaged_task to wrap the match execution
                 auto task = std::packaged_task<GameExecution()>([this, match = roundMatches[i]]() -> GameExecution {
                     return executeMatch(match);
                 });
                 
-                // Get the future from the packaged_task
                 roundFutures.push_back(task.get_future());
                 
-                // Execute the task immediately in the main thread
                 task();
             }
             
@@ -329,16 +318,14 @@ GameExecution CompetitiveSimulator::executeMatch(Match* match) {
         return execution;
     }
     
-    // In competitive mode, we need to run a match between two different competitors
-    // But our current GameRunner only supports one algorithm factory per game
-    // For now, use competitor1's algorithm - this needs further redesign for true competition
+
     TankAlgorithmFactory algorithmFactory = match->competitor1->algorithmFactory;
     
     return GameRunner::runSingleGame(
         gameManagerFactory,
         gameManagerName,
-        playerFactories[0], // Player factory (creates both players with different indices)
-        algorithmFactory,   // Algorithm factory (creates algorithms for both tanks)
+        playerFactories[0], 
+        algorithmFactory,   
         match->competitor1->name + " vs " + match->competitor2->name,
         *mapIt,
         false // verbose

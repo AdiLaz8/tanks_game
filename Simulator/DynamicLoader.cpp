@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdexcept>
 
-// Forward declarations for registration system access
 std::vector<PlayerFactory>& getPlayerFactoryRegistry();
 std::vector<TankAlgorithmFactory>& getTankAlgorithmFactoryRegistry();
 std::vector<GameManagerFactory>& getGameManagerFactoryRegistry();

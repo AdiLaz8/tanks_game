@@ -31,7 +31,7 @@ protected:
     bool minesInitialized = false;
     bool moveAfterRotate = false;
     
-    // Player 1 specific (Algo1) variables
+    // Player 1 specific variables
     std::vector<Direction::Value> currentPath;
     Position targetPos{0,0};
     bool chasing = false;
@@ -54,7 +54,7 @@ protected:
     int getTankId() const;
     void updateBattleInfo(BattleInfo& info) override;
     
-    // Player 1 (Algo1) specific methods
+    // Player 1 specific methods
     bool needsNewBattleInfo() const;
     void computeShootingPath();
     std::vector<Direction::Value> computeBFS(const Position& from, const Position& to,

@@ -18,7 +18,6 @@
 
 namespace fs = std::filesystem;
 
-// Command line argument structure
 struct ComparativeArgs {
     std::string gameMap;
     std::string gameManagersFolder;
@@ -182,19 +181,16 @@ ComparativeArgs parseArgs(int argc, char* argv[]) {
 
 // Validate file and folder existence
 void validatePaths(const ComparativeArgs& args) {
-    // Check game map file
     if (!fs::exists(args.gameMap)) {
         std::cerr << "Error: Game map file does not exist: " << args.gameMap << "\n";
         exit(1);
     }
     
-    // Check game managers folder
     if (!fs::exists(args.gameManagersFolder) || !fs::is_directory(args.gameManagersFolder)) {
         std::cerr << "Error: Game managers folder does not exist or is not a directory: " << args.gameManagersFolder << "\n";
         exit(1);
     }
     
-    // Check algorithm files
     if (!fs::exists(args.algorithm1)) {
         std::cerr << "Error: Algorithm1 file does not exist: " << args.algorithm1 << "\n";
         exit(1);
@@ -268,10 +264,8 @@ ComparativeGameResult runSingleGame(
             return result;
         }
         
-        // For now, we'll use direct instantiation since we know our classes work
-        // In a full implementation, we would use dlsym to get factory functions
         
-        // Create factories (using our known classes)
+        // Create factories
         GameManagerFactory gameManagerFactory = [](bool verbose) -> std::unique_ptr<AbstractGameManager> {
             return std::make_unique<GameManager_318772340_206580102::GameManager_318772340_206580102>(verbose);
         };
@@ -290,8 +284,8 @@ ComparativeGameResult runSingleGame(
             result.gameManagerName,
             playerFactory,
             tankAlgorithmFactory,
-            "TankAlgorithm_318772340_206580102",  // First algorithm name
-            "TankAlgorithm_318772340_206580102",  // Second algorithm name (same in comparative mode)
+            "TankAlgorithm_318772340_206580102", 
+            "TankAlgorithm_318772340_206580102",  
             map,
             verbose
         );
@@ -354,13 +348,11 @@ void writeResults(
         std::cerr << "Error: Cannot create output file: " << outputPath << "\n";
         std::cerr << "Writing results to screen instead:\n\n";
         
-        // Write to screen
         std::cout << "game_map=" << args.gameMap << "\n";
         std::cout << "algorithm1=" << args.algorithm1 << "\n";
         std::cout << "algorithm2=" << args.algorithm2 << "\n\n";
         
         for (const auto& group : groups) {
-            // Write comma-separated game manager names
             for (size_t i = 0; i < group.size(); ++i) {
                 if (i > 0) std::cout << ",";
                 std::cout << group[i].gameManagerName;
@@ -377,7 +369,6 @@ void writeResults(
             std::cout << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
             std::cout << result.rounds << "\n";
             
-            // Write final game state (simplified for now)
             if (result.gameState) {
                 for (size_t y = 0; y < result.gameState->getHeight(); ++y) {
                     for (size_t x = 0; x < result.gameState->getWidth(); ++x) {
@@ -397,7 +388,6 @@ void writeResults(
     file << "algorithm2=" << args.algorithm2 << "\n\n";
     
     for (const auto& group : groups) {
-        // Write comma-separated game manager names
         for (size_t i = 0; i < group.size(); ++i) {
             if (i > 0) file << ",";
             file << group[i].gameManagerName;
@@ -414,7 +404,6 @@ void writeResults(
         file << winner << " wins in round " << result.rounds << " (" << reason << ")\n";
         file << result.rounds << "\n";
         
-        // Write final game state (simplified for now)
         if (result.gameState) {
             for (size_t y = 0; y < result.gameState->getHeight(); ++y) {
                 for (size_t x = 0; x < result.gameState->getWidth(); ++x) {
@@ -437,7 +426,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Parse arguments (skip the -comparative flag)
+    // Parse arguments
     char** args = argv + 1;
     ComparativeArgs config = parseArgs(argc - 1, args);
     

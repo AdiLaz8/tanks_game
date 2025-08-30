@@ -10,7 +10,6 @@
 #include "../common/TankAlgorithm.h"
 #include "../common/AbstractGameManager.h"
 
-// Global registries - these will be accessed by the Simulator
 extern std::vector<PlayerFactory> playerFactories;
 extern std::vector<TankAlgorithmFactory> tankAlgorithmFactories;
 extern std::vector<GameManagerFactory> gameManagerFactories;

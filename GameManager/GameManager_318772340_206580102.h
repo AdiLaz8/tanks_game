@@ -20,7 +20,6 @@
 #include "../UserCommon/Direction.h"
 #include "../common/ActionRequest.h"
 
-// Use UserCommon namespace
 using namespace UserCommon_318772340_206580102;
 
 namespace GameManager_318772340_206580102 {
@@ -43,7 +42,7 @@ private:
     std::vector<std::string> currentActions;
     
     struct TankLogInfo {
-        char symbol; // '1' או '2'
+        char symbol; 
         bool isAlive = true;
         bool wasKilledThisTurn = false;
         std::string lastAction = "DoNothing";
@@ -65,17 +64,15 @@ public:
     GameManager_318772340_206580102(GameManager_318772340_206580102&&) = delete;
     GameManager_318772340_206580102& operator=(GameManager_318772340_206580102&&) = delete;
     
-    // Inherit from AbstractGameManager  
     virtual GameResult run(
         size_t map_width, size_t map_height,
-        const SatelliteView& map, // <= a snapshot, NOT updated
+        const SatelliteView& map, 
         string map_name,
         size_t max_steps, size_t num_shells,
         Player& player1, string name1, Player& player2, string name2, 
         TankAlgorithmFactory player1_tank_algo_factory,
         TankAlgorithmFactory player2_tank_algo_factory) override;
 
-    // Additional public methods from original GameManager
     Board& getBoard() { return *gameBoard; }
 
 private:

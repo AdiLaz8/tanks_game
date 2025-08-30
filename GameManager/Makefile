@@ -4,8 +4,6 @@ LDFLAGS = -shared -Wl,-soname,$(TARGET)
 
 TARGET = GameManager_318772340_206580102.so
 
-# Note: UserCommon files will be linked as a static library or object files
-# For now, assume UserCommon components are available as source
 USERCOMMON_DIR = ../UserCommon
 
 # Local GameManager source files

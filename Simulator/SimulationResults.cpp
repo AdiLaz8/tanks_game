@@ -24,7 +24,6 @@ void SimulationResults::calculateStats() {
         stats.totalGames++;
         stats.totalTime += execution.executionTime;
         
-        // Determine if this GameManager won
         if (execution.result.winner == 1 || execution.result.winner == 2) {
             stats.wins++;
         } else {
@@ -32,7 +31,7 @@ void SimulationResults::calculateStats() {
         }
     }
     
-    // Calculate derived statistics
+    // Calculate statistics
     for (auto& [name, stats] : managerStats) {
         if (stats.totalGames > 0) {
             stats.averageTimeMs = static_cast<double>(stats.totalTime.count()) / stats.totalGames;
@@ -119,7 +118,6 @@ void SimulationResults::printSummary() const {
         std::cout << "║ Manager Name          │ Games │ Wins │ Ties │ Win Rate │ Avg Time (ms) ║\n";
         std::cout << "╠═══════════════════════════════════════════════════════════════════════════╣\n";
         
-        // Sort managers by win rate for better presentation
         std::vector<std::pair<std::string, ManagerStats>> sortedStats(managerStats.begin(), managerStats.end());
         std::sort(sortedStats.begin(), sortedStats.end(), 
                  [](const auto& a, const auto& b) { return a.second.winRate > b.second.winRate; });
@@ -135,7 +133,6 @@ void SimulationResults::printSummary() const {
         std::cout << "╚═══════════════════════════════════════════════════════════════════════════╝\n";
     }
     
-    // Show some individual game details if not too many
     if (gameExecutions.size() <= 20) {
         std::cout << "\n╔════════════════════════════════════════════════════════════════╗\n";
         std::cout << "║                        INDIVIDUAL GAMES                       ║\n";

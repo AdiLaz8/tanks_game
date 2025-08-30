@@ -20,7 +20,6 @@ void Player_318772340_206580102::updateTankWithBattleInfo(TankAlgorithm& tank, S
     }
 }
 
-// Player 1 behavior (with mine tracking from original Player1)
 void Player_318772340_206580102::updatePlayer1BattleInfo(TankAlgorithm& tank, SatelliteView& satellite_view) {
     (void)maxSteps;
     Position currentPos(-1, -1);
@@ -53,7 +52,6 @@ void Player_318772340_206580102::updatePlayer1BattleInfo(TankAlgorithm& tank, Sa
     tank.updateBattleInfo(battleInfo);
 }
 
-// Player 2 behavior (simpler, no mine tracking from original Player2)
 void Player_318772340_206580102::updatePlayer2BattleInfo(TankAlgorithm& tank, SatelliteView& satellite_view) {
     (void)maxSteps;
     Position currentPos(-1, -1);

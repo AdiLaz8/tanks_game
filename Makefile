@@ -2,35 +2,30 @@
 # This orchestrates the building of all components in the correct order
 
 # Default target
-all: usercommon algorithm gamemanager simulator
+all: algorithm gamemanager simulator
 
-# Build UserCommon components (dependency for others)
-usercommon:
-	@echo "=== Building UserCommon ==="
-	$(MAKE) -C UserCommon
-
-# Build Algorithm shared library (depends on UserCommon)
-algorithm: usercommon
+# Build Algorithm shared library
+algorithm:
 	@echo "=== Building Algorithm ==="
 	$(MAKE) -C Algorithm
 
-# Build GameManager shared library (depends on UserCommon)
-gamemanager: usercommon
+# Build GameManager shared library
+gamemanager:
 	@echo "=== Building GameManager ==="
 	$(MAKE) -C GameManager
 
-# Build Simulator executables (depends on UserCommon)
-simulator: usercommon
+# Build Simulator executables
+simulator:
 	@echo "=== Building Simulator ==="
 	$(MAKE) -C Simulator
 
 # Clean all components
 clean:
 	@echo "=== Cleaning all components ==="
-	$(MAKE) -C UserCommon clean || true
 	$(MAKE) -C Algorithm clean
 	$(MAKE) -C GameManager clean
 	$(MAKE) -C Simulator clean
+	rm -f UserCommon/*.o
 
 # Install simulator to root directory
 install: simulator
@@ -42,7 +37,7 @@ test: all
 	@echo "=== Running tests ==="
 	$(MAKE) -C Simulator test
 
-quick: usercommon
+quick:
 	@echo "=== Quick parallel build ==="
 	$(MAKE) -j2 algorithm gamemanager
 	$(MAKE) simulator
@@ -52,8 +47,6 @@ rebuild: clean all
 # Show build status
 status:
 	@echo "=== Build Status ==="
-	@echo "UserCommon objects:"
-	@ls -la UserCommon/*.o 2>/dev/null || echo "  No UserCommon objects found"
 	@echo "Algorithm shared library:"
 	@ls -la Algorithm/*.so 2>/dev/null || echo "  No Algorithm .so found"
 	@echo "GameManager shared library:"
@@ -65,7 +58,6 @@ status:
 help:
 	@echo "Available targets:"
 	@echo "  all        - Build all components (default)"
-	@echo "  usercommon - Build UserCommon objects"
 	@echo "  algorithm  - Build Algorithm shared library"
 	@echo "  gamemanager- Build GameManager shared library"
 	@echo "  simulator  - Build Simulator executables"
@@ -77,4 +69,4 @@ help:
 	@echo "  status     - Show current build status"
 	@echo "  help       - Show this help message"
 
-.PHONY: all usercommon algorithm gamemanager simulator clean install test quick rebuild status help
+.PHONY: all algorithm gamemanager simulator clean install test quick rebuild status help

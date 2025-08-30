@@ -5,7 +5,7 @@
 - **Adi Lazarovich** (ID: 318772340)
 
 ## Project Overview
-This project implements a comprehensive tanks battle simulation system with support for both comparative and competitive game modes. The system features dynamic library loading, multi-threading capabilities, and an advanced logging system.
+This project implements a comprehensive tanks battle simulation system with support for both comparative and competitive game modes. The system features dynamic library loading and multi-threading capabilities.
 
 ## Project Structure
 ```
@@ -30,14 +30,11 @@ tanks_game/
 │   ├── Registry.cpp/h      # Dynamic component registration
 │   ├── ThreadPool.cpp/h    # Multi-threading support
 │   └── Makefile            # Simulator executables build
-├── UserCommon/             # Shared utilities
-│   ├── Logger.cpp/h        # Comprehensive logging system
+├── UserCommon/             # Shared utilities (no Makefile per assignment)
 │   ├── Position.cpp/h      # 2D coordinate handling
-│   ├── Direction.cpp/h     # 8-directional movement
-│   └── Makefile            # Common objects build
+│   └── Direction.cpp/h     # 8-directional movement
 ├── common/                 # Interface definitions
 ├── maps/                   # Game map files (map1.txt, map2.txt, map3.txt)
-├── logging*.conf           # Logging configuration files
 └── Makefile               # Unified build system
 ```
 
@@ -65,23 +62,23 @@ make simulator         # Build Simulator executables
 ### Comparative Mode
 Runs multiple GameManagers against the same algorithm pair on a single map:
 ```bash
-./simulator_318772340_206580102 -map <map_file> -gameManagers <gamemanagers_folder> -algorithm1 <algo1.so> -algorithm2 <algo2.so> [-threads <num>] [-verbose]
+./simulator_318772340_206580102 -comparative game_map=<map_file> game_managers_folder=<folder> algorithm1=<algo1.so> algorithm2=<algo2.so> [num_threads=<num>] [-verbose]
 ```
 
 Example:
 ```bash
-./simulator_318772340_206580102 -map map1.txt -gameManagers GameManagers/ -algorithm1 Algorithms/Algorithm_318772340_206580102.so -algorithm2 Algorithms/Algorithm_322213836_212054837.so -threads 4
+./simulator_318772340_206580102 -comparative game_map=../maps/map1.txt game_managers_folder=../GameManagers algorithm1=../Algorithms/Algorithm_318772340_206580102.so algorithm2=../Algorithms/Algorithm_318772340_206580102.so num_threads=2 -verbose
 ```
 
 ### Competitive Mode
 Tournament-style competition between multiple algorithms across multiple maps:
 ```bash
-./simulator_competitive_318772340_206580102 -gameMapsFolder <maps_folder> -gameManager <gamemanager.so> -algorithmsFolder <algorithms_folder> [-verbose]
+./simulator_competitive_318772340_206580102 -competition game_maps_folder=<folder> game_manager=<gamemanager.so> algorithms_folder=<folder> [num_threads=<num>] [-verbose]
 ```
 
 Example:
 ```bash
-./simulator_competitive_318772340_206580102 -gameMapsFolder maps/ -gameManager GameManagers/GameManager_318772340_206580102.so -algorithmsFolder Algorithms/
+./simulator_competitive_318772340_206580102 -competition game_maps_folder=../maps game_manager=../GameManagers/GameManager_318772340_206580102.so algorithms_folder=../Algorithms num_threads=2 -verbose
 ```
 
 ## Implementation Details
@@ -107,17 +104,11 @@ Example:
 - **Game Rules**: Configurable max steps, shell limits, and victory conditions
 - **State Tracking**: Complete game state preservation for result analysis
 
-### Logging System
-- **Multi-Level Logging**: DEBUG, INFO, WARN, ERROR levels with configurable filtering
-- **Thread-Safe**: Mutex-protected logging with deadlock prevention
-- **Configurable Output**: Console and/or file output with timestamp and thread ID support
-- **Configuration Files**: External configuration via logging.conf, logging_debug.conf, logging_production.conf
-- **Extensive Coverage**: Detailed logging of game execution, thread operations, and component interactions
-
-## Configuration Files
-- **logging.conf**: Default logging configuration (INFO level, console + file output)
-- **logging_debug.conf**: Debug configuration (DEBUG level, all features enabled)
-- **logging_production.conf**: Production configuration (ERROR level only, file output only)
+### Output System
+- **Simple Output**: Uses std::cout and std::cerr for essential messages
+- **No Configuration**: No configuration files needed
+- **Assignment Compliant**: Avoids shared library conflicts
+- **Clean Operation**: No static variable dependencies between .so files
 
 ## Map Format
 Maps are text files with the following format:

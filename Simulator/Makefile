@@ -27,10 +27,10 @@ OBJS = $(SRCS:.cpp=.o)
 all: $(TARGET) $(COMPETITIVE_TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(OBJS) ../UserCommon/Logger.o -o $@ $(LDFLAGS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 $(COMPETITIVE_TARGET): $(COMPETITIVE_SRCS:.cpp=.o)
-	$(CXX) $(COMPETITIVE_SRCS:.cpp=.o) ../UserCommon/Logger.o -o $@ $(LDFLAGS)
+	$(CXX) $(COMPETITIVE_SRCS:.cpp=.o) -o $@ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

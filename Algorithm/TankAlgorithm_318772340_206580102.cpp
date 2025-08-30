@@ -1,5 +1,5 @@
 #include "TankAlgorithm_318772340_206580102.h"
-#include "../UserCommon/Logger.h"
+// Logger removed to avoid conflicts in shared libraries
 #include <cmath>
 #include <algorithm>
 #include "MyBattleInfo.h"
@@ -248,7 +248,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getAction() {
 ActionRequest TankAlgorithm_318772340_206580102::getPlayer1Action() {
     ActionRequest action = ActionRequest::DoNothing;
     if (turnCounterSinceInfo == -1 || turnCounterSinceInfo == 5) {
-        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": No battle info yet or 5 turns passed since last update, requesting BattleInfo to refresh awareness.");
+        // Debug: No battle info yet or 5 turns passed since last update, requesting BattleInfo
         return ActionRequest::GetBattleInfo;
     }
     if(getShootingStatus()>0){
@@ -261,7 +261,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer1Action() {
     if (needsNewBattleInfo()) {
         chasing = false;
         turnCounterSinceInfo = 0;
-        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Current path invalidated or target lost, requesting BattleInfo for updated state.");
+        // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Current path invalidated or target lost, requesting BattleInfo for updated state.");
         return ActionRequest::GetBattleInfo;
     }
     action = getShootingActionIfAvailable();
@@ -275,7 +275,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer1Action() {
     }
     turnCounterSinceInfo = 0;
     chasing = false;
-    Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Info outdated or chase failed, requesting updated battle info.");
+    // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Info outdated or chase failed, requesting updated battle info.");
     return ActionRequest::GetBattleInfo;
 }
 
@@ -284,7 +284,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer2Action() {
 
     if (turnCounterSinceInfo == -1) { // first turn
 
-        Logger::debug("Player 2: Tank " + std::to_string(tankId) + ": First turn, requesting battle info.");
+        // Debug:("Player 2: Tank " + std::to_string(tankId) + ": First turn, requesting battle info.");
         return ActionRequest::GetBattleInfo;
     }
     turnCounterSinceInfo++;
@@ -300,23 +300,23 @@ ActionRequest TankAlgorithm_318772340_206580102::getPlayer2Action() {
         newPos.setx((newPos.getx() + boardWidth) % boardWidth);
         newPos.sety((newPos.gety() + boardHeight) % boardHeight);
         selfPosition = newPos;
-        Logger::debug("Player 2: Tank " + std::to_string(tankId) + ": Moved forward after rotation to avoid shell threat that was detected the turn before.");
+        // Debug:("Player 2: Tank " + std::to_string(tankId) + ": Moved forward after rotation to avoid shell threat that was detected the turn before.");
         return ActionRequest::MoveForward;
     }
 
     if (isThreatenedByShells()) { // if the tank is threatened by shells, try to escape
-        Logger::debug("Player 2: Tank " + std::to_string(tankId) + ": Shell threat detected, initiating evasive move.");
+        // Debug:("Player 2: Tank " + std::to_string(tankId) + ": Shell threat detected, initiating evasive move.");
         return moveIfThreatened().getType();
     }
 
     if (canShootInDirection() && ammo > 0 && shootingStatus == 0) { // if enemy in sight --> shoot
         shootingStatus = 5;
         ammo--;
-        Logger::debug("Player 2: Tank " + std::to_string(tankId) + ": Enemy in line of sight, firing.");
+        // Debug:("Player 2: Tank " + std::to_string(tankId) + ": Enemy in line of sight, firing.");
         return ActionRequest::Shoot;
     }
 
-    Logger::debug("Player 2: Tank " + std::to_string(tankId) + ": Moving forward by default.");
+    // Debug:("Player 2: Tank " + std::to_string(tankId) + ": Moving forward by default.");
     return ActionRequest::MoveForward;
 }
 
@@ -334,7 +334,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getShootingActionIfAvailable() 
             ammo--;
             turnCounterSinceInfo++;
             needsNewInfo = true;
-            Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Enemy in direct line of sight, firing in direction "+ direction.toString());
+            // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Enemy in direct line of sight, firing in direction "+ direction.toString());
             return ActionRequest::Shoot;
         }
     }
@@ -347,7 +347,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getShootingActionIfAvailable() 
         if (canShootInDirection()) {
             direction = originalDir; 
             turnCounterSinceInfo++;
-            Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Enemy in other line of sight at , rotating to direction " + tryDir.toString());
+            // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Enemy in other line of sight at , rotating to direction " + tryDir.toString());
             return rotateTowards(originalDir.getDirection(), tryDir.getDirection());
         }
         direction = originalDir; 
@@ -360,7 +360,7 @@ ActionRequest TankAlgorithm_318772340_206580102::moveForwardAfterRotate() {
     if (isThreatenedByShells()) {
         currentPath.clear();
         turnCounterSinceInfo++;
-        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Shell threat detected, taking evasive action.");
+        // Debug: Shell threat detected, taking evasive action
         return moveIfThreatened().getType();
     }
     // if we rotated last turn, we move forward if there's no mine in front
@@ -373,7 +373,7 @@ ActionRequest TankAlgorithm_318772340_206580102::moveForwardAfterRotate() {
             newPos.sety((newPos.gety() + boardHeight) % boardHeight);
             if (!isMine(newPos)) {
                 selfPosition = newPos;
-                Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Shell threat detected, taking evasive action.");
+                // Debug: Shell threat detected, taking evasive action
                 return ActionRequest::MoveForward;
             }
         }
@@ -397,7 +397,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
                     currentPath.clear();
                     needsNewInfo = true;
                     turnCounterSinceInfo = 0;
-                    Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Path blocked (mine/tank/wall), cancelling path and requesting battle info.");
+                    // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Path blocked (mine/tank/wall), cancelling path and requesting battle info.");
                     return ActionRequest::GetBattleInfo;
                 }
                 if (it->second == '#') {
@@ -406,7 +406,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
                         ammo--;
                         needsNewInfo = true;
                         turnCounterSinceInfo++;
-                        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": wall in the way, firing to destroy it. firing in direction "+ direction.toString());
+                        // Debug:("Player 1: Tank " + std::to_string(tankId) + ": wall in the way, firing to destroy it. firing in direction "+ direction.toString());
                         return ActionRequest::Shoot;
                     }
                 }
@@ -415,20 +415,20 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
             if (!isMine(nextPos)) {
                 selfPosition = nextPos;
                 turnCounterSinceInfo++;
-                Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Advancing along BFS path towards target.");
+                // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Advancing along BFS path towards target.");
                 return ActionRequest::MoveForward;
             } else {
                 currentPath.clear();
                 chasing = false;
                 turnCounterSinceInfo = 0;
-                Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Requesting GetBattleInfo to refresh map state.");
+                // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Requesting GetBattleInfo to refresh map state.");
                 return ActionRequest::GetBattleInfo;
             }
         } else {
             direction = Direction(nextDir);
             moveAfterRotate = true;
             turnCounterSinceInfo++;
-            Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Rotating towards next direction in path: " + Direction(nextDir).toString());
+            // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Rotating towards next direction in path: " + Direction(nextDir).toString());
             return rotateTowards(direction.getDirection(), nextDir);
         }
     }
@@ -438,7 +438,7 @@ ActionRequest TankAlgorithm_318772340_206580102::getActionFromPath() {
 void TankAlgorithm_318772340_206580102::computeShootingPath() {
     currentPath = computeBFS(selfPosition, targetPos, fullView, boardWidth, boardHeight);
     if (!currentPath.empty()) {
-        Logger::debug("Player 1: Tank " + std::to_string(tankId) + ": Computed new path to target with " + std::to_string(currentPath.size()) + " steps.");
+        // Debug:("Player 1: Tank " + std::to_string(tankId) + ": Computed new path to target with " + std::to_string(currentPath.size()) + " steps.");
         chasing = true;
     }
 }

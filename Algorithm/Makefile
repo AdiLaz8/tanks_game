@@ -14,8 +14,7 @@ LOCAL_SRCS = Player_318772340_206580102.cpp \
 
 # UserCommon source files that Algorithm depends on
 USERCOMMON_SRCS = $(USERCOMMON_DIR)/Position.cpp \
-                  $(USERCOMMON_DIR)/Direction.cpp \
-                  $(USERCOMMON_DIR)/Logger.cpp
+                  $(USERCOMMON_DIR)/Direction.cpp
 
 ALL_SRCS = $(LOCAL_SRCS) $(USERCOMMON_SRCS)
 

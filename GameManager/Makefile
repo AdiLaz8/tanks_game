@@ -17,8 +17,7 @@ LOCAL_SRCS = GameManager_318772340_206580102.cpp \
 
 # UserCommon source files that GameManager depends on
 USERCOMMON_SRCS = $(USERCOMMON_DIR)/Position.cpp \
-                  $(USERCOMMON_DIR)/Direction.cpp \
-                  $(USERCOMMON_DIR)/Logger.cpp
+                  $(USERCOMMON_DIR)/Direction.cpp
 
 ALL_SRCS = $(LOCAL_SRCS) $(USERCOMMON_SRCS)
 

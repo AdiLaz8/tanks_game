@@ -17,7 +17,7 @@
 #include <functional>
 
 #include "GameRunner.h"
-#include "../UserCommon/Logger.h"
+// Logger removed - using std::cout for output instead
 #include "Registry.h"
 
 namespace fs = std::filesystem;
@@ -270,63 +270,63 @@ ComparativeGameResult runSingleGame(
     result.gameManagerName = fs::path(gameManagerPath).stem().string();
     result.success = false;
     
-    LOG_DEBUG("Starting game with GameManager: " + result.gameManagerName, "GAME");
-    LOG_DEBUG("Thread ID: " + std::to_string(std::hash<std::thread::id>{}(std::this_thread::get_id())) + " processing GameManager: " + result.gameManagerName, "THREAD");
+    std::cout << "[DEBUG] " << "Starting game with GameManager: " + result.gameManagerName << std::endl;
+    std::cout << "[DEBUG] " << "Thread ID: " + std::to_string(std::hash<std::thread::id>{}(std::this_thread::get_id())) + " processing GameManager: " + result.gameManagerName << std::endl;
     
     try {
         static std::mutex gameManagerLoadMutex;
-        LOG_DEBUG("Thread acquiring GameManager load mutex", "THREAD");
+        std::cout << "[DEBUG] " << "Thread acquiring GameManager load mutex" << std::endl;
         std::lock_guard<std::mutex> loadLock(gameManagerLoadMutex);
-        LOG_DEBUG("Thread acquired GameManager load mutex successfully", "THREAD");
+        std::cout << "[DEBUG] " << "Thread acquired GameManager load mutex successfully" << std::endl;
         
         // Clear any existing GameManager registrations before loading new library
-        LOG_DEBUG("Clearing existing GameManager registrations", "GAME");
+        std::cout << "[DEBUG] " << "Clearing existing GameManager registrations" << std::endl;
         {
             std::lock_guard<std::mutex> lock(registryMutex);
             gameManagerFactories.clear();
             gameManagerNames.clear();
         }
-        LOG_DEBUG("GameManager registrations cleared", "GAME");
+        std::cout << "[DEBUG] " << "GameManager registrations cleared" << std::endl;
         
         // Load GameManager library
-        LOG_INFO("Loading GameManager library: " + gameManagerPath, "GAME");
+        std::cout << "[INFO] " << "Loading GameManager library: " + gameManagerPath << std::endl;
         void* gameManagerHandle = dlopen(gameManagerPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!gameManagerHandle) {
             result.errorMessage = "Failed to load GameManager library: " + std::string(dlerror());
-            LOG_ERROR("Failed to load GameManager library: " + result.errorMessage, "GAME");
+            std::cerr << "[ERROR] " << "Failed to load GameManager library: " + result.errorMessage << std::endl;
             return result;
         }
-        LOG_INFO("GameManager library loaded successfully", "GAME");
+        std::cout << "[INFO] " << "GameManager library loaded successfully" << std::endl;
         
         // Wait for static initialization to complete
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         
         // Check what GameManager was registered
-        LOG_DEBUG("Checking registered GameManager factories", "GAME");
+        std::cout << "[DEBUG] " << "Checking registered GameManager factories" << std::endl;
         std::lock_guard<std::mutex> lock(registryMutex);
         
         if (gameManagerFactories.empty()) {
-            LOG_ERROR("No GameManager factories registered after loading library", "GAME");
+            std::cerr << "[ERROR] " << "No GameManager factories registered after loading library" << std::endl;
             dlclose(gameManagerHandle);
             result.errorMessage = "No GameManager factories registered after loading library";
             return result;
         }
-        LOG_INFO("GameManager factory registered successfully, total factories: " + std::to_string(gameManagerFactories.size()), "GAME");
+        std::cout << "[INFO] " << "GameManager factory registered successfully, total factories: " + std::to_string(gameManagerFactories.size()) << std::endl;
         
         GameManagerFactory gameManagerFactory = gameManagerFactories[0];
         PlayerFactory playerFactory = playerFactories[0];
         TankAlgorithmFactory tankAlgorithmFactory = tankAlgorithmFactories[0];
         
-        LOG_DEBUG("Preparing to run game with factories", "GAME");
-        LOG_DEBUG("Player factory address: " + std::to_string(reinterpret_cast<uintptr_t>(&playerFactory)), "GAME");
-        LOG_DEBUG("TankAlgorithm factory address: " + std::to_string(reinterpret_cast<uintptr_t>(&tankAlgorithmFactory)), "GAME");
+        std::cout << "[DEBUG] " << "Preparing to run game with factories" << std::endl;
+        std::cout << "[DEBUG] " << "Player factory address: " + std::to_string(reinterpret_cast<uintptr_t>(&playerFactory)) << std::endl;
+        std::cout << "[DEBUG] " << "TankAlgorithm factory address: " + std::to_string(reinterpret_cast<uintptr_t>(&tankAlgorithmFactory)) << std::endl;
         
         // Run the game
-        LOG_INFO("Starting game execution with GameRunner::runSingleGame", "GAME");
-        LOG_DEBUG("Algorithm 1: TankAlgorithm_318772340_206580102", "GAME");
-        LOG_DEBUG("Algorithm 2: TankAlgorithm_318772340_206580102", "GAME");
-        LOG_DEBUG("Map dimensions: " + std::to_string(map.width) + "x" + std::to_string(map.height), "GAME");
-        LOG_DEBUG("Verbose mode: " + std::string(verbose ? "enabled" : "disabled"), "GAME");
+        std::cout << "[INFO] " << "Starting game execution with GameRunner::runSingleGame" << std::endl;
+        std::cout << "[DEBUG] " << "Algorithm 1: TankAlgorithm_318772340_206580102" << std::endl;
+        std::cout << "[DEBUG] " << "Algorithm 2: TankAlgorithm_318772340_206580102" << std::endl;
+        std::cout << "[DEBUG] " << "Map dimensions: " + std::to_string(map.width) + "x" + std::to_string(map.height) << std::endl;
+        std::cout << "[DEBUG] " << "Verbose mode: " + std::string(verbose ? "enabled" : "disabled") << std::endl;
         
         GameExecution execution = GameRunner::runSingleGame(
             gameManagerFactory,
@@ -339,7 +339,7 @@ ComparativeGameResult runSingleGame(
             verbose
         );
         
-        LOG_INFO("Game execution completed", "GAME");
+        std::cout << "[INFO] " << "Game execution completed" << std::endl;
         
         // Process and log detailed game results
         result.success = true;
@@ -347,16 +347,16 @@ ComparativeGameResult runSingleGame(
         result.reason = execution.result.reason;
         result.rounds = execution.result.rounds;
         
-        LOG_INFO("=== GAME RESULT DETAILS ===", "RESULT");
-        LOG_INFO("GameManager: " + result.gameManagerName, "RESULT");
-        LOG_INFO("Game Status: SUCCESS", "RESULT");
+        std::cout << "[INFO] " << "=== GAME RESULT DETAILS ===" << std::endl;
+        std::cout << "[INFO] " << "GameManager: " + result.gameManagerName << std::endl;
+        std::cout << "[INFO] " << "Game Status: SUCCESS" << std::endl;
         if (result.winner == 0) {
-            LOG_INFO("Game Result: TIE", "RESULT");
+            std::cout << "[INFO] " << "Game Result: TIE" << std::endl;
         } else {
-            LOG_INFO("Game Result: PLAYER " + std::to_string(result.winner) + " WINS", "RESULT");
+            std::cout << "[INFO] " << "Game Result: PLAYER " + std::to_string(result.winner) + " WINS" << std::endl;
         }
-        LOG_INFO("Total Rounds: " + std::to_string(result.rounds), "RESULT");
-        LOG_INFO("End Reason: " + getReasonString(result.reason), "RESULT");
+        std::cout << "[INFO] " << "Total Rounds: " + std::to_string(result.rounds) << std::endl;
+        std::cout << "[INFO] " << "End Reason: " + getReasonString(result.reason) << std::endl;
         
         // Extract final game state from the game execution result
         std::ostringstream finalStateStream;
@@ -387,13 +387,13 @@ ComparativeGameResult runSingleGame(
             }
         }
         result.finalGameState = finalStateStream.str();
-        LOG_DEBUG("Final Game State Length: " + std::to_string(result.finalGameState.length()) + " characters", "RESULT");
-        LOG_INFO("=== END GAME RESULT ===", "RESULT");
+        std::cout << "[DEBUG] " << "Final Game State Length: " + std::to_string(result.finalGameState.length()) + " characters" << std::endl;
+        std::cout << "[INFO] " << "=== END GAME RESULT ===" << std::endl;
         
 
-        LOG_DEBUG("GameManager library will be closed at program end", "GAME");
+        std::cout << "[DEBUG] " << "GameManager library will be closed at program end" << std::endl;
         
-        LOG_DEBUG("Returning successful result for GameManager: " + result.gameManagerName, "GAME");
+        std::cout << "[DEBUG] " << "Returning successful result for GameManager: " + result.gameManagerName << std::endl;
         return result;
         
     } catch (const std::exception& e) {
@@ -520,14 +520,14 @@ void writeResults(
 
 int main(int argc, char* argv[]) {
     // Initialize logging system
-    UserCommon_318772340_206580102::Logger::init("logging.conf");
-    LOG_INFO("Starting comparative mode simulator", "COMPARATIVE");
+    // Logger initialization removed
+    std::cout << "[INFO] Starting comparative mode simulator" << std::endl;
     
     // Check for comparative mode flag
     if (argc < 2 || std::string(argv[1]) != "-comparative") {
-        LOG_ERROR("Invalid command line arguments - missing -comparative flag", "COMPARATIVE");
+        std::cerr << "[ERROR] " << "Invalid command line arguments - missing -comparative flag" << std::endl;
         std::cerr << "Usage: " << argv[0] << " -comparative game_map=<file> game_managers_folder=<dir> algorithm1=<file> algorithm2=<file> [num_threads=<n>] [-verbose]\n";
-        UserCommon_318772340_206580102::Logger::shutdown();
+        // Logger shutdown removed
         return 1;
     }
     
@@ -535,27 +535,27 @@ int main(int argc, char* argv[]) {
     char** args = argv + 1;
     ComparativeArgs config = parseArgs(argc - 1, args);
     
-    LOG_INFO("Configuration parsed successfully", "COMPARATIVE");
-    LOG_INFO("Game map: " + config.gameMap, "COMPARATIVE");
-    LOG_INFO("GameManagers folder: " + config.gameManagersFolder, "COMPARATIVE");
-    LOG_INFO("Algorithm 1: " + config.algorithm1, "COMPARATIVE");
-    LOG_INFO("Algorithm 2: " + config.algorithm2, "COMPARATIVE");
-    LOG_INFO("Number of threads: " + std::to_string(config.numThreads), "COMPARATIVE");
-    LOG_INFO("Verbose mode: " + std::string(config.verbose ? "enabled" : "disabled"), "COMPARATIVE");
+    std::cout << "[INFO] " << "Configuration parsed successfully" << std::endl;
+    std::cout << "[INFO] " << "Game map: " + config.gameMap << std::endl;
+    std::cout << "[INFO] " << "GameManagers folder: " + config.gameManagersFolder << std::endl;
+    std::cout << "[INFO] " << "Algorithm 1: " + config.algorithm1 << std::endl;
+    std::cout << "[INFO] " << "Algorithm 2: " + config.algorithm2 << std::endl;
+    std::cout << "[INFO] " << "Number of threads: " + std::to_string(config.numThreads) << std::endl;
+    std::cout << "[INFO] " << "Verbose mode: " + std::string(config.verbose ? "enabled" : "disabled") << std::endl;
     
     // Validate paths
     validatePaths(config);
-    LOG_INFO("Paths validated successfully", "COMPARATIVE");
+    std::cout << "[INFO] " << "Paths validated successfully" << std::endl;
     
     // Load map
     MapData map;
     if (!map.loadFromFile(config.gameMap, config.verbose)) {
-        LOG_ERROR("Failed to load game map: " + config.gameMap, "COMPARATIVE");
+        std::cerr << "[ERROR] " << "Failed to load game map: " + config.gameMap << std::endl;
         std::cerr << "Error: Failed to load game map: " << config.gameMap << "\n";
-        UserCommon_318772340_206580102::Logger::shutdown();
+        // Logger shutdown removed
         return 1;
     }
-    LOG_INFO("Game map loaded successfully", "COMPARATIVE");
+    std::cout << "[INFO] " << "Game map loaded successfully" << std::endl;
     
     // Collect game manager .so files
     std::vector<std::string> gameManagerFiles;
@@ -621,7 +621,7 @@ int main(int argc, char* argv[]) {
     
     if (config.numThreads == 1) {
         // Single-threaded execution (main thread only)
-        LOG_INFO("Using single-threaded execution (main thread only)", "COMPARATIVE");
+        std::cout << "[INFO] " << "Using single-threaded execution (main thread only)" << std::endl;
         std::cout << "Using single-threaded execution (main thread only)" << std::endl;
         std::cout << "Main Thread ID: " << std::this_thread::get_id() << " processing all GameManagers" << std::endl;
         
@@ -632,7 +632,7 @@ int main(int argc, char* argv[]) {
         }
     } else {
         // Multi-threaded execution: num_threads worker threads + main thread
-        LOG_INFO("Using multi-threaded execution with " + std::to_string(config.numThreads) + " worker threads + main thread (total: " + std::to_string(config.numThreads + 1) + " threads)", "COMPARATIVE");
+        std::cout << "[INFO] " << "Using multi-threaded execution with " + std::to_string(config.numThreads) + " worker threads + main thread (total: " + std::to_string(config.numThreads + 1) + " threads)" << std::endl;
         std::cout << "Using multi-threaded execution with " << config.numThreads << " worker threads + main thread (total: " << (config.numThreads + 1) << " threads)" << std::endl;
         std::cout << "Main Thread ID: " << std::this_thread::get_id() << " coordinating execution" << std::endl;
         
@@ -643,17 +643,17 @@ int main(int argc, char* argv[]) {
             std::cout << "Enqueueing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
             futures.push_back(pool.enqueue([gameManagerFile, &map, &config]() {
                 std::cout << "Worker Thread ID: " << std::this_thread::get_id() << " processing " << fs::path(gameManagerFile).filename() << std::endl;
-                LOG_INFO("Worker thread started for GameManager: " + fs::path(gameManagerFile).filename().string(), "THREAD");
-                LOG_DEBUG("Worker Thread ID: " + std::to_string(std::hash<std::thread::id>{}(std::this_thread::get_id())), "THREAD");
+                std::cout << "[INFO] " << "Worker thread started for GameManager: " + fs::path(gameManagerFile).filename().string() << std::endl;
+                std::cout << "[DEBUG] " << "Worker Thread ID: " + std::to_string(std::hash<std::thread::id>{}(std::this_thread::get_id())) << std::endl;
                 
                 auto result = runSingleGame(gameManagerFile, map, false, playerFactories, tankAlgorithmFactories);
                 
-                LOG_INFO("Worker thread completed for GameManager: " + fs::path(gameManagerFile).filename().string(), "THREAD");
-                LOG_DEBUG("Worker thread result - Success: " + std::string(result.success ? "true" : "false"), "THREAD");
+                std::cout << "[INFO] " << "Worker thread completed for GameManager: " + fs::path(gameManagerFile).filename().string() << std::endl;
+                std::cout << "[DEBUG] " << "Worker thread result - Success: " + std::string(result.success ? "true" : "false") << std::endl;
                 if (result.success) {
-                    LOG_DEBUG("Worker thread result - Winner: " + std::to_string(result.winner) + ", Rounds: " + std::to_string(result.rounds), "THREAD");
+                    std::cout << "[DEBUG] " << "Worker thread result - Winner: " + std::to_string(result.winner) + ", Rounds: " + std::to_string(result.rounds) << std::endl;
                 } else {
-                    LOG_DEBUG("Worker thread result - Error: " + result.errorMessage, "THREAD");
+                    std::cout << "[DEBUG] " << "Worker thread result - Error: " + result.errorMessage << std::endl;
                 }
                 
                 return result;
@@ -687,18 +687,18 @@ int main(int argc, char* argv[]) {
     std::string outputPath = fs::path(config.gameManagersFolder) / ("comparative_results_" + timestamp + ".txt");
     
     // Write results
-    LOG_INFO("Writing results to file: " + outputPath, "COMPARATIVE");
+    std::cout << "[INFO] " << "Writing results to file: " + outputPath << std::endl;
     writeResults(outputPath, config, groups);
     
     // Print summary
     int successfulGames = std::count_if(results.begin(), results.end(), [](const auto& r) { return r.success; });
     int failedGames = std::count_if(results.begin(), results.end(), [](const auto& r) { return !r.success; });
     
-    LOG_INFO("Comparative simulation completed successfully", "COMPARATIVE");
-    LOG_INFO("Total GameManagers: " + std::to_string(gameManagerFiles.size()), "COMPARATIVE");
-    LOG_INFO("Successful games: " + std::to_string(successfulGames), "COMPARATIVE");
-    LOG_INFO("Failed games: " + std::to_string(failedGames), "COMPARATIVE");
-    LOG_INFO("Result groups: " + std::to_string(groups.size()), "COMPARATIVE");
+    std::cout << "[INFO] " << "Comparative simulation completed successfully" << std::endl;
+    std::cout << "[INFO] " << "Total GameManagers: " + std::to_string(gameManagerFiles.size()) << std::endl;
+    std::cout << "[INFO] " << "Successful games: " + std::to_string(successfulGames) << std::endl;
+    std::cout << "[INFO] " << "Failed games: " + std::to_string(failedGames) << std::endl;
+    std::cout << "[INFO] " << "Result groups: " + std::to_string(groups.size()) << std::endl;
     
     std::cout << "\nSummary:\n";
     std::cout << "  Total GameManagers: " << gameManagerFiles.size() << "\n";
@@ -707,11 +707,11 @@ int main(int argc, char* argv[]) {
     std::cout << "  Result groups: " << groups.size() << "\n";
     
     // Cleanup algorithm libraries
-    LOG_DEBUG("Cleaning up algorithm libraries", "COMPARATIVE");
+    std::cout << "[DEBUG] " << "Cleaning up algorithm libraries" << std::endl;
     dlclose(algorithm2Handle);
     dlclose(algorithm1Handle);
     
     // Shutdown logging system
-    UserCommon_318772340_206580102::Logger::shutdown();
+    // Logger shutdown removed
     return 0;
 } 

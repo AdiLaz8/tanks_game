@@ -18,7 +18,7 @@
 #include <numeric>
 
 #include "GameRunner.h"
-#include "../UserCommon/Logger.h"
+// Logger removed - using std::cout for output instead
 #include "Registry.h"
 
 namespace fs = std::filesystem;
@@ -313,14 +313,14 @@ void writeCompetitionResults(const std::string& outputPath,
 
 int main(int argc, char* argv[]) {
     // Initialize logging system
-    UserCommon_318772340_206580102::Logger::init("logging.conf");
-    LOG_INFO("Starting competitive mode simulator", "COMPETITIVE");
+    // Logger initialization removed
+    // Log removed: "Starting competitive mode simulator" << std::endl;
     
     // Check for competitive mode flag
     if (argc < 2 || std::string(argv[1]) != "-competition") {
-        LOG_ERROR("Invalid command line arguments - missing -competition flag", "COMPETITIVE");
+        // Log removed: "Invalid command line arguments - missing -competition flag" << std::endl;
         std::cerr << "Usage: " << argv[0] << " -competition game_maps_folder=<dir> game_manager=<file> algorithms_folder=<dir> [num_threads=<n>] [-verbose]\n";
-        UserCommon_318772340_206580102::Logger::shutdown();
+        // Logger shutdown removed
         return 1;
     }
     
@@ -332,23 +332,23 @@ int main(int argc, char* argv[]) {
     char** args = argv + 1;
     CompetitiveArgs config = parseArgs(argc - 1, args);
     
-    LOG_INFO("Configuration parsed successfully", "COMPETITIVE");
-    LOG_INFO("Game maps folder: " + config.gameMapsFolder, "COMPETITIVE");
-    LOG_INFO("Game manager: " + config.gameManager, "COMPETITIVE");
-    LOG_INFO("Algorithms folder: " + config.algorithmsFolder, "COMPETITIVE");
-    LOG_INFO("Number of threads: " + std::to_string(config.numThreads), "COMPETITIVE");
-    LOG_INFO("Verbose mode: " + std::string(config.verbose ? "enabled" : "disabled"), "COMPETITIVE");
+    // Log removed: "Configuration parsed successfully" << std::endl;
+    // Log removed: "Game maps folder: " + config.gameMapsFolder << std::endl;
+    // Log removed: "Game manager: " + config.gameManager << std::endl;
+    // Log removed: "Algorithms folder: " + config.algorithmsFolder << std::endl;
+    // Log removed: "Number of threads: " + std::to_string(config.numThreads) << std::endl;
+    // Log removed: "Verbose mode: " + std::string(config.verbose ? "enabled" : "disabled") << std::endl;
         
         if (!config.isValid()) {
-            LOG_ERROR("Invalid arguments - missing required parameters", "COMPETITIVE");
+            // Log removed: "Invalid arguments - missing required parameters" << std::endl;
             std::cerr << "Error: Invalid arguments. All required parameters must be provided.\n";
-            UserCommon_318772340_206580102::Logger::shutdown();
+            // Logger shutdown removed
             return 1;
         }
         
         // Validate paths
         validatePaths(config);
-        LOG_INFO("Paths validated successfully", "COMPETITIVE");
+        // Log removed: "Paths validated successfully" << std::endl;
         
         // Collect map files
         std::vector<std::string> mapFiles;
@@ -359,13 +359,13 @@ int main(int argc, char* argv[]) {
         }
         
         if (mapFiles.empty()) {
-            LOG_ERROR("No map files found in game maps folder: " + config.gameMapsFolder, "COMPETITIVE");
+            // Log removed: "No map files found in game maps folder: " + config.gameMapsFolder << std::endl;
             std::cerr << "Error: No map files found in game maps folder: " << config.gameMapsFolder << std::endl;
-            UserCommon_318772340_206580102::Logger::shutdown();
+            // Logger shutdown removed
             return 1;
         }
         
-        LOG_INFO("Found " + std::to_string(mapFiles.size()) + " map files", "COMPETITIVE");
+        // Log removed: "Found " + std::to_string(mapFiles.size()) + " map files" << std::endl;
         
         // Collect algorithm files
         std::vector<std::string> algorithmFiles;
@@ -606,13 +606,13 @@ int main(int argc, char* argv[]) {
         std::cout << "Competition completed successfully!" << std::endl;
         
     } catch (const std::exception& e) {
-        LOG_ERROR("Exception caught: " + std::string(e.what()), "COMPETITIVE");
+        // Log removed: "Exception caught: " + std::string(e.what()) << std::endl;
         std::cerr << "Error: " << e.what() << std::endl;
-        UserCommon_318772340_206580102::Logger::shutdown();
+        // Logger shutdown removed
         return 1;
     }
     
-    LOG_INFO("Competitive simulation completed successfully", "COMPETITIVE");
-    UserCommon_318772340_206580102::Logger::shutdown();
+    // Log removed: "Competitive simulation completed successfully" << std::endl;
+    // Logger shutdown removed
     return 0;
 }

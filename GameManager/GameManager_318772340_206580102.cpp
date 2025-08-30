@@ -2,7 +2,7 @@
 #include "Shell.h"
 #include "Wall.h"
 #include "Mine.h"
-#include "../UserCommon/Logger.h"
+// Logger removed to avoid conflicts in shared libraries
 #include "ActionRequestUtils.h"
 #include "CellSlot.h"
 #include "../common/GameManagerRegistration.h"
@@ -72,7 +72,7 @@ GameResult GameManager_318772340_206580102::run(
             // Check if this is comparative mode or competitive mode
             if (name1 == name2 || (name1.find("Player") == 0 && name2.find("Player") == 0)) {
                 // Comparative mode:
-                outputFile = "output_" + map_name;
+                outputFile = "Simulator/output_" + map_name;
             } else {
                 // Competitive mode:
                 std::string algo1Name = name1;
@@ -95,11 +95,11 @@ GameResult GameManager_318772340_206580102::run(
                 }
                 
                 // Create a clean filename
-                outputFile = "output_" + map_name + "_" + algo1Name + "_vs_" + algo2Name;
+                outputFile = "Simulator/output_" + map_name + "_" + algo1Name + "_vs_" + algo2Name;
             }
         } else {
             // Fallback: use map name only
-            outputFile = "output_" + map_name;
+            outputFile = "Simulator/output_" + map_name;
         }
         simpleOutput.open(outputFile);
     }
@@ -138,14 +138,14 @@ void GameManager_318772340_206580102::parseMapFromSatelliteView(const SatelliteV
                     tankPairs.emplace_back(std::move(algo), t);
                     
                     if (verbose) {
-                        Logger::debug(t->getFullIdString() + " tank placed at (" + std::to_string(x) + "," + std::to_string(y) + ")");
+                        // Debug: Tank placed
                     }
                     tankIdx++;
                     break;
                 }
                 default:
                     if (verbose) {
-                        Logger::debug("Warning: Unknown char '" + std::string(1, c) + "' at (" + std::to_string(x) + "," + std::to_string(y) + ")");
+                        // Debug: Warning - Unknown character
                     }
             }
         }
@@ -180,7 +180,7 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
         } else {
             std::string turn = std::to_string(currentStep / 2 + 1);
             if (verbose) {
-                Logger::debug("Turn : " + turn);
+                // Debug: Turn start
             }
             
             moveShells();
@@ -193,13 +193,13 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
             MySatelliteView satellite(boardView);
             
             if (verbose) {
-                Logger::debug("Board after Turn " + turn + ":");
+                // Debug: Board state after turn
                 for (const auto& row : boardView) {
                     std::string line;
                     for (char cell : row) {
                         line += cell;
                     }
-                    Logger::debug(line);
+                    // Debug: Board line
                 }
             }
             
@@ -211,14 +211,14 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
                 
                 ActionRequest request = algoPtr->getAction();
                 if (verbose) {
-                    Logger::debug(tank->getFullIdString() + ": Requested action - " + actionToString(request));
+                    // Debug: Tank requested action
                 }
                 
                 std::string actionStr = actionToString(request);
                 if (request == ActionRequest::GetBattleInfo) {
                     tankLog[birthIdx].lastAction = "GetBattleInfo";
                     if (verbose) {
-                        Logger::debug(tank->getFullIdString() + ": GetBattleInfo triggered");
+                        // Debug: GetBattleInfo triggered
                     }
                     satellite.setPosition(tank->getPosition());
                     if (tank->getSymbol() == '1') {
@@ -254,7 +254,7 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
                     }
                     tankLog[birthIdx].lastAction = actionStr;
                     if (verbose) {
-                        Logger::debug(tank->getFullIdString() + ": Action executed - " + actionStr);
+                        // Debug: Action executed
                     }
                 }
             }
@@ -263,7 +263,7 @@ GameResult GameManager_318772340_206580102::executeGameLoop(Player& player1, Pla
             if (noShellsLeftForAllLiveTanks()) {
                 stepsWithoutShells++;
                 if (verbose) {
-                    Logger::debug("No shells left for all live tanks. Counter: " + std::to_string(stepsWithoutShells));
+                    // Debug: No shells left for all live tanks
                 }
             }
         }
@@ -333,7 +333,7 @@ bool GameManager_318772340_206580102::handleBackwardStatus(Tank* tank, const Act
         wrapPosition(back);
         tank->moveBackward(gameBoard->getWidth(), gameBoard->getHeight());
         if (verbose) {
-            Logger::debug(tank->getFullIdString() + " moved backward.");
+            // Debug: Tank moved backward
         }
         tank->decreaseBackwardStatus();
         return true;
@@ -349,7 +349,7 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
     Direction dir = tank->getDirection();
     std::string player = (tank->getSymbol() == '1') ? "Player 1" : "Player 2";
     if (verbose) {
-        Logger::debug(tank->getFullIdString() + " initiates action:");
+        // Debug: Tank initiates action
     }
     if (handleBackwardStatus(tank, req, pos, dir)) { return; }
     
@@ -360,11 +360,11 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
             if (gameBoard->isPassable(next.getx(), next.gety())) {
                 gameBoard->moveTank(tank, next);
                 if (verbose) {
-                    Logger::debug(tank->getFullIdString() + ": MoveForward to (" + std::to_string(next.getx()) + ", " + std::to_string(next.gety()) + ")");
+                    // Debug: MoveForward
                 }
             } else {
                 if (verbose) {
-                    Logger::debug(tank->getFullIdString() + ": Bad step - blocked forward.");
+                    // Debug: Bad step - blocked forward
                 }
                 int birthIdx = tank->getBirthIndex();
                 tankLog[birthIdx].lastAction += "(ignored)";
@@ -377,7 +377,7 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
             if (tank->getBackwardStatus() == 0 && gameBoard->isPassable(back.getx(), back.gety())) {
                 tank->setBackwardStatus(3);
                 if (verbose) {
-                    Logger::debug(tank->getFullIdString() + ": Started MoveBackward process.");
+                    // Debug: Started MoveBackward process
                 }
             }
             break;
@@ -385,7 +385,7 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
         case ActionRequest::Shoot: {
             if (tank->getRemainingShells() <= 0) {
                 if (verbose) {
-                    Logger::debug(tank->getFullIdString() + ": Bad step - no shells left.");
+                    // Debug: Bad step - no shells left
                 }
                 int birthIdx = tank->getBirthIndex();
                 tankLog[birthIdx].lastAction += "(ignored)";
@@ -396,7 +396,7 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
             wrapPosition(shoot);
             gameBoard->addShell(std::make_unique<Shell>(shoot, dir, player[0]));
             if (verbose) {
-                Logger::debug(tank->getFullIdString() + ": Shoot from (" + std::to_string(pos.getx()) + ", " + std::to_string(pos.gety()) + ") to (" + std::to_string(shoot.getx()) + ", " + std::to_string(shoot.gety()) + ")");
+                // Debug: Shoot action
             }
             break;
         }
@@ -414,12 +414,12 @@ void GameManager_318772340_206580102::executeAction(const ActionRequest& req, Ta
             break;
         default:
             if (verbose) {
-                Logger::debug(tank->getFullIdString() + ": No action taken.");
+                // Debug: No action taken
             }
             break;
     }
     if (verbose) {
-        Logger::debug(tank->getFullIdString() + ": Direction is now " + std::to_string(tank->getDirection().getDirection()));
+        // Debug: Direction updated
     }
 }
 
@@ -439,7 +439,7 @@ void GameManager_318772340_206580102::checkShellCollisions() {
         if (Tank* tank = slot.getTank()) {
             char symbol = tank->getSymbol();
             if (verbose) {
-                Logger::debug("Shell:" + tank->getFullIdString() + " destroyed at (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
+                // Debug: Shell destroyed
             }
             tank->Hit();
             if (symbol == '1') tankIndex1--;
@@ -456,12 +456,12 @@ void GameManager_318772340_206580102::checkShellCollisions() {
         if (Wall* wall = slot.getWall()) {
             int hp = wall->onHit();
             if (verbose) {
-                Logger::debug("Shell hit wall at (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + "). Wall HP: " + std::to_string(hp));
+                // Debug: Shell hit wall
             }
             if (hp <= 0) {
                 gameBoard->removeWallAt(pos.getx(), pos.gety());
                 if (verbose) {
-                    Logger::debug("Wall destroyed at (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
+                    // Debug: Wall destroyed
                 }
             }
             toRemove.emplace_back(shell, pos);
@@ -473,7 +473,7 @@ void GameManager_318772340_206580102::checkShellCollisions() {
                 toRemove.emplace_back(shell, pos);
                 toRemove.emplace_back(other, pos);
                 if (verbose) {
-                    Logger::debug("Shells collided at (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
+                    // Debug: Shells collided
                 }
                 break;
             }
@@ -497,7 +497,7 @@ void GameManager_318772340_206580102::checkTankMineCollisions() {
         if (slot.getMine()) {
             char symbol = tank->getSymbol(); 
             if (verbose) {
-                Logger::debug("Mine:" + tank->getFullIdString() + " hit a mine at (" + std::to_string(pos.getx()) + "," + std::to_string(pos.gety()) + ")");
+                // Debug: Tank hit a mine
             }
             tank->Hit();
             if (symbol == '1') tankIndex1--;
@@ -529,7 +529,7 @@ void GameManager_318772340_206580102::checkTankTankCollisions() {
             if (tanks.size() > 1) {
                 if (verbose) {
                     std::string posStr = "(" + std::to_string(x) + "," + std::to_string(y) + ")";
-                    Logger::debug("Tank-Tank collision at " + posStr);
+                    // Debug: Tank-Tank collision
                 }
                 
                 // Collect all tank information before removing any tanks
@@ -596,7 +596,7 @@ std::vector<std::vector<char>> GameManager_318772340_206580102::buildBoardMatrix
                 if(!slot.getShells().empty()){
                     board[y][x] = '*';
                     if (verbose) {
-                        Logger::debug("Shell detected at (" + std::to_string(x) + "," + std::to_string(y) + ")");
+                        // Debug: Shell detected
                     }
                 }
                 else{board[y][x] = '@';}
@@ -604,7 +604,7 @@ std::vector<std::vector<char>> GameManager_318772340_206580102::buildBoardMatrix
             else if (!slot.getShells().empty()){
                 if (!slot.getShells().empty()) {
                     if (verbose) {
-                        Logger::debug("Shell detected at (" + std::to_string(x) + "," + std::to_string(y) + ")");
+                        // Debug: Shell detected
                     }
                     board[y][x] = '*';
                 }
@@ -635,16 +635,17 @@ void GameManager_318772340_206580102::populateTankOrderAndLog(size_t rows, size_
 void GameManager_318772340_206580102::logGameResult() {
     if (!verbose) return;
     
-    Logger::debug("Game Over!");
+    // Debug: Game Over!
 
-    if (tankIndex1 == 0 && tankIndex2 == 0)
-        Logger::debug("Tie - Both players lost all tanks");
-    else if (tankIndex1 == 0)
-        Logger::debug("Player 2 wins - Player 1 eliminated");
-    else if (tankIndex2 == 0)
-        Logger::debug("Player 1 wins - Player 2 eliminated");
-    else
-        Logger::debug("Tie - Reached max steps or no shells left for all live tanks");
+    if (tankIndex1 == 0 && tankIndex2 == 0) {
+        // Debug: Tie - Both players lost all tanks
+    } else if (tankIndex1 == 0) {
+        // Debug: Player 2 wins - Player 1 eliminated
+    } else if (tankIndex2 == 0) {
+        // Debug: Player 1 wins - Player 2 eliminated
+    } else {
+        // Debug: Tie - Reached max steps or no shells left for all live tanks
+    }
         
     if (!simpleOutput.is_open()) return;
     

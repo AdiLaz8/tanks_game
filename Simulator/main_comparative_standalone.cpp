@@ -267,12 +267,14 @@ ComparativeGameResult runSingleGame(
     result.gameManagerName = fs::path(gameManagerPath).stem().string();
     result.success = false;
     
-    std::cout << "DEBUG: Starting runSingleGame for GameManager: " << result.gameManagerName << std::endl;
-    std::cout << "DEBUG: GameManager path: " << gameManagerPath << std::endl;
+
     
     try {
+        // CRITICAL FIX: Serialize entire GameManager loading to prevent race conditions
+        static std::mutex gameManagerLoadMutex;
+        std::lock_guard<std::mutex> loadLock(gameManagerLoadMutex);
+        
         // Clear any existing GameManager registrations before loading new library
-        std::cout << "DEBUG: Clearing existing GameManager registrations..." << std::endl;
         {
             std::lock_guard<std::mutex> lock(registryMutex);
             gameManagerFactories.clear();
@@ -280,27 +282,21 @@ ComparativeGameResult runSingleGame(
         }
         
         // Load GameManager library
-        std::cout << "DEBUG: Loading GameManager library..." << std::endl;
         void* gameManagerHandle = dlopen(gameManagerPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!gameManagerHandle) {
             result.errorMessage = "Failed to load GameManager library: " + std::string(dlerror());
-            std::cout << "DEBUG: FAILED to load GameManager: " << result.errorMessage << std::endl;
             return result;
         }
-        std::cout << "DEBUG: Successfully loaded GameManager library" << std::endl;
         
         // Wait for static initialization to complete
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         
         // Check what GameManager was registered
-        std::cout << "DEBUG: Checking GameManager registrations..." << std::endl;
         std::lock_guard<std::mutex> lock(registryMutex);
-        std::cout << "DEBUG: Registered GameManagers: " << gameManagerFactories.size() << std::endl;
         
         if (gameManagerFactories.empty()) {
             dlclose(gameManagerHandle);
             result.errorMessage = "No GameManager factories registered after loading library";
-            std::cout << "DEBUG: NO GameManager factories registered!" << std::endl;
             return result;
         }
         
@@ -310,10 +306,8 @@ ComparativeGameResult runSingleGame(
         PlayerFactory playerFactory = playerFactories[0];
         TankAlgorithmFactory tankAlgorithmFactory = tankAlgorithmFactories[0];
         
-        std::cout << "DEBUG: Using registered GameManager factory and pre-loaded algorithm factories" << std::endl;
         
         // Run the game
-        std::cout << "DEBUG: Calling GameRunner::runSingleGame..." << std::endl;
         GameExecution execution = GameRunner::runSingleGame(
             gameManagerFactory,
             result.gameManagerName,
@@ -325,8 +319,6 @@ ComparativeGameResult runSingleGame(
             verbose
         );
         
-        std::cout << "DEBUG: GameRunner::runSingleGame completed successfully" << std::endl;
-        std::cout << "DEBUG: Game result - winner: " << execution.result.winner << ", reason: " << static_cast<int>(execution.result.reason) << ", rounds: " << execution.result.rounds << std::endl;
         
         result.success = true;
         result.winner = execution.result.winner;
@@ -363,30 +355,21 @@ ComparativeGameResult runSingleGame(
         }
         result.finalGameState = finalStateStream.str();
         
-        std::cout << "DEBUG: Game completed successfully for " << result.gameManagerName << std::endl;
-        std::cout << "DEBUG: About to return from runSingleGame..." << std::endl;
-        std::cout << "DEBUG: Final result values - success: " << result.success << ", winner: " << result.winner << ", rounds: " << result.rounds << std::endl;
         
         // Don't close the library here - we'll close all libraries at the end
         // This prevents segmentation faults and endless loops
-        std::cout << "DEBUG: Keeping library open to avoid crashes..." << std::endl;
         
         return result;
         
     } catch (const std::exception& e) {
         result.errorMessage = "Exception during game execution: " + std::string(e.what());
-        std::cout << "DEBUG: EXCEPTION caught in runSingleGame: " << result.errorMessage << std::endl;
     } catch (...) {
         result.errorMessage = "Unknown exception during game execution";
-        std::cout << "DEBUG: UNKNOWN EXCEPTION caught in runSingleGame" << std::endl;
     }
     
-    std::cout << "DEBUG: runSingleGame finished for " << result.gameManagerName << " with success=" << result.success << std::endl;
     if (!result.success) {
-        std::cout << "DEBUG: Error message: " << result.errorMessage << std::endl;
     }
     
-    std::cout << "DEBUG: About to return result from runSingleGame..." << std::endl;
     return result;
 }
 
@@ -543,7 +526,6 @@ int main(int argc, char* argv[]) {
     std::cout << "Using " << config.numThreads << " thread(s)\n";
     
     // Load algorithm libraries ONCE at the beginning
-    std::cout << "DEBUG: Loading algorithm libraries..." << std::endl;
     
     // Clear any existing registrations
     {
@@ -555,7 +537,6 @@ int main(int argc, char* argv[]) {
     }
     
     // Load Algorithm1 library
-    std::cout << "DEBUG: Loading Algorithm1 library: " << config.algorithm1 << std::endl;
     void* algorithm1Handle = dlopen(config.algorithm1.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!algorithm1Handle) {
         std::cerr << "Error: Failed to load Algorithm1 library: " << dlerror() << "\n";
@@ -563,7 +544,6 @@ int main(int argc, char* argv[]) {
     }
     
     // Load Algorithm2 library
-    std::cout << "DEBUG: Loading Algorithm2 library: " << config.algorithm2 << std::endl;
     void* algorithm2Handle = dlopen(config.algorithm2.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!algorithm2Handle) {
         dlclose(algorithm1Handle);
@@ -575,11 +555,8 @@ int main(int argc, char* argv[]) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     
     // Check what algorithms were registered
-    std::cout << "DEBUG: Checking algorithm registrations..." << std::endl;
     {
         std::lock_guard<std::mutex> lock(registryMutex);
-        std::cout << "DEBUG: Registered Players: " << playerFactories.size() << std::endl;
-        std::cout << "DEBUG: Registered TankAlgorithms: " << tankAlgorithmFactories.size() << std::endl;
         
         if (playerFactories.empty() || tankAlgorithmFactories.empty()) {
             dlclose(algorithm2Handle);
@@ -589,63 +566,51 @@ int main(int argc, char* argv[]) {
         }
     }
     
-    std::cout << "DEBUG: Successfully loaded algorithm libraries" << std::endl;
     
     // Run games
     std::vector<ComparativeGameResult> results;
     results.reserve(gameManagerFiles.size());
     
-    std::cout << "DEBUG: Starting to run " << gameManagerFiles.size() << " games..." << std::endl;
     
     if (config.numThreads == 1) {
-        // Single-threaded execution
-        std::cout << "DEBUG: Using single-threaded execution" << std::endl;
+        // Single-threaded execution (main thread only)
+        std::cout << "Using single-threaded execution (main thread only)" << std::endl;
+        std::cout << "Main Thread ID: " << std::this_thread::get_id() << " processing all GameManagers" << std::endl;
+        
         for (const auto& gameManagerFile : gameManagerFiles) {
-            std::cout << "DEBUG: Processing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
-            
-            if (config.verbose) {
-                std::cout << "Running game with: " << fs::path(gameManagerFile).filename() << "\n";
-            }
-            
+            std::cout << "Main Thread ID: " << std::this_thread::get_id() << " processing " << fs::path(gameManagerFile).filename() << std::endl;
             auto result = runSingleGame(gameManagerFile, map, config.verbose, playerFactories, tankAlgorithmFactories);
-            std::cout << "DEBUG: Got result for " << fs::path(gameManagerFile).filename() << " - success: " << result.success << std::endl;
-            
             results.push_back(std::move(result));
-            
-            if (config.verbose) {
-                if (result.success) {
-                    std::cout << "  Completed successfully\n";
-                } else {
-                    std::cout << "  Failed: " << result.errorMessage << "\n";
-                }
-            }
         }
     } else {
-        // Multi-threaded execution
-        std::cout << "DEBUG: Using multi-threaded execution with " << config.numThreads << " threads" << std::endl;
+        // Multi-threaded execution: num_threads worker threads + main thread
+        // According to spec: num_threads>=2 means num_threads worker threads + main thread
+        std::cout << "Using multi-threaded execution with " << config.numThreads << " worker threads + main thread (total: " << (config.numThreads + 1) << " threads)" << std::endl;
+        std::cout << "Main Thread ID: " << std::this_thread::get_id() << " coordinating execution" << std::endl;
+        
         ComparativeThreadPool pool(config.numThreads);
         std::vector<std::future<ComparativeGameResult>> futures;
         
         for (const auto& gameManagerFile : gameManagerFiles) {
-            std::cout << "DEBUG: Enqueueing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
+            std::cout << "Enqueueing GameManager: " << fs::path(gameManagerFile).filename() << std::endl;
             futures.push_back(pool.enqueue([gameManagerFile, &map, &config]() {
+                std::cout << "Worker Thread ID: " << std::this_thread::get_id() << " processing " << fs::path(gameManagerFile).filename() << std::endl;
                 return runSingleGame(gameManagerFile, map, false, playerFactories, tankAlgorithmFactories);
             }));
         }
         
-        // Collect results
-        std::cout << "DEBUG: Collecting results from " << futures.size() << " futures..." << std::endl;
+        // Main thread collects results (waiting/joining worker threads)
+        std::cout << "Main Thread ID: " << std::this_thread::get_id() << " collecting results from " << futures.size() << " worker threads..." << std::endl;
         for (size_t i = 0; i < futures.size(); ++i) {
-            std::cout << "DEBUG: Getting result from future " << i << std::endl;
-            auto result = futures[i].get();
-            std::cout << "DEBUG: Future " << i << " result - success: " << result.success << std::endl;
+            std::cout << "Main Thread ID: " << std::this_thread::get_id() << " waiting for worker thread result " << i << std::endl;
+            auto result = futures[i].get();  // This is the join/wait operation
+            std::cout << "Main Thread ID: " << std::this_thread::get_id() << " received result " << i << " - success: " << result.success << std::endl;
             results.push_back(std::move(result));
         }
     }
     
-    std::cout << "DEBUG: All games completed. Total results: " << results.size() << std::endl;
     for (size_t i = 0; i < results.size(); ++i) {
-        std::cout << "DEBUG: Result " << i << " - GameManager: " << results[i].gameManagerName 
+        std::cout << "Result " << i << " - GameManager: " << results[i].gameManagerName 
                   << ", Success: " << results[i].success;
         if (!results[i].success) {
             std::cout << ", Error: " << results[i].errorMessage;

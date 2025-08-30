@@ -6,6 +6,7 @@
 #include <future>
 #include <map>
 #include <set>
+#include <mutex>
 #include "SimulationConfig.h"
 #include "SimulationResults.h"
 #include "DynamicLoader.h"
@@ -50,6 +51,9 @@ private:
     PlayerFactory playerFactory;
     TankAlgorithmFactory algorithm1Factory;
     TankAlgorithmFactory algorithm2Factory;
+    
+    // Thread safety for concurrent factory usage
+    mutable std::mutex factoryMutex;
     
     // Results grouped by identical game outcomes
     std::map<ComparativeGameResult, std::vector<std::string>> resultGroups;

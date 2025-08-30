@@ -1,4 +1,5 @@
 #include "ComparativeSimulator.h"
+#include "Registry.h"
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
@@ -7,6 +8,7 @@
 #include <iomanip>
 #include <chrono>
 #include <filesystem>
+#include <thread>
 
 // ComparativeGameResult comparison operators for grouping
 bool ComparativeGameResult::operator<(const ComparativeGameResult& other) const {
@@ -77,12 +79,50 @@ void ComparativeSimulator::loadGameManagerLibraries() {
         throw std::runtime_error("No .so files found in GameManager folder: " + gameManagersFolder);
     }
     
-    // Load the GameManager libraries
-    loader.loadGameManagerLibraries(soFiles);
-    gameManagerFactories = loader.getGameManagerFactories();
-    gameManagerNames = loader.getGameManagerFactoryNames();
+    // CRITICAL FIX: Load GameManager libraries one by one to avoid race conditions
+    // This prevents the global registry conflicts in multi-threaded mode
+    gameManagerFactories.clear();
+    gameManagerNames.clear();
     
-    std::cout << "Loaded " << gameManagerFactories.size() << " GameManager(s)" << std::endl;
+    // Get reference to the global registry
+    auto& gmRegistry = getGameManagerFactoryRegistry();
+    
+    for (const auto& soFile : soFiles) {
+
+        
+        // Clear registry before loading each GameManager
+        gmRegistry.clear();
+        
+        try {
+            // Load this specific library
+            loader.loadLibrary(soFile);
+            
+            // Capture the factory that was just registered
+            if (gmRegistry.size() == 1) {
+                gameManagerFactories.push_back(gmRegistry[0]);
+                
+                // Generate name from filename
+                std::filesystem::path path(soFile);
+                std::string name = path.stem().string();
+                gameManagerNames.push_back(name);
+                
+
+            } else {
+                throw std::runtime_error("Expected exactly 1 GameManager factory after loading " + soFile + 
+                                       ", got " + std::to_string(gmRegistry.size()));
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to load GameManager library " << soFile << ": " << e.what() << std::endl;
+            throw;
+        }
+    }
+    
+    // Clear the global registry to prevent confusion during multi-threaded execution
+    gmRegistry.clear();
+    
+    std::cout << "Loaded " << gameManagerFactories.size() << " GameManager(s) with isolated factories" << std::endl;
+    
+
 }
 
 void ComparativeSimulator::loadAlgorithmLibraries() {
@@ -113,9 +153,19 @@ void ComparativeSimulator::loadAlgorithmLibraries() {
 }
 
 void ComparativeSimulator::setupThreadPool() {
-    // For numThreads >= 2, create numThreads worker threads
-    // The main thread will also participate in the work
-    size_t workerThreads = (numThreads >= 2) ? numThreads : 0;
+    // CRITICAL FIX: Ensure we have enough threads for all GameManagers
+    // Each GameManager needs its own thread to avoid race conditions
+    size_t minThreadsNeeded = gameManagerFactories.size();
+    size_t actualThreads = std::max(numThreads, minThreadsNeeded);
+    
+    if (numThreads < minThreadsNeeded) {
+        std::cout << "WARNING: Requested " << numThreads << " threads, but need " << minThreadsNeeded 
+                  << " threads for " << minThreadsNeeded << " GameManagers." << std::endl;
+        std::cout << "         Using " << actualThreads << " threads for stability." << std::endl;
+    }
+    
+    size_t workerThreads = (actualThreads >= 2) ? actualThreads : 0;
+    std::cout << "Creating ThreadPool with " << workerThreads << " worker threads" << std::endl;
     threadPool = std::make_unique<ThreadPool>(workerThreads);
 }
 
@@ -205,40 +255,21 @@ std::vector<std::future<ComparativeExecution>> ComparativeSimulator::queueAllGam
     
     size_t totalGameManagers = gameManagerFactories.size();
     
-    if (numThreads == 1) {
-        // Single-threaded: queue all games for the single worker thread
-        for (size_t gmIdx = 0; gmIdx < totalGameManagers; ++gmIdx) {
-            auto future = threadPool->enqueue([=, this]() -> ComparativeExecution {
-                return runSingleGame(gmIdx, map);
-            });
-            futures.push_back(std::move(future));
-        }
+    size_t actualThreads = threadPool->size();
+    if (actualThreads == 0) {
+        std::cout << "Using single-threaded execution" << std::endl;
     } else {
-        // Multi-threaded: distribute work between worker threads and main thread
-        size_t workerThreads = threadPool->size();
-        size_t gamesForWorkers = std::min(workerThreads, totalGameManagers);
-        
-        // Queue games for worker threads
-        for (size_t gmIdx = 0; gmIdx < gamesForWorkers; ++gmIdx) {
-            auto future = threadPool->enqueue([=, this]() -> ComparativeExecution {
-                return runSingleGame(gmIdx, map);
-            });
-            futures.push_back(std::move(future));
-        }
-        
-        // Main thread runs remaining games
-        for (size_t gmIdx = gamesForWorkers; gmIdx < totalGameManagers; ++gmIdx) {
-            // Create a packaged_task to wrap the game execution
-            auto task = std::packaged_task<ComparativeExecution()>([=, this]() -> ComparativeExecution {
-                return runSingleGame(gmIdx, map);
-            });
-            
-            // Get the future from the packaged_task
-            futures.push_back(task.get_future());
-            
-            // Execute the task immediately in the main thread
-            task();
-        }
+        std::cout << "Using multi-threaded execution with " << actualThreads << " worker threads" << std::endl;
+    }
+    
+    // SIMPLIFIED: Queue all GameManagers to worker threads (one per GameManager)
+    for (size_t gmIdx = 0; gmIdx < totalGameManagers; ++gmIdx) {
+        auto future = threadPool->enqueue([=, this]() -> ComparativeExecution {
+            std::cout << "Thread ID: " << std::this_thread::get_id() << " processing GameManager " << gmIdx 
+                      << " (" << gameManagerNames[gmIdx] << ")" << std::endl;
+            return runSingleGame(gmIdx, map);
+        });
+        futures.push_back(std::move(future));
     }
     
     return futures;
@@ -252,21 +283,13 @@ ComparativeExecution ComparativeSimulator::runSingleGame(size_t gmIdx, const Map
         ("GameManager" + std::to_string(gmIdx)) : gameManagerNames[gmIdx];
     
     try {
-        // Create GameManager
+        // Use the pre-loaded factories directly (single-threaded execution ensures no conflicts)
         auto gameManager = gameManagerFactories[gmIdx](verbose);
-        
-        // Create satellite view from map
         auto satelliteView = GameRunner::createSatelliteView(map);
-        
-        // Create players with the same factory but different indices
         auto player1 = playerFactory(1, map.width, map.height, map.maxSteps, map.numShells);
         auto player2 = playerFactory(2, map.width, map.height, map.maxSteps, map.numShells);
         
-        // Create algorithms with different factories
-        auto algorithm1 = algorithm1Factory(1, 0);
-        auto algorithm2 = algorithm2Factory(2, 0);
-        
-        // Run the game
+        // Run the game using the GameManager directly
         GameResult result = gameManager->run(
             map.width, map.height,
             *satelliteView,

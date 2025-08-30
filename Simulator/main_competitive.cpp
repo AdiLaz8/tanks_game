@@ -51,7 +51,6 @@ public:
     CompetitiveThreadPool(size_t threads) : stop(false) {
         for (size_t i = 0; i < threads; ++i) {
             workers.emplace_back([this, i] {
-                std::cout << "DEBUG: Worker thread " << i << " started (ID: " << std::this_thread::get_id() << ")" << std::endl;
                 while (true) {
                     std::function<void()> task;
                     {
@@ -61,7 +60,6 @@ public:
                         task = std::move(tasks.front());
                         tasks.pop();
                     }
-                    std::cout << "DEBUG: Worker thread " << i << " (ID: " << std::this_thread::get_id() << ") executing task" << std::endl;
                     task();
                 }
             });
@@ -179,23 +177,18 @@ CompetitiveGameResult runCompetitiveGame(
     const std::string& /*gameManagerFile*/,
     const std::string& algorithm1File,
     const std::string& algorithm2File,
-    int algorithm1Index,
-    int algorithm2Index,
+    int algorithm1Index __attribute__((unused)),
+    int algorithm2Index __attribute__((unused)),
     bool verbose) {
     
-    std::cout << "DEBUG: Entering runCompetitiveGame function" << std::endl;
     
     CompetitiveGameResult result;
     result.mapName = fs::path(mapFile).filename().string();
     result.algorithm1 = fs::path(algorithm1File).filename().string();
     result.algorithm2 = fs::path(algorithm2File).filename().string();
     
-    std::cout << "DEBUG: Map: " << result.mapName << std::endl;
-    std::cout << "DEBUG: Player1: Algorithm " << algorithm1Index << " (" << result.algorithm1 << ")" << std::endl;
-    std::cout << "DEBUG: Player2: Algorithm " << algorithm2Index << " (" << result.algorithm2 << ")" << std::endl;
     
     try {
-        std::cout << "DEBUG: About to load map: " << mapFile << std::endl;
         // Load map
         MapData map;
         if (!map.loadFromFile(mapFile, verbose)) {
@@ -207,7 +200,7 @@ CompetitiveGameResult runCompetitiveGame(
         // Check registrations - we need at least 2 algorithms
         {
             std::lock_guard<std::mutex> lock(registryMutex);
-            std::cout << "DEBUG: Checking registrations - Players: " << playerFactories.size() 
+            std::cout << "Registered Players: " << playerFactories.size() 
                       << ", TankAlgorithms: " << tankAlgorithmFactories.size() << std::endl;
             if (playerFactories.size() < 2 || tankAlgorithmFactories.size() < 2) {
                 result.success = false;
@@ -221,7 +214,6 @@ CompetitiveGameResult runCompetitiveGame(
         // Check GameManager registration
         {
             std::lock_guard<std::mutex> lock(registryMutex);
-            std::cout << "DEBUG: Checking GameManager registration - Count: " << gameManagerFactories.size() << std::endl;
             if (gameManagerFactories.empty()) {
                 result.success = false;
                 result.errorMessage = "No GameManager registered";
@@ -230,16 +222,13 @@ CompetitiveGameResult runCompetitiveGame(
         }
         
         // Use the registered factories - algorithm1 for player1, algorithm2 for player2
-        std::cout << "DEBUG: Getting factories from registries..." << std::endl;
         GameManagerFactory gameManagerFactory = gameManagerFactories[0];
         PlayerFactory player1Factory = playerFactories[0];  // First registered player
         PlayerFactory player2Factory = playerFactories[1];  // Second registered player
         TankAlgorithmFactory tankAlgorithm1Factory = tankAlgorithmFactories[0];  // First registered algorithm
         TankAlgorithmFactory tankAlgorithm2Factory = tankAlgorithmFactories[1];  // Second registered algorithm
-        std::cout << "DEBUG: Factories obtained successfully" << std::endl;
         
         // Run the game using GameRunner
-        std::cout << "DEBUG: Starting game execution..." << std::endl;
         try {
             GameExecution execution = GameRunner::runSingleGame(
                 gameManagerFactory,
@@ -257,13 +246,10 @@ CompetitiveGameResult runCompetitiveGame(
             result.success = true;
             result.rounds = execution.result.rounds;
             
-            std::cout << "DEBUG: Game completed. Winner: " << result.winner << " (0=tie, 1=Player1, 2=Player2)" << std::endl;
         } catch (const std::exception& e) {
-            std::cout << "DEBUG: Game execution failed with exception: " << e.what() << std::endl;
             result.success = false;
             result.errorMessage = "Game execution exception: " + std::string(e.what());
         } catch (...) {
-            std::cout << "DEBUG: Game execution failed with unknown exception" << std::endl;
             result.success = false;
             result.errorMessage = "Game execution failed with unknown exception";
         }
@@ -442,15 +428,12 @@ int main(int argc, char* argv[]) {
         
                 if (config.numThreads == 1) {
             // Single-threaded execution
-            std::cout << "DEBUG: Single-threaded mode - Main thread (ID: " << std::this_thread::get_id() << ") executing all games sequentially" << std::endl;
             for (size_t mapIndex = 0; mapIndex < mapFiles.size(); ++mapIndex) {
-                std::cout << "DEBUG: Main thread (ID: " << std::this_thread::get_id() << ") processing map " << mapIndex << " (k=" << mapIndex << ")" << std::endl;
                 
                 // Calculate pairings for this map
                 std::vector<std::pair<int, int>> pairings = calculatePairings(mapIndex, algorithmFiles.size());
                 
                 for (const auto& [algo1Index, algo2Index] : pairings) {
-                    std::cout << "DEBUG: Running game: Algorithm " << algo1Index << " vs Algorithm " << algo2Index << std::endl;
                     
                     auto result = runCompetitiveGame(
                         mapFiles[mapIndex],
@@ -506,19 +489,16 @@ int main(int argc, char* argv[]) {
             }
         } else {
             // Multi-threaded execution
-            std::cout << "DEBUG: Main thread (ID: " << std::this_thread::get_id() << ") creating thread pool with " << config.numThreads << " workers" << std::endl;
             CompetitiveThreadPool pool(config.numThreads);
             std::vector<std::future<CompetitiveGameResult>> futures;
             
             for (size_t mapIndex = 0; mapIndex < mapFiles.size(); ++mapIndex) {
-                std::cout << "DEBUG: Main thread (ID: " << std::this_thread::get_id() << ") processing map " << mapIndex << " (k=" << mapIndex << ")" << std::endl;
                 
                 // Calculate pairings for this map
                 std::vector<std::pair<int, int>> pairings = calculatePairings(mapIndex, algorithmFiles.size());
                 
                 for (const auto& [algo1Index, algo2Index] : pairings) {
                     futures.push_back(pool.enqueue([mapFiles, mapIndex, config, algo1Index, algo2Index, algorithmFiles]() {
-                        std::cout << "DEBUG: Worker thread (ID: " << std::this_thread::get_id() << ") starting game: Algorithm " << algo1Index << " vs Algorithm " << algo2Index << std::endl;
                         return runCompetitiveGame(
                             mapFiles[mapIndex],
                             config.gameManager,
@@ -533,7 +513,6 @@ int main(int argc, char* argv[]) {
             }
             
             // Collect results
-            std::cout << "DEBUG: Main thread (ID: " << std::this_thread::get_id() << ") starting to collect results from " << futures.size() << " futures" << std::endl;
             for (auto& future : futures) {
                 auto result = future.get();
                 allResults.push_back(result);
